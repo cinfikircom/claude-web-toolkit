@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-web-toolkit",
+  "description": "Site-bağımsız web optimizasyon yetenekleri koleksiyonu. SEO, GEO (Generative Engine Optimization), Entity SEO, Core Web Vitals ve AI Crawler denetimi için Claude Code eklentileri. Her proje/sitede yeniden kullanılabilir.",
+  "owner": {
+    "name": "cinfikircom"
+  },
+  "plugins": [
+    {
+      "name": "seo-geo-optimizer",
+      "description": "Herhangi bir web sitesi için SEO + GEO + Entity SEO + Core Web Vitals + AI Crawler denetim ve optimizasyon iş akışı. İlk aşamada chat üzerinden hedef/risk sorularını sorar, framework'ü tespit eder, sonra başlık başlık (onay alarak) uygular. Next.js, Astro, React, Nuxt, düz HTML — mimariden bağımsız çalışır.",
+      "author": {
+        "name": "cinfikircom"
+      },
+      "category": "seo",
+      "source": "./plugins/seo-geo-optimizer"
+    }
+  ]
+}
