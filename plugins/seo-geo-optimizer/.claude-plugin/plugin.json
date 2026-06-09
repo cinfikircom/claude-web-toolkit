@@ -5,5 +5,7 @@
   "author": {
     "name": "cinfikircom"
   },
-  "keywords": ["seo", "geo", "generative-engine-optimization", "entity-seo", "core-web-vitals", "ai-crawler", "schema-org", "llms-txt"]
+  "homepage": "https://github.com/cinfikircom/claude-web-toolkit",
+  "license": "MIT",
+  "keywords": ["seo", "geo", "generative-engine-optimization", "entity-seo", "core-web-vitals", "ai-crawler", "schema-org", "llms-txt", "knowledge-graph", "lighthouse"]
 }
