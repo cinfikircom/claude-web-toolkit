@@ -22,3 +22,20 @@ Bu beceri kapsamında yapılan HER kod değişikliği bu protokole tabidir.
 ## High Risk değişikliklerde ek adım
 Madde madde ilerle, her maddeden sonra dur ve onay al. Toplu uygulama yapma.
 Mümkünse önce tek bir örnek sayfada uygula, doğrula, sonra yaygınlaştır.
+
+## Geri alma (rollback) şablonu
+Her High Risk (ve istenirse Medium Risk) değişiklik için raporda şu bloğu doldur:
+
+```
+### Geri Alma Planı — {değişiklik adı}
+- **Değişen dosyalar:** {tam yollar}
+- **Önceki davranış:** {değişiklikten önce ne yapıyordu}
+- **Geri alma yöntemi:**
+  - Git: `git revert {commit}` veya `git checkout {commit} -- {dosya}`
+  - Manuel: {config/flag değişikliğiyle eski davranışa dönüş — örn. revalidate → force-dynamic}
+- **Doğrulama:** geri aldıktan sonra {hangi sayfa/metrik nasıl kontrol edilir}
+- **Etki süresi:** {ISR/CDN cache nedeniyle yayılma gecikmesi — örn. revalidate süresi kadar}
+```
+
+> Render stratejisi (SSR↔ISR↔SSG) ve cache header değişikliklerinde **CDN/ISR cache'inin
+> ne zaman temizleneceğini** mutlaka belirt — geri alma anında değil, cache TTL'i kadar gecikir.

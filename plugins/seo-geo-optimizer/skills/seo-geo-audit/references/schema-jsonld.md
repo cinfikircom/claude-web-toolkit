@@ -1,0 +1,172 @@
+# Schema.org & JSON-LD Referansı
+
+Kaynak: https://schema.org/ — GEO'nun bel kemiği. AI Overviews ve ChatGPT/Perplexity citation
+sistemleri yapılandırılmış veriden çok beslenir. Çoğu site llms.txt ekler ama schema + entity
+ilişkisini kurmadığı için güvenilir kaynak olarak öne çıkamaz.
+
+Format: **JSON-LD** (`<script type="application/ld+json">`). Inline mikrodata kullanma.
+`@id` ile graf bağla (bkz. `references/entity-graph.md`).
+
+## Hangi sayfada hangi şema
+| Sayfa tipi | Birincil şema | Ek şema |
+|------------|---------------|---------|
+| Ana sayfa | `WebSite` + `Organization` | `SearchAction` (sitelinks search box) |
+| Hakkında | `AboutPage` | `Organization` |
+| İletişim | `ContactPage` | `Organization` + `ContactPoint` |
+| Firma/işletme detay | `LocalBusiness` (alt tip: `Restaurant`, `Store`, `Pharmacy`…) | `AggregateRating`, `Review`, `OpeningHoursSpecification`, `GeoCoordinates` |
+| Ürün | `Product` | `Offer`, `AggregateRating`, `Review` |
+| Hizmet | `Service` | `Offer`, `areaServed` |
+| Haber/blog detay | `NewsArticle` / `Article` | `author`(Person), `publisher`(Organization), `BreadcrumbList` |
+| Liste/kategori | `ItemList` | her öğe → ilgili entity `@id` |
+| SSS | `FAQPage` | (AI Overviews alıntısı için en yüksek getiri) |
+| Tüm sayfalar | `BreadcrumbList` | — |
+
+## Temel kopya-yapıştır şablonlar (placeholder'ları doldur)
+
+### WebSite + Organization (ana sayfada, graf kökü)
+```json
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://SITE/#organization",
+      "name": "MARKA ADI",
+      "url": "https://SITE/",
+      "logo": "https://SITE/logo.png",
+      "sameAs": ["https://...google-business", "https://...instagram", "https://www.wikidata.org/wiki/Q..."]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://SITE/#website",
+      "url": "https://SITE/",
+      "name": "MARKA ADI",
+      "publisher": { "@id": "https://SITE/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://SITE/ara?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+```
+
+### LocalBusiness (firma detay)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://SITE/firma/SLUG/#business",
+  "name": "FİRMA ADI",
+  "image": "https://SITE/resim/...",
+  "address": { "@type": "PostalAddress", "streetAddress": "...", "addressLocality": "Eryaman", "addressRegion": "Ankara", "postalCode": "...", "addressCountry": "TR" },
+  "geo": { "@type": "GeoCoordinates", "latitude": 0, "longitude": 0 },
+  "telephone": "+90...",
+  "openingHoursSpecification": [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday"], "opens": "09:00", "closes": "18:00" }],
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.7", "reviewCount": "123" },
+  "parentOrganization": { "@id": "https://SITE/#organization" }
+}
+```
+
+### NewsArticle (haber detay)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "@id": "https://SITE/haber/SLUG/#article",
+  "headline": "BAŞLIK",
+  "image": ["https://SITE/resim/..."],
+  "datePublished": "2026-01-01T08:00:00+03:00",
+  "dateModified": "2026-01-02T10:00:00+03:00",
+  "author": { "@type": "Person", "name": "YAZAR", "url": "https://SITE/yazar/SLUG" },
+  "publisher": { "@id": "https://SITE/#organization" },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://SITE/haber/SLUG" }
+}
+```
+
+### FAQPage
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "SORU?", "acceptedAnswer": { "@type": "Answer", "text": "KISA NET CEVAP." } }
+  ]
+}
+```
+
+### BreadcrumbList
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Ana Sayfa", "item": "https://SITE/" },
+    { "@type": "ListItem", "position": 2, "name": "Kategori", "item": "https://SITE/kategori/SLUG" }
+  ]
+}
+```
+
+### Product (ürün detay)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "@id": "https://SITE/urun/SLUG/#product",
+  "name": "ÜRÜN ADI",
+  "image": ["https://SITE/resim/urun.webp"],
+  "description": "ÜRÜN AÇIKLAMASI",
+  "sku": "SKU-123",
+  "brand": { "@type": "Brand", "name": "MARKA" },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://SITE/urun/SLUG",
+    "priceCurrency": "TRY",
+    "price": "199.90",
+    "availability": "https://schema.org/InStock",
+    "seller": { "@id": "https://SITE/#organization" }
+  },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.6", "reviewCount": "87" }
+}
+```
+> `price`/`availability` yalnızca gerçek/güncel veriyse ekle — yanlış fiyat rich result cezası getirir.
+
+### Service (hizmet detay)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://SITE/hizmet/SLUG/#service",
+  "serviceType": "HİZMET TÜRÜ",
+  "name": "HİZMET ADI",
+  "description": "HİZMET AÇIKLAMASI",
+  "provider": { "@id": "https://SITE/#organization" },
+  "areaServed": { "@type": "City", "name": "Ankara" },
+  "offers": { "@type": "Offer", "priceCurrency": "TRY", "price": "0", "description": "Teklif için iletişime geçin" }
+}
+```
+
+### Review + AggregateRating (standalone — yorum/değerlendirme bloğu)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Review",
+  "itemReviewed": { "@id": "https://SITE/firma/SLUG/#business" },
+  "author": { "@type": "Person", "name": "YORUMCU ADI" },
+  "datePublished": "2026-06-09",
+  "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+  "reviewBody": "GERÇEK YORUM METNİ."
+}
+```
+> `AggregateRating` tek başına değil **her zaman bir varlığa** (`Product`/`LocalBusiness`/`Service`)
+> gömülü verilir (yukarıdaki örneklerde olduğu gibi). Uydurma puan = manuel ceza riski.
+
+## Doğrulama
+- Schema Markup Validator: https://validator.schema.org/
+- Google Rich Results Test: https://search.google.com/test/rich-results
+- Zorunlu/önerilen alanlar eksikse rich result kazanılamaz — denetimde eksik alanları listele.
+
+## Risk
+JSON-LD eklemek **Low/Medium Risk** (markup eklemesi, mevcut davranışı bozmaz). Ama yanlış/sahte
+veri (gerçek olmayan rating, yanlış adres) ceza riski → yalnızca DB/gerçek veriden üret.
