@@ -1,0 +1,51 @@
+{
+  "$schema": "seo-os-validation/geo-simulation-v1",
+  "site": "golden-seo-test-site",
+  "purpose": "Mock simulation of how AI search systems would interpret the BROKEN golden site (pre-optimization). Expected: LOW across the board. After SEO-OS optimization, a re-run should rise substantially.",
+  "evaluatedState": "broken-by-design (baseline failures present)",
+
+  "overall": {
+    "citationLikelihoodScore": 14,
+    "entityClarityScore": 11,
+    "llmExtractabilityScore": 18,
+    "knowledgeGraphReadiness": "low"
+  },
+
+  "rationale": {
+    "citationLikelihood": "No citable summaries, no factual/numeric data, generic marketing copy, no FAQ -> almost nothing quotable.",
+    "entityClarity": "Organization has no stable @id, no url/logo, no sameAs; dangling publisher @id; brand identity unverifiable.",
+    "llmExtractability": "Multiple H1s, heading-level jumps, div-ish structure, no semantic article/section -> weak chunking.",
+    "knowledgeGraph": "No llms.txt/ai-agents.json, broken @id graph, no Wikidata/sameAs -> not graph-ready."
+  },
+
+  "engines": {
+    "ChatGPT Search": {
+      "wouldCite": false,
+      "score": 15,
+      "reason": "No /llms.txt and no citation-ready paragraphs; would summarize generically without attributing this site."
+    },
+    "Perplexity": {
+      "wouldCite": false,
+      "score": 16,
+      "reason": "Prefers sources with clear facts + structure; thin content and broken schema make it a weak citation candidate."
+    },
+    "Gemini": {
+      "wouldCite": false,
+      "score": 12,
+      "reason": "Relies on Knowledge Graph/entity signals; missing Organization @id + sameAs + Google-Extended access uncertainty -> low trust."
+    },
+    "Google AI Overviews": {
+      "wouldCite": false,
+      "score": 13,
+      "reason": "No FAQPage/structured data, duplicate titles, missing descriptions -> unlikely to be surfaced as an Overview source."
+    }
+  },
+
+  "expectedAfterOptimization": {
+    "note": "Targets if SEO-OS applies the baseline correctly (for delta validation).",
+    "citationLikelihoodScore": ">= 75",
+    "entityClarityScore": ">= 80",
+    "llmExtractabilityScore": ">= 80",
+    "knowledgeGraphReadiness": "high"
+  }
+}

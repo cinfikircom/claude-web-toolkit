@@ -1,0 +1,70 @@
+{
+  "$schema": "seo-os-validation/baseline-v1",
+  "site": "golden-seo-test-site",
+  "purpose": "Gold-standard CORRECT state. The SEO-OS agent's audit output is scored against this. Higher match = better detection/decision quality.",
+  "performanceTargets": { "LCP_s": 2.5, "INP_ms": 200, "CLS": 0.1, "TTFB_ms": 800 },
+
+  "idealState": {
+    "headingHierarchy": "Exactly one <h1> per page; ordered descent h1>h2>h3 (no skips); headings describe structure, not style.",
+    "metadata": "Unique <title> per page; unique meta description per page; absolute rel=canonical per page; OG + Twitter cards.",
+    "internalLinking": "All 5 pages reachable from global nav; contextual cross-links; descriptive anchors; breadcrumb.",
+    "schema": {
+      "Organization": "Stable @id (https://acme.example/#org), url, logo, sameAs[] to real profiles/Wikidata.",
+      "WebSite": "@id, publisher -> Organization @id.",
+      "Service": "@id, provider -> Organization @id, areaServed, offers.",
+      "Article": "@id, author -> Person, publisher -> Organization @id, datePublished, dateModified, valid mainEntityOfPage.",
+      "ContactPage/LocalBusiness": "ContactPoint, NAP consistent with on-page + GBP."
+    },
+    "geoFiles": ["/llms.txt", "/llms-full.txt", "/ai-agents.json"],
+    "geoContent": "Per page: primary-answer block, 40-60 word citable summary, entity definition, FAQ, factual data.",
+    "performance": "next/image (AVIF/WebP, srcset, dims), LCP preload/priority, lazy below-fold, next/font self-host + preload, defer/async 3rd-party, reserved space (no CLS)."
+  },
+
+  "categories": {
+    "seo": {
+      "weight": 25,
+      "checks": [
+        { "id": "seo.single-h1", "desc": "Exactly one <h1> per page", "severity": "high" },
+        { "id": "seo.meta-description", "desc": "Unique meta description on every page", "severity": "high" },
+        { "id": "seo.unique-titles", "desc": "No duplicate <title> across pages", "severity": "high" },
+        { "id": "seo.canonical", "desc": "Absolute rel=canonical on every page", "severity": "medium" },
+        { "id": "seo.internal-linking", "desc": "All pages linked; no orphans; descriptive anchors", "severity": "medium" }
+      ]
+    },
+    "geo": {
+      "weight": 25,
+      "checks": [
+        { "id": "geo.llms-txt", "desc": "/llms.txt present and valid", "severity": "high" },
+        { "id": "geo.llms-full-txt", "desc": "/llms-full.txt present", "severity": "medium" },
+        { "id": "geo.ai-agents-json", "desc": "/ai-agents.json present", "severity": "medium" },
+        { "id": "geo.ai-summaries", "desc": "AI-readable summaries / primary-answer blocks", "severity": "high" },
+        { "id": "geo.citation-paragraphs", "desc": "Citation-ready factual paragraphs + FAQ", "severity": "high" }
+      ]
+    },
+    "schema": {
+      "weight": 25,
+      "checks": [
+        { "id": "schema.organization", "desc": "Complete Organization w/ stable @id, url, logo", "severity": "high" },
+        { "id": "schema.entity-ids", "desc": "Valid @id graph (no dangling references)", "severity": "high" },
+        { "id": "schema.sameas", "desc": "sameAs[] mappings to real profiles/Wikidata", "severity": "medium" },
+        { "id": "schema.service-article", "desc": "Service & Article complete + linked to Organization", "severity": "high" },
+        { "id": "schema.contact-local", "desc": "ContactPage/LocalBusiness + ContactPoint/NAP", "severity": "medium" }
+      ]
+    },
+    "performance": {
+      "weight": 25,
+      "checks": [
+        { "id": "perf.image-optimization", "desc": "Optimized responsive images (AVIF/WebP, dims) for LCP", "severity": "high" },
+        { "id": "perf.lazy-loading", "desc": "Lazy-load below-the-fold media", "severity": "medium" },
+        { "id": "perf.font-preload", "desc": "Self-hosted font + preload (no render-blocking webfont)", "severity": "medium" },
+        { "id": "perf.render-blocking", "desc": "Defer/async 3rd-party scripts (no render-blocking)", "severity": "high" },
+        { "id": "perf.cls", "desc": "Reserved dimensions to avoid layout shift (CLS)", "severity": "high" }
+      ]
+    }
+  },
+
+  "scoring": {
+    "perCheckPoints": 5,
+    "note": "Each category has 5 checks x 5 pts = 25. Award full points when the SEO-OS output detects the issue AND proposes the correct action; half when detected only; zero when missed."
+  }
+}

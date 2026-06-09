@@ -1,0 +1,16 @@
+{
+  "name": "golden-seo-test-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BROKEN-BY-DESIGN Next.js site for SEO-OS validation. Intentional SEO/GEO/Schema/CWV failures. DO NOT FIX.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

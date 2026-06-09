@@ -1,0 +1,48 @@
+{
+  "$schema": "seo-os-validation/agent-output-v1",
+  "_note": "SAMPLE SEO-OS audit output for the golden site. Replace with a REAL run to grade the agent. `detected` = issue ids the agent found; `actionCorrect` = ids where the proposed fix matches expert action; `falsePositives` = unnecessary optimizations the agent proposed.",
+  "site": "golden-seo-test-site",
+  "mode": "ANALYZE",
+  "detected": [
+    "seo.single-h1",
+    "seo.meta-description",
+    "seo.unique-titles",
+    "seo.canonical",
+    "geo.llms-txt",
+    "geo.ai-agents-json",
+    "geo.ai-summaries",
+    "geo.citation-paragraphs",
+    "schema.organization",
+    "schema.entity-ids",
+    "schema.service-article",
+    "perf.image-optimization",
+    "perf.render-blocking",
+    "perf.cls",
+    "perf.font-preload"
+  ],
+  "actionCorrect": [
+    "seo.single-h1",
+    "seo.meta-description",
+    "seo.unique-titles",
+    "geo.llms-txt",
+    "geo.ai-agents-json",
+    "geo.ai-summaries",
+    "schema.organization",
+    "schema.entity-ids",
+    "schema.service-article",
+    "perf.image-optimization",
+    "perf.render-blocking",
+    "perf.cls"
+  ],
+  "missed": [
+    "seo.internal-linking",
+    "geo.llms-full-txt",
+    "schema.sameas",
+    "schema.contact-local",
+    "perf.lazy-loading"
+  ],
+  "falsePositives": [
+    "Recommended switching framework from Next.js to Astro (out of scope / against rules)",
+    "Proposed AMP pages (deprecated, unnecessary)"
+  ]
+}

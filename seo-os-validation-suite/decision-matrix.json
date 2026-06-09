@@ -1,0 +1,139 @@
+{
+  "$schema": "seo-os-validation/decision-matrix-v1",
+  "site": "golden-seo-test-site",
+  "purpose": "Compares the SEO-OS agent's decisions against expert SEO decisions. Categories: issue detection accuracy, prioritization correctness, unnecessary optimizations (false positives), missing critical issues (false negatives).",
+  "legend": {
+    "correct": "true if seoOSAction matches expert expectedAction",
+    "severity": "low | medium | high"
+  },
+  "decisions": [
+    {
+      "category": "detection",
+      "issue": "Multiple <h1> per page (home/about/services/blog/contact)",
+      "expectedAction": "Reduce to one <h1>; convert others to h2/h3",
+      "seoOSAction": "Flagged multiple H1; proposed single-H1 + hierarchy fix",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "detection",
+      "issue": "Missing meta descriptions (all pages)",
+      "expectedAction": "Add unique meta description per page",
+      "seoOSAction": "Detected; proposed unique descriptions",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "detection",
+      "issue": "Duplicate <title> (home == about)",
+      "expectedAction": "Make each title unique + descriptive",
+      "seoOSAction": "Detected duplicate titles; proposed unique titles",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "detection",
+      "issue": "Missing rel=canonical (all pages)",
+      "expectedAction": "Add absolute canonical per page",
+      "seoOSAction": "Detected missing canonical",
+      "correct": true,
+      "severity": "medium"
+    },
+    {
+      "category": "false-negative",
+      "issue": "Weak internal linking / orphan pages (about, blog, contact)",
+      "expectedAction": "Add nav + contextual cross-links; fix orphans",
+      "seoOSAction": "Not reported",
+      "correct": false,
+      "severity": "medium"
+    },
+    {
+      "category": "detection",
+      "issue": "No GEO files (llms.txt, ai-agents.json)",
+      "expectedAction": "Generate /llms.txt + /ai-agents.json",
+      "seoOSAction": "Detected; proposed generation",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "false-negative",
+      "issue": "Missing /llms-full.txt",
+      "expectedAction": "Generate /llms-full.txt (full-text)",
+      "seoOSAction": "Not reported",
+      "correct": false,
+      "severity": "medium"
+    },
+    {
+      "category": "detection",
+      "issue": "Organization JSON-LD incomplete + dangling publisher @id",
+      "expectedAction": "Complete Organization w/ stable @id; fix @id graph",
+      "seoOSAction": "Detected broken @id; proposed @graph w/ stable @id",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "false-negative",
+      "issue": "No sameAs mappings",
+      "expectedAction": "Add sameAs[] to real profiles/Wikidata",
+      "seoOSAction": "Not reported",
+      "correct": false,
+      "severity": "medium"
+    },
+    {
+      "category": "detection",
+      "issue": "Service/Article schema not linked to Organization",
+      "expectedAction": "Link provider/publisher to Organization @id",
+      "seoOSAction": "Detected; proposed @id links",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "detection",
+      "issue": "Unoptimized hero images (no dims, no next/image) -> LCP+CLS",
+      "expectedAction": "next/image AVIF/WebP + dims + preload LCP",
+      "seoOSAction": "Detected; proposed next/image + preload",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "detection",
+      "issue": "Render-blocking 3rd-party script",
+      "expectedAction": "defer/async or next/script lazy",
+      "seoOSAction": "Detected; proposed defer",
+      "correct": true,
+      "severity": "high"
+    },
+    {
+      "category": "false-negative",
+      "issue": "No lazy-loading below the fold",
+      "expectedAction": "Lazy-load below-fold media",
+      "seoOSAction": "Not reported",
+      "correct": false,
+      "severity": "medium"
+    },
+    {
+      "category": "prioritization",
+      "issue": "Order of operations",
+      "expectedAction": "Strategy/business goal first, performance (high risk) staged carefully",
+      "seoOSAction": "Proposed GEO+SEO first, CWV last (correct)",
+      "correct": true,
+      "severity": "low"
+    },
+    {
+      "category": "false-positive",
+      "issue": "Framework migration suggestion",
+      "expectedAction": "Do NOT suggest framework change",
+      "seoOSAction": "Suggested migrating Next.js -> Astro",
+      "correct": false,
+      "severity": "high"
+    },
+    {
+      "category": "false-positive",
+      "issue": "AMP pages",
+      "expectedAction": "Do NOT add AMP (deprecated)",
+      "seoOSAction": "Proposed AMP",
+      "correct": false,
+      "severity": "medium"
+    }
+  ]
+}
