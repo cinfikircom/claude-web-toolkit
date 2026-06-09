@@ -68,14 +68,21 @@ Büyük/kapsamlı sitelerde tek-tur denetim yüzeysel kalabilir. İş, 4 uzman a
 Faz 0 ana akışta yapılır; başlıklar ilgili ajana devredilir. **Bellek:** her ajan `seo-gorev-listesi.md`'yi
 okuyup günceller (bağlam devri) — geçişte hafıza kaybı olmaz (detay: SKILL.md "DERİN MOD").
 
-### Durum takibi — bir "SEO operasyon sistemi"
-Skill yalnızca öneri sunmaz; **yürütür ve durumu takip eder.** `seo-gorev-listesi.md` projenin kalıcı
-execution state'idir. Her başlık durum işaretiyle izlenir — `[ ]` Not Started · `[~]` In Progress ·
-`[✓]` Completed · `[!]` Blocked/Waiting (dış aksiyon). Her raporda kompakt **Durum Panosu** gösterilir:
+### SEO-OS v2 — bir "SEO Operating System"
+Skill yalnızca öneri sunmaz; **çalışır, durumu diske yazar, mod-tabanlı ilerler.** (Runtime: `references/execution-model.md`.)
+- **File-based state (SSOT):** `seo-os-state.json` projenin tek doğruluk kaynağı (boot'ta okunur, her aksiyonda yazılır). `seo-gorev-listesi.md` onun insan-okunur görünümü.
+- **3 yürütme modu:** **ANALYZE** (yalnız okur) → **PROPOSE** (diff + risk, onay bekler) → **EXECUTE** (uygular + state yazar). Onaysız EXECUTE yok.
+- **Durum:** `[ ]` Not Started · `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting.
+- **Deterministic dashboard** her raporda render edilir:
 ```
-DURUM: FAZ0 [✓] · A [~] · B [ ] · C [ ] · D [ ] · E [ ] · F [ ] · G [ ] · H [ ] · I [ ] · J [ ] · K [ ] · L [ ]
+=== SEO-OS DASHBOARD ===
+FAZ 0A [~]   FAZ 0B [ ]
+A [ ]  B [ ]  C [ ]   D [ ]  E [ ]  F [ ]
+G [ ]  H [ ]  I [ ]   J [ ]  K [ ]  L [ ]
+MODE: ANALYZE   CURRENT TASK: →   BLOCKED: → None   AI VISIBILITY: 0 → 0 / 100
+========================
 ```
-Kurallar: aynı anda tek başlık `[~]`, state güncellenmeden ilerleme yok, kritik aşamada onaysız kod/dosya/deploy yok.
+Kurallar: tek faz `[~]`, atomic ilerleme, state güncellenmeden geçiş yok, onay kapısı atlanmaz, dış entegrasyon (GSC/sitemap/GA4) doğrulanmadan `completed` sayılmaz. **Faz 0 iki tur:** 0-A Tech Scan → 0-B Business Input.
 
 ### Üretilen hazır artefaktlar
 `/llms.txt`, `/llms-full.txt`, `/ai-agents.json`, AI-dostu `robots.txt` ve sayfa bazlı JSON-LD
@@ -101,7 +108,8 @@ claude-web-toolkit/
     skills/seo-geo-audit/
       SKILL.md
       references/
-        code-safety.md           business-goal.md          competitor-content-gap.md
+        execution-model.md       code-safety.md            business-goal.md
+        competitor-content-gap.md
         topical-authority.md     geo-citation.md           entity-graph.md
         schema-jsonld.md         eeat-quality-rater.md     semantic-structure.md
         ai-crawler-audit.md      local-seo.md              cloudflare-edge.md
@@ -110,9 +118,9 @@ claude-web-toolkit/
         offsite-setup.md         audit-tools.md            ai-visibility-score.md
         sources.md
       templates/
-        kesif-raporu.template.md  gorev-listesi.template.md  son-rapor.template.md
-        llms.txt.template         llms-full.txt.template
-        ai-agents.json.template   robots-ai.txt.template
+        seo-os-state.template.json  kesif-raporu.template.md  gorev-listesi.template.md
+        son-rapor.template.md       llms.txt.template         llms-full.txt.template
+        ai-agents.json.template     robots-ai.txt.template
 ```
 
 ## Kapsam (12 başlık)

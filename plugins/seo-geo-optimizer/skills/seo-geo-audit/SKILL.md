@@ -27,11 +27,16 @@ Detaylı güvenlik protokolü → `references/code-safety.md`
 
 ---
 
-## FAZ 0 — İNTERAKTİF KEŞİF (her zaman buradan başla)
+## FAZ 0 — İNTERAKTİF KEŞİF (her zaman buradan başla, İKİ ayrı turda)
 
-Bu fazda İKİ iş aynı anda yapılır: (A) otomatik teknik tespit, (B) kullanıcıya hedef soruları.
+Faz 0 **iki ayrı tura** bölünür (tek mesajda her şeyi sıkıştırma — bu SEO-OS v2 kuralıdır):
+- **FAZ 0-A — Tech Scan:** yalnızca otomatik teknik tespit (ANALYZE modu, kod değişmez). Sonunda
+  `seo-os-state.json`'u oluştur/güncelle ve dashboard'u göster.
+- **FAZ 0-B — Business Input:** kullanıcıya hedef/rakip/risk sorularını sor; cevapları state'e yaz.
 
-### A) Otomatik teknik tespit (kod tabanını tara)
+Çalışma protokolü (state, 3 mod, phase locking, deterministic dashboard, safety) → **`references/execution-model.md`**.
+
+### FAZ 0-A) Otomatik teknik tespit (kod tabanını tara — ANALYZE)
 Şunları tespit et ve kısaca raporla:
 - **Framework & sürüm** (`package.json`, dosya yapısı; Next.js / Astro / Nuxt / SvelteKit / React SPA / düz HTML)
 - **Build sistemi** ve **hosting ortamı** (Vercel / Netlify / Hostinger / kendi sunucu / static host)
@@ -43,8 +48,8 @@ Bu fazda İKİ iş aynı anda yapılır: (A) otomatik teknik tespit, (B) kullan�
 - **Off-site izleri (koddan):** Search Console doğrulama meta/dosyası, GA4/GTM tag'i, Bing doğrulaması var mı
 - **Veri kaynağı:** içerik nereden geliyor (DB, CMS, markdown, statik)
 
-### B) Kullanıcıya sorulacak hedef soruları (AskUserQuestion ile, tek turda)
-Aşağıdakileri sor — cevaplar tüm sonraki adımları şekillendirir:
+### FAZ 0-B) Kullanıcıya sorulacak hedef soruları (AskUserQuestion ile, ayrı tur)
+0-A bitip state yazıldıktan **sonra** sor — cevaplar tüm sonraki adımları şekillendirir ve state'e yazılır:
 
 1. **Hedef anahtar kelimeler / temalar:** Hangi aramalarda üst sırada olmak istiyorsun?
    (marka adı, kategori, lokasyon, ürün vb. — "değişken" kalıplar dahil)
@@ -61,12 +66,13 @@ Aşağıdakileri sor — cevaplar tüm sonraki adımları şekillendirir:
 > Framework tespitini de bu soruların içinde **kullanıcıya doğrulat** ("X tespit ettim, doğru mu?").
 
 ### Faz 0 çıktısı
-İKİ dosya üret, onay iste, **henüz kod değiştirme:**
-1. `templates/kesif-raporu.template.md` → `seo-kesif-raporu.md`: mevcut durum + tüm başlıkların
-   (A–L) ön analizi + iş hedefi + rakip özeti + öncelik sırası + risk seviyeleri + **başlangıç AI Visibility Score**.
-2. `templates/gorev-listesi.template.md` → `seo-gorev-listesi.md`: 12 başlığın (strateji A–C → arama
-   görünürlüğü D–H → performans I → büyüme J → off-site K → doğrulama L) **rehberli görev listesi**.
-   Bu, ilerlemeyi işaretleyeceğin **kalıcı checklist**'tir (derin modda ajanlar arası bellek de buradan devralınır).
+ÜÇ dosya üret, onay iste, **henüz kod değiştirme:**
+1. `templates/seo-os-state.template.json` → **`seo-os-state.json`**: makine-okunur **tek doğruluk
+   kaynağı** (mode, faz durumları, tech/business, competitors, score, blocked, log). 0-A'da oluşturulur.
+2. `templates/kesif-raporu.template.md` → `seo-kesif-raporu.md`: mevcut durum + tüm başlıkların
+   (A–L) ön analizi + iş hedefi + rakip özeti + öncelik + risk + **başlangıç AI Visibility Score**.
+3. `templates/gorev-listesi.template.md` → `seo-gorev-listesi.md`: state'in **insan-okunur görünümü**
+   (12 başlıklı rehberli checklist). Çelişirse `seo-os-state.json` kazanır.
 
 ## 🧭 REHBERLİ YÜRÜTME (bu beceri bir danışman gibi yönlendirir)
 Kullanıcıyı elinden tutup **adım adım** ilerlet — sadece kod yazma, **yol göster**:
@@ -79,36 +85,31 @@ Kullanıcıyı elinden tutup **adım adım** ilerlet — sadece kod yazma, **yol
 
 ---
 
-## 📊 DURUM MODELİ & YÜRÜTME TAKİBİ (STATE SYSTEM)
+## 📊 DURUM MODELİ & YÜRÜTME (SEO-OS v2)
 
-Bu beceri bir **SEO operasyon sistemi** gibi çalışır: yalnızca öneri sunmaz, yürütür, ilerlemeyi takip
-eder ve durumu kalıcı tutar. Her proje için `seo-gorev-listesi.md` **tek doğruluk kaynağı** (execution state).
+Bu beceri bir **SEO Operating System** gibi çalışır. Tam runtime protokolü → **`references/execution-model.md`**.
+Tek doğruluk kaynağı diskteki **`seo-os-state.json`** (insan görünümü: `seo-gorev-listesi.md`).
 
-### Durum işaretleri
-| İşaret | Anlam |
-|--------|-------|
-| `[ ]` | Not Started — başlanmadı |
-| `[~]` | In Progress — şu an çalışılıyor |
-| `[✓]` | Completed — tamamlandı (uygulandı/doğrulandı) |
-| `[!]` | Blocked / Waiting — dış aksiyon bekleniyor (kullanıcı hesabı, DNS, panel gönderimi) |
+### Durum işaretleri (JSON `status` → sembol)
+`not_started [ ]` · `in_progress [~]` · `completed [✓]` · `blocked [!]` (dış aksiyon bekliyor).
+
+### Üç yürütme modu
+**ANALYZE** (yalnız okur) → **PROPOSE** (diff planı + risk, onay bekler) → **EXECUTE** (uygular + state/log yazar).
+Onaysız EXECUTE yok.
 
 ### Kritik davranış kuralları
-1. **Tek başlık çalış.** Aynı anda yalnızca bir başlık `[~]` olabilir. Tüm sistemi tek seferde bitirme.
-2. **State güncellemeden ilerleme.** Bir başlık bitmeden / state güncellenmeden sonrakine geçme.
-3. **Onay kapıları (kritik aşamalar):** kullanıcı onayı olmadan ❌ kod değiştirme ❌ dosya oluşturma ❌ deploy önerme.
-4. **Checklist dışına çıkma.** Yeni iş çıkarsa önce listeye madde ekle, sonra yürüt.
-5. **Bekleme (`[!]`):** dış aksiyon gerekiyorsa başlığı `[!]` yap, **ne beklendiğini** yaz (örn.
-   `[!] Search Console DNS doğrulaması — kullanıcı registrar'da TXT eklemeli`), kullanıcı aksiyonunu bekle.
+1. **Tek faz `in_progress`.** Tüm sistemi tek seferde bitirme; atomic ilerle.
+2. **State güncellemeden ilerleme yok.** Her EXECUTE sonrası `seo-os-state.json` + `seo-gorev-listesi.md` yaz.
+3. **Onay kapıları:** onaysız ❌ kod değiştirme ❌ dosya oluşturma ❌ deploy.
+4. **Checklist dışına çıkma.** Yeni iş → önce state'e ekle.
+5. **Dış entegrasyon varsayma:** GSC/sitemap/GA4 "tamam" denip doğrulanmadan `completed` yapma; gerekirse `blocked`.
 
-### Her raporda Progress Dashboard (zorunlu)
-Her başlık sonunda ve her raporun başında şu kompakt panoyu göster:
-```
-DURUM: FAZ0 [✓] · A [~] · B [ ] · C [ ] · D [ ] · E [ ] · F [ ] · G [ ] · H [ ] · I [ ] · J [ ] · K [ ] · L [ ]
-```
+### Her raporda — deterministic dashboard (zorunlu, sabit format)
+`=== SEO-OS DASHBOARD ===` bloğu (faz ızgarası + MODE + CURRENT TASK + BLOCKED + AI VISIBILITY) →
+birebir `references/execution-model.md`'deki formatta render et.
 
 ### Cycle sonu raporu
-Her tur sonunda: **Completed Tasks · Pending Tasks · Blocked Items · Next Step · Estimated Impact**
-(detay format → `templates/son-rapor.template.md`).
+**Completed · Pending · Blocked · Next Step · Estimated Impact** (format → `templates/son-rapor.template.md`).
 
 ---
 
@@ -216,6 +217,7 @@ Oluşturulan Dosyalar · Beklenen Lighthouse/GEO/Crawlability Kazancı · **AI V
 Riskli Değişiklikler · Sonraki Önerilen Adım.
 
 ## REFERANS DOKÜMANLAR
+- `references/execution-model.md` — SEO-OS runtime: state.json, 3 mod, phase locking, deterministic dashboard, safety
 - `references/code-safety.md` — değişiklik güvenlik protokolü
 - `references/business-goal.md` — iş hedefi & dönüşüm önceliklendirme (Başlık A)
 - `references/competitor-content-gap.md` — rakip & içerik boşluğu analizi (Başlık B)
@@ -237,8 +239,9 @@ Riskli Değişiklikler · Sonraki Önerilen Adım.
 - `references/offsite-setup.md` — Search Console / Bing / GA4 / GBP kurulum rehberi (Başlık K)
 - `references/audit-tools.md` — PageSpeed / Pingdom / DebugBear / GTmetrix ve hedef skor döngüsü (Başlık L)
 - `references/ai-visibility-score.md` — AI Visibility Score (0-100) skorlama metodolojisi
+- `templates/seo-os-state.template.json` — makine-okunur state (tek doğruluk kaynağı)
 - `templates/kesif-raporu.template.md` — Faz 0 keşif raporu şablonu
-- `templates/gorev-listesi.template.md` — rehberli görev listesi (on-site + off-site + doğrulama)
+- `templates/gorev-listesi.template.md` — rehberli görev listesi (state'in insan görünümü)
 - `templates/son-rapor.template.md` — 14 maddelik son rapor şablonu
 - `templates/llms.txt.template` · `llms-full.txt.template` · `ai-agents.json.template` · `robots-ai.txt.template` — hazır artefakt şablonları (placeholder'ları gerçek veriyle doldur)
 

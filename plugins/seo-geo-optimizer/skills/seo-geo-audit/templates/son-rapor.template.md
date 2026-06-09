@@ -1,7 +1,14 @@
 # SON RAPOR — {BAŞLIK ADI} / {SITE_ADI}
 
-## DURUM PANOSU
-`FAZ0 [✓] · A [~] · B [ ] · C [ ] · D [ ] · E [ ] · F [ ] · G [ ] · H [ ] · I [ ] · J [ ] · K [ ] · L [ ]`
+## DURUM PANOSU (deterministic — `references/execution-model.md`)
+```
+=== SEO-OS DASHBOARD ===
+FAZ 0A [✓]   FAZ 0B [✓]
+A [~]  B [ ]  C [ ]   D [ ]  E [ ]  F [ ]
+G [ ]  H [ ]  I [ ]   J [ ]  K [ ]  L [ ]
+MODE: PROPOSE   CURRENT TASK: → {…}   BLOCKED: → {…/None}   AI VISIBILITY: {önce} → {güncel} / 100
+========================
+```
 > `[ ]` Not Started · `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting
 
 ### Cycle Özeti

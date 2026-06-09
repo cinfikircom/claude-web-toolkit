@@ -6,9 +6,10 @@ description: "AI Search & Growth Optimization denetimini başlatır (SEO + GEO +
 
 Kullanıcı bu projede SEO + GEO denetimi başlatmak istiyor.
 
-`seo-geo-audit` becerisini (skill) uygula. **Önce skill'in tamamını oku**, sonra
-**Faz 0: İnteraktif Keşif**'ten başla — yani kod tabanını tarayıp framework'ü tespit et
-ve aynı mesajda kullanıcıya hedef/risk sorularını (AskUserQuestion ile) sor.
+`seo-geo-audit` becerisini (skill) uygula. **Önce skill'in tamamını + `references/execution-model.md`'i oku.**
+SEO-OS v2 protokolüyle çalış: `seo-os-state.json`'u boot'ta oku/oluştur, deterministic dashboard göster,
+ANALYZE → PROPOSE → EXECUTE modlarıyla ilerle. **Faz 0 İKİ ayrı tur:** önce 0-A (Tech Scan, kod taraması),
+state'i yaz; sonra 0-B'de kullanıcıya hedef/rakip/risk sorularını (AskUserQuestion) sor.
 
 KRİTİK kurallar (skill içinde detaylı):
 - Onay almadan kod değiştirme.

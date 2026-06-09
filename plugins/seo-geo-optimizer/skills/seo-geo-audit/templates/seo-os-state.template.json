@@ -1,0 +1,44 @@
+{
+  "$schema": "seo-os-state/v2",
+  "project": "{SITE_ADI}",
+  "version": "2.0.0",
+  "updatedAt": "{ISO8601}",
+  "mode": "ANALYZE",
+  "currentPhase": "FAZ0A",
+  "currentTask": null,
+  "tech": {
+    "framework": null,
+    "routing": null,
+    "hosting": null,
+    "cloudflare": false,
+    "renderStrategy": null,
+    "dataSource": null
+  },
+  "business": {
+    "primaryGoal": null,
+    "secondaryGoal": null,
+    "geography": null,
+    "language": null,
+    "riskTolerance": null
+  },
+  "competitors": [],
+  "aiVisibilityScore": { "before": null, "current": null },
+  "phases": {
+    "FAZ0A": { "status": "not_started", "notes": "" },
+    "FAZ0B": { "status": "not_started", "notes": "" },
+    "A":  { "status": "not_started", "notes": "" },
+    "B":  { "status": "not_started", "notes": "" },
+    "C":  { "status": "not_started", "notes": "" },
+    "D":  { "status": "not_started", "notes": "" },
+    "E":  { "status": "not_started", "notes": "" },
+    "F":  { "status": "not_started", "notes": "" },
+    "G":  { "status": "not_started", "notes": "" },
+    "H":  { "status": "not_started", "notes": "" },
+    "I":  { "status": "not_started", "notes": "" },
+    "J":  { "status": "not_started", "notes": "" },
+    "K":  { "status": "not_started", "notes": "" },
+    "L":  { "status": "not_started", "notes": "" }
+  },
+  "blocked": [],
+  "log": []
+}

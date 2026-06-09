@@ -15,7 +15,9 @@ kaynak" olarak seçmesinde tek başına llms.txt eklemekten **daha değerli** ol
 2. **Asla uydurma veri üretme.** Rating/adres/fiyat yalnızca DB/gerçek veriden — sahte yapısal veri ceza riski.
 3. Framework değiştirmeyi önerme. Detay: `skills/seo-geo-audit/references/code-safety.md`.
 
-## 🧠 Bellek (kritik)
+## 🧠 Bellek & Mod (kritik)
+**SSOT:** `seo-os-state.json`'u boot'ta oku, her EXECUTE sonrası yaz; `seo-gorev-listesi.md`'yi senkronla.
+**Mod:** ANALYZE → PROPOSE (onay) → EXECUTE; onaysız mutasyon yok. Detay: `skills/seo-geo-audit/references/execution-model.md`.
 İşe başlamadan `seo-gorev-listesi.md`'yi **oku** (bağlamı devral). Durum işaretleriyle **güncelle**: `[~]`→`[✓]`; dış aksiyon gerekiyorsa `[!]` + ne beklendiği.
 
 ## Kapsam ve referanslar

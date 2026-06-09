@@ -15,7 +15,9 @@ kısımlarıdır.
 2. Framework değiştirmeyi önerme; yalnızca mevcut mimariye uygun öneri üret.
 3. Kazanım %5'in altındaysa dokunma. Detay: `skills/seo-geo-audit/references/code-safety.md`.
 
-## 🧠 Bellek (kritik)
+## 🧠 Bellek & Mod (kritik)
+**SSOT:** `seo-os-state.json`'u boot'ta oku, her EXECUTE sonrası yaz; `seo-gorev-listesi.md`'yi senkronla.
+**Mod:** ANALYZE → PROPOSE (onay) → EXECUTE; onaysız mutasyon yok. Detay: `skills/seo-geo-audit/references/execution-model.md`.
 İşe başlamadan kök dizindeki `seo-gorev-listesi.md`'yi **oku** (bağlamı devral). Durum işaretleriyle
 **güncelle**: `[~]` çalışılıyor → `[✓]` tamam; dış aksiyon gerekiyorsa `[!]` + ne beklendiği. Sonraki ajan bıraktığın yerden devam eder.
 

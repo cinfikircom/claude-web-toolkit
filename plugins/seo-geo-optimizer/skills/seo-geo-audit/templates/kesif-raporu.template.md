@@ -2,9 +2,16 @@
 
 > Faz 0 (İnteraktif Keşif) çıktısı. Henüz kod değiştirilmedi. Uygulama başlık başlık, onayla yapılır.
 
-## DURUM PANOSU (başlangıç)
-`FAZ0 [~] · A [ ] · B [ ] · C [ ] · D [ ] · E [ ] · F [ ] · G [ ] · H [ ] · I [ ] · J [ ] · K [ ] · L [ ]`
-> `[ ]` Not Started · `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting — detay: `seo-gorev-listesi.md`
+## DURUM PANOSU (başlangıç — deterministic)
+```
+=== SEO-OS DASHBOARD ===
+FAZ 0A [~]   FAZ 0B [ ]
+A [ ]  B [ ]  C [ ]   D [ ]  E [ ]  F [ ]
+G [ ]  H [ ]  I [ ]   J [ ]  K [ ]  L [ ]
+MODE: ANALYZE   CURRENT TASK: → Tech scan   BLOCKED: → None   AI VISIBILITY: — → — / 100
+========================
+```
+> SSOT: `seo-os-state.json` · görünüm: `seo-gorev-listesi.md` · runtime: `references/execution-model.md`
 
 ## 0. FRAMEWORK & TEKNOLOJİ TESPİTİ
 | Konu | Tespit |

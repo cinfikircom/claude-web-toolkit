@@ -1,15 +1,21 @@
 # SEO + GEO + GROWTH GÖREV LİSTESİ — {SITE_ADI}
 
-> Bu dosya projenin **execution state**'idir (tek doğruluk kaynağı). Durum: `[ ]` Not Started ·
-> `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting (dış aksiyon). Sorumlu: **C** = Claude ·
-> **K** = Kullanıcı · **C+K** = Claude hazırlar, kullanıcı onaylar/gönderir. Hedef etkisi: 🟢 doğrudan ·
-> 🟡 dolaylı · ⚪ nötr. Aynı anda yalnızca **bir** başlık `[~]`. **Derin modda ajanlar bu dosyadan bağlam devralır.**
+> Bu dosya, makine-okunur **`seo-os-state.json`**'un (tek doğruluk kaynağı) **insan-okunur görünümüdür**;
+> çelişirse JSON kazanır. Durum: `[ ]` Not Started · `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting.
+> Sorumlu: **C** = Claude · **K** = Kullanıcı · **C+K** = Claude hazırlar, kullanıcı onaylar/gönderir.
+> Hedef etkisi: 🟢 doğrudan · 🟡 dolaylı · ⚪ nötr. Aynı anda yalnızca **bir** başlık `[~]`.
 
 **Framework:** {…} · **Hosting/Cloudflare:** {…} · **Birincil iş hedefi:** {…} · **Risk toleransı:** {…}
-**AI Visibility Score (başlangıç):** {…}/100
 
-## DURUM PANOSU
-`FAZ0 [ ] · A [ ] · B [ ] · C [ ] · D [ ] · E [ ] · F [ ] · G [ ] · H [ ] · I [ ] · J [ ] · K [ ] · L [ ]`
+## DURUM PANOSU (deterministic — `references/execution-model.md`)
+```
+=== SEO-OS DASHBOARD ===
+FAZ 0A [ ]   FAZ 0B [ ]
+A [ ]  B [ ]  C [ ]   D [ ]  E [ ]  F [ ]
+G [ ]  H [ ]  I [ ]   J [ ]  K [ ]  L [ ]
+MODE: ANALYZE   CURRENT TASK: → —   BLOCKED: → None   AI VISIBILITY: {önce} → {güncel} / 100
+========================
+```
 
 ---
 
