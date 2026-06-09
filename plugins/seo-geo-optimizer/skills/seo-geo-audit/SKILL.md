@@ -1,20 +1,23 @@
 ---
 name: seo-geo-audit
-description: Use this skill to run a full SEO + GEO (Generative Engine Optimization) + Entity SEO + Core Web Vitals + AI Crawler audit and optimization on ANY website/codebase. Triggers when the user asks to "improve SEO", "do an SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", or runs /seo-audit. Framework-agnostic (Next.js, Astro, React, Nuxt, SvelteKit, plain HTML). Starts with an interactive discovery (asks goal/risk questions in chat), detects the framework, then applies improvements heading-by-heading WITH approval.
-version: 1.0.0
+description: Use this skill as a full Growth Optimization Framework — SEO + GEO (Generative Engine Optimization) + Entity/Knowledge Graph + Core Web Vitals + AI Crawler + Business Goal + Competitor/Content Gap + Topical Authority + Local SEO + CRO — on ANY website/codebase. Triggers when the user asks to "improve SEO", "do an SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO optimization", "AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads/conversions", or runs /seo-audit. Framework-agnostic (Next.js, Astro, React, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Acts as a guided consultant: asks goal/risk/competitor questions, detects the framework, walks tasks one-by-one WITH approval, and guides off-site steps (Search Console, GA4, target scores) the user must do.
+version: 2.0.0
 ---
 
-# SEO + GEO + Entity + Core Web Vitals + AI Crawler Audit
+# AI Search & Growth Optimization Framework
 
-Bu beceri, **herhangi bir web sitesini** arama motorları (Google + AI Overviews) ve LLM
-arama motorları (ChatGPT Search, Perplexity, Gemini, Claude, Copilot) için optimize eder.
-Site-bağımsızdır: framework'ü tespit eder ve yalnızca o mimariye uygun öneri üretir.
+Bu beceri, **herhangi bir web sitesini** sadece Google için değil; **Google + AI arama motorları**
+(ChatGPT Search, Perplexity, Gemini, Claude, Copilot, AI Overviews) + Core Web Vitals + Knowledge
+Graph + **iş hedefi/dönüşüm** açısından üst seviyeye çıkarır. Amaç sadece trafik değil, **daha fazla
+lead/satış**. Site-bağımsızdır: framework'ü (ve Cloudflare kullanımını) tespit eder, yalnızca mevcut
+mimariye uygun öneri üretir ve bir **danışman gibi adım adım yönlendirir**.
 
 ## 🔒 DEĞİŞMEZ KURALLAR (her zaman geçerli)
 
 1. **Onay almadan kod değiştirme.** Her değişiklikten önce: (a) etkilenecek dosyaları listele,
    (b) değişikliği açıkla, (c) risk seviyesini belirt — `Low / Medium / High Risk`.
 2. **Her başlığı tek tek uygula.** Hepsini birden yapma. Bir başlığı uygula → raporla → onay al → sonrakine geç.
+   İlerlemeyi `seo-gorev-listesi.md`'de durum işaretleriyle (`[ ] [~] [✓] [!]`) takip et — bkz. "DURUM MODELİ".
 3. **Framework değiştirmeyi ÖNERME.** (Next.js'e Astro tavsiye etme.) Mimari değişikliği yalnızca açıkça istenirse sun.
 4. **%5 kuralı:** Beklenen SEO/performans kazanımı %5'in altındaysa kodu değiştirme — gereksiz risk alma.
 5. **Mevcut çalışan fonksiyonelliği bozma.** Riskli refactor'dan kaçın. Çoklu dosya değişiminde bütünü teslim et.
@@ -33,9 +36,11 @@ Bu fazda İKİ iş aynı anda yapılır: (A) otomatik teknik tespit, (B) kullan�
 - **Framework & sürüm** (`package.json`, dosya yapısı; Next.js / Astro / Nuxt / SvelteKit / React SPA / düz HTML)
 - **Build sistemi** ve **hosting ortamı** (Vercel / Netlify / Hostinger / kendi sunucu / static host)
 - **Render stratejisi:** sayfa bazında SSR / SSG / ISR / CSR durumu
-- **CDN / cache yapısı**
+- **CDN / cache yapısı** + **Cloudflare** kullanımı mı (`cf-ray` header, `wrangler.toml`, `_headers`,
+  Pages/R2/Workers) → varsa Başlık I & H'de edge yetenekleri (`references/cloudflare-edge.md`)
 - **Mevcut SEO altyapısı:** robots, sitemap, metadata API kullanımı, mevcut JSON-LD şemaları,
   `llms.txt` / `ai-agents.json` var mı, favicon/OG görseli var mı
+- **Off-site izleri (koddan):** Search Console doğrulama meta/dosyası, GA4/GTM tag'i, Bing doğrulaması var mı
 - **Veri kaynağı:** içerik nereden geliyor (DB, CMS, markdown, statik)
 
 ### B) Kullanıcıya sorulacak hedef soruları (AskUserQuestion ile, tek turda)
@@ -46,71 +51,202 @@ Aşağıdakileri sor — cevaplar tüm sonraki adımları şekillendirir:
 2. **Coğrafya & dil:** Yerel SEO mi (şehir/bölge), ulusal mı, global mi? Site dili?
 3. **Hedef motorlar:** Sadece Google mı, AI motorları da mı (ChatGPT/Perplexity/Gemini/Claude)?
 4. **Risk toleransı:** `Sadece düşük riskli` / `Orta` / `Agresif (performans refactor dahil)`?
-5. **Öncelik:** Hangi başlıklardan başlayalım, yoksa önerilen sırayla mı gidelim?
-6. **Trafik/iş hedefi (opsiyonel):** Aylık ziyaretçi hedefi, dönüşüm önceliği var mı?
+5. **Birincil iş hedefi (kritik):** Satış / Lead / Form / Rezervasyon / Telefon / WhatsApp / Bayilik /
+   Üyelik? İkincil hedef? — Tüm önerileri buna göre önceliklendiririz (Başlık A → `references/business-goal.md`).
+6. **Rakipler:** En fazla **5 rakip URL** ver — içerik/entity/schema/GEO/hız boşluğunu çıkaralım (Başlık B).
+7. **Öncelik & trafik hedefi:** Hangi başlıktan başlayalım (yoksa önerilen sıra)? Aylık ziyaretçi/dönüşüm hedefi?
+8. **Off-site durumu:** Google Search Console / GA4 / Bing kurulu mu? DNS/registrar erişimin var mı
+   (doğrulama için)? Yerel işletme misin (Google Business Profile)? — Başlık G & K'yi şekillendirir.
 
 > Framework tespitini de bu soruların içinde **kullanıcıya doğrulat** ("X tespit ettim, doğru mu?").
 
 ### Faz 0 çıktısı
-`templates/kesif-raporu.template.md` şablonunu kullanarak bir **Keşif Raporu** üret:
-mevcut durum + tüm başlıkların ön analizi + öncelik sırası + risk seviyeleri.
-Bunu `seo-kesif-raporu.md` olarak projeye yaz ve onay iste. **Henüz kod değiştirme.**
+İKİ dosya üret, onay iste, **henüz kod değiştirme:**
+1. `templates/kesif-raporu.template.md` → `seo-kesif-raporu.md`: mevcut durum + tüm başlıkların
+   (A–L) ön analizi + iş hedefi + rakip özeti + öncelik sırası + risk seviyeleri + **başlangıç AI Visibility Score**.
+2. `templates/gorev-listesi.template.md` → `seo-gorev-listesi.md`: 12 başlığın (strateji A–C → arama
+   görünürlüğü D–H → performans I → büyüme J → off-site K → doğrulama L) **rehberli görev listesi**.
+   Bu, ilerlemeyi işaretleyeceğin **kalıcı checklist**'tir (derin modda ajanlar arası bellek de buradan devralınır).
+
+## 🧭 REHBERLİ YÜRÜTME (bu beceri bir danışman gibi yönlendirir)
+Kullanıcıyı elinden tutup **adım adım** ilerlet — sadece kod yazma, **yol göster**:
+- Görevleri **tek tek** sun (hepsini birden değil). Her görev için: ne, neden, nasıl, risk.
+- **Claude'un yapabileceğini yap** (kod, dosya üretimi). **Kullanıcının yapması gerekeni** (hesap
+  açma, panelden gönderim, DNS kaydı) net talimat + tam URL ile iste ve **"tamamlandı" onayını bekle**.
+- Her görev bitince `seo-gorev-listesi.md`'de durumu güncelle (`[~]`→`[✓]`, dış aksiyonda `[!]`) ve bir sonrakine geç.
+- Harici skor (PageSpeed/Pingdom/DebugBear) için: kullanıcıdan URL'yi açıp sonucu paylaşmasını iste,
+  çıktıyı yorumla, düzelt, **hedefe ulaşana kadar** döngüyü tekrarla (→ `references/audit-tools.md`).
 
 ---
 
-## DENETİM & OPTİMİZASYON BAŞLIKLARI
+## 📊 DURUM MODELİ & YÜRÜTME TAKİBİ (STATE SYSTEM)
 
-Her başlık ayrı bir çalışma turudur. Önerilen sıra: A → B → C → E → D (D en riskli, en sona).
+Bu beceri bir **SEO operasyon sistemi** gibi çalışır: yalnızca öneri sunmaz, yürütür, ilerlemeyi takip
+eder ve durumu kalıcı tutar. Her proje için `seo-gorev-listesi.md` **tek doğruluk kaynağı** (execution state).
 
-### BAŞLIK A — GEO / LLM CRAWLER ALTYAPISI  *(düşük risk, yüksek getiri)*
-- LLM'lerin içeriği parçalayıp (chunking) kaynak gösterebilmesi için yapıyı optimize et.
-- `/llms.txt`, `/llms-full.txt`, `/ai-agents.json` oluştur (framework'e uygun: Next.js route handler,
-  Astro endpoint, ya da statik dosya).
-- **AI Citation Optimization** ve **AI Crawler Audit** → detay: `references/geo-citation.md`, `references/ai-crawler-audit.md`
+### Durum işaretleri
+| İşaret | Anlam |
+|--------|-------|
+| `[ ]` | Not Started — başlanmadı |
+| `[~]` | In Progress — şu an çalışılıyor |
+| `[✓]` | Completed — tamamlandı (uygulandı/doğrulandı) |
+| `[!]` | Blocked / Waiting — dış aksiyon bekleniyor (kullanıcı hesabı, DNS, panel gönderimi) |
 
-### BAŞLIK B — KLASİK SEO & MARKA TEMELİ
-- robots.txt, sitemap(.xml), canonical, tek H1 kuralı, başlık hiyerarşisi.
-- Favicon/icon/apple-icon + varsayılan OpenGraph görseli (yoksa oluştur).
-- Title/description/keywords; OG + Twitter Cards.
-- Erişilebilirlik temeli: zoom engelleme (viewport `user-scalable=no`) gibi WCAG ihlallerini ayıkla.
+### Kritik davranış kuralları
+1. **Tek başlık çalış.** Aynı anda yalnızca bir başlık `[~]` olabilir. Tüm sistemi tek seferde bitirme.
+2. **State güncellemeden ilerleme.** Bir başlık bitmeden / state güncellenmeden sonrakine geçme.
+3. **Onay kapıları (kritik aşamalar):** kullanıcı onayı olmadan ❌ kod değiştirme ❌ dosya oluşturma ❌ deploy önerme.
+4. **Checklist dışına çıkma.** Yeni iş çıkarsa önce listeye madde ekle, sonra yürüt.
+5. **Bekleme (`[!]`):** dış aksiyon gerekiyorsa başlığı `[!]` yap, **ne beklendiğini** yaz (örn.
+   `[!] Search Console DNS doğrulaması — kullanıcı registrar'da TXT eklemeli`), kullanıcı aksiyonunu bekle.
 
-### BAŞLIK C — ENTITY SEO & SCHEMA (JSON-LD)
-- Ana varlıkları tespit et: Organization, Brand, Product, Service, Person, Location, FAQ, Article.
-- Sayfa bazlı Primary/Secondary entity ilişkisi + `@id` ile bağlı bütünleşik graf.
-- FAQPage şeması (AI Overviews alıntıları için en yüksek getiri).
-- **Entity Graph** çıkarımı ve eksik bağlantı raporu → detay: `references/entity-graph.md`
+### Her raporda Progress Dashboard (zorunlu)
+Her başlık sonunda ve her raporun başında şu kompakt panoyu göster:
+```
+DURUM: FAZ0 [✓] · A [~] · B [ ] · C [ ] · D [ ] · E [ ] · F [ ] · G [ ] · H [ ] · I [ ] · J [ ] · K [ ] · L [ ]
+```
 
-### BAŞLIK D — CORE WEB VITALS & PERFORMANS  *(en yüksek risk → en son, madde madde onay)*
-- Hedefler: **LCP < 2.5s · INP < 200ms · CLS < 0.1 · TTFB < 800ms**
-- Render-blocking, unused kod, aşırı DOM, hydration, görsel/font optimizasyonu, render stratejisi (SSR→ISR vb.)
-- Framework'ün yerel araçlarını kullan (Next.js: `next/font`, `next/image`, dynamic import).
-- Detay + raporlama formatı → `references/core-web-vitals.md`
+### Cycle sonu raporu
+Her tur sonunda: **Completed Tasks · Pending Tasks · Blocked Items · Next Step · Estimated Impact**
+(detay format → `templates/son-rapor.template.md`).
 
-### BAŞLIK E — METADATA TUTARLILIĞI & CRAWLABILITY
-- Canonical mutlak URL tutarlılığı, kırık link, sitemap kapsamı (tüm indekslenebilir tipler).
-- DB/CMS'teki anahtar kelime alanlarının sayfa metadata'sına enjekte edilmesi.
-- Yapısal hiyerarşi denetimi.
+---
+
+## DENETİM & OPTİMİZASYON BAŞLIKLARI (12 başlık)
+
+Her başlık ayrı bir çalışma turudur. Akış: **Strateji (A–C) → Arama Görünürlüğü (D–H) →
+Performans (I) → Büyüme (J) → Off-site (K) → Doğrulama (L).** Önerilen sıra **A→B→C→D→E→F→G→H→I→J→K→L**;
+I en riskli (madde madde onay), L en sonda (gerçek skor ancak optimizasyon sonrası ölçülür), K paralel başlatılabilir.
+
+> **— STRATEJİ KATMANI (A–C): önce yön, sonra uygulama —**
+
+### BAŞLIK A — İŞ HEDEFİ & DÖNÜŞÜM ÖNCELİKLENDİRME  *(tüm başlıkların merceği)*
+- Birincil/ikincil dönüşüm hedefini netleştir; **her öneriyi hedef etkisine göre etiketle** (🟢 doğrudan / 🟡 dolaylı / ⚪ nötr).
+- SEO ↔ dönüşüm çatışmalarında iş hedefini koru. Detay → `references/business-goal.md`
+
+### BAŞLIK B — RAKİP & İÇERİK BOŞLUĞU ANALİZİ
+- En fazla 5 rakibi WebFetch ile incele; içerik/entity/schema/GEO/hız boşluklarını çıkar.
+- Eksik hizmet/soru/vaka/karşılaştırma/FAQ'ları ilgili başlığa yönlendir. Detay → `references/competitor-content-gap.md`
+
+### BAŞLIK C — TOPICAL AUTHORITY & TOPIC CLUSTER
+- Ana konu etrafında pillar→cluster haritası; eksik alt konular; hub-spoke iç linkleme.
+- Kapsamlılık = Google otoritesi + AI citation. Detay → `references/topical-authority.md`
+
+> **— ARAMA GÖRÜNÜRLÜĞÜ KATMANI (D–H) —**
+
+### BAŞLIK D — GEO / LLM CRAWLER ALTYAPISI  *(düşük risk, yüksek getiri)*
+- İçeriği chunking + citation için optimize et; `/llms.txt`, `/llms-full.txt`, `/ai-agents.json` oluştur (framework'e uygun).
+- **AI Citation** → `references/geo-citation.md` · **llms.txt standardı** → `references/llms-txt-generator.md` · **AI Crawler Audit** → `references/ai-crawler-audit.md`
+
+### BAŞLIK E — ENTITY SEO, SCHEMA & KNOWLEDGE GRAPH
+- Ana varlıkları çıkar (Organization, Brand, Product, Service, Person, Location, FAQ, Article); `@id` ile bağlı bütünleşik `@graph`.
+- **Knowledge Conflict Audit · sameAs Validation · Wikidata Mapping · Brand Consistency Audit** — dijital ayak izini çapraz mühürle.
+- Detay → `references/entity-graph.md` ve `references/schema-jsonld.md`
+
+### BAŞLIK F — KLASİK SEO & MARKA + E-E-A-T
+- robots/sitemap/canonical, title/description, OG + Twitter Cards, favicon/icon/apple-icon, görsel alt metni, hreflang.
+- **Başlık hiyerarşisi (H1-H6) & semantik HTML** → `references/semantic-structure.md` · **E-E-A-T** → `references/eeat-quality-rater.md`
+
+### BAŞLIK G — YEREL SEO
+- NAP tutarlılığı (site + schema + GBP), `LocalBusiness` + `GeoCoordinates` + `areaServed`, harita görünürlüğü, yerel landing page'ler.
+- Detay → `references/local-seo.md` (GBP kurulumu Başlık K'de).
+
+### BAŞLIK H — METADATA TUTARLILIĞI & CRAWLABILITY
+- Canonical mutlak URL tutarlılığı, kırık link, redirect zinciri, orphan sayfa, sitemap kapsamı.
+- **AI bot erişimi & robots** → `references/ai-crawler-audit.md` · Cloudflare arkasındaysa bot bloklaması → `references/cloudflare-edge.md`
+
+> **— PERFORMANS KATMANI (I) —**
+
+### BAŞLIK I — CORE WEB VITALS & PERFORMANS  *(en yüksek risk → madde madde onay)*
+- Hedefler: **LCP < 2.5s · INP < 200ms · CLS < 0.1 · TTFB < 800ms**. Render-blocking, unused kod, hydration, görsel/font, render stratejisi.
+- Framework'ün yerel araçları + **Cloudflare arkasındaysa** Polish/Fonts/Early Hints/Cache Rules → `references/cloudflare-edge.md`
+- Detay → `references/core-web-vitals.md` · `resource-hints.md` · `framework-performance.md` · `lighthouse-rubric.md`
+
+> **— BÜYÜME KATMANI (J) —**
+
+### BAŞLIK J — CRO / DÖNÜŞÜM OPTİMİZASYONU
+- CTA görünürlüğü, form sürtünmesi, telefon/WhatsApp erişimi, mobil dönüşüm akışı, teklif süreci.
+- İş hedefiyle (A) bağ; CWV/SEO'yu bozma. Detay → `references/cro-audit.md`
+
+> **— OFF-SITE & DOĞRULAMA (K–L): rehberli, Claude yönlendirir / kullanıcı yapar —**
+
+### BAŞLIK K — OFF-SITE KURULUM  *(rehberli)*
+- Google Search Console (doğrula → sitemap → indexing), Bing Webmaster (DuckDuckGo/Yahoo'yu kapsar), IndexNow, (ops.) Yandex.
+- GA4 ölçüm kodu (framework-aware) + GSC bağlantısı; Google Business Profile (yerelse). Detay → `references/offsite-setup.md`
+
+### BAŞLIK L — HARİCİ DOĞRULAMA & HEDEF SKOR  *(en son — döngü)*
+- PageSpeed Insights (≥90 mobil/desktop, CWV Passed), DebugBear, Pingdom (A), GTmetrix.
+- Ölç → en ağır metriği düzelt → yeniden ölç, **hedefe ulaşana kadar**. Detay → `references/audit-tools.md`
+
+---
+
+## DERİN MOD — 4 UZMAN AJANA BÖLME (opsiyonel)
+
+Tek seferde tüm denetim geniş sitelerde yüzeysel kalabilir. Daha derin sonuç için (veya kullanıcı
+"derin/kapsamlı denetim" istediğinde) iş, plugin'in 4 uzman ajanına bölünür:
+
+| Ajan | Başlık | Odak |
+|------|--------|------|
+| `growth-strategy-agent` | A, B, C, J | İş hedefi, rakip/içerik boşluğu, topical authority, CRO |
+| `seo-geo-agent` | D, F, G, H | GEO/llms.txt, klasik SEO, yerel SEO, crawlability |
+| `entity-knowledge-graph-agent` | E | Entity çıkarımı, JSON-LD graf, Knowledge Graph/Wikidata, knowledge conflict |
+| `performance-cwv-agent` | I | Core Web Vitals, Lighthouse, resource hints, Cloudflare edge |
+
+> Off-site (K) + doğrulama (L) ana akışta yürütülür (rehberli, kullanıcı etkileşimli).
+
+**Ne zaman böl:** büyük site, çok sayfa tipi, derin analiz talebi, paralel ilerleme.
+**Nasıl:** Faz 0 keşfini ana akışta yap (framework + hedefler + rakipler tek yerden netleşsin), sonra
+başlıkları ilgili ajana devret (`Agent` aracı). Her ajan **onay alarak** uygular.
+
+**🧠 Bellek güvencesi (kritik):** Her ajan görevini bitirince kök dizindeki `seo-gorev-listesi.md`'yi
+günceller (`[~]`→`[✓]`, dış aksiyonda `[!]` + not). Bir sonraki ajan işe başlamadan **bu dosyayı okuyarak bağlamı devralır**
+(önceki kararlar, üretilen dosyalar, açık maddeler). Böylece ajanlar arası geçişte hafıza kaybı/
+dosya çakışması olmaz. Tek-tur denetim isteniyorsa bölme atlanır.
 
 ---
 
 ## ÇIKTI FORMATI — SON RAPOR
 
-Her onaylanan başlık sonunda ve en sonda `templates/son-rapor.template.md` formatında raporla:
+Her onaylanan başlık sonunda ve en sonda `templates/son-rapor.template.md` formatında raporla.
+Rapor başında **AI Visibility Score (0-100, önce→sonra)** tablosu yer alır → `references/ai-visibility-score.md`.
 
-1. Kritik Problemler · 2. GEO Problemleri · 3. Entity SEO Problemleri · 4. Teknik SEO Problemleri
-· 5. Core Web Vitals Problemleri · 6. Accessibility Problemleri · 7. AI Crawler Problemleri
-· 8. Yapılan Değişiklikler · 9. Oluşturulan Dosyalar · 10. Beklenen Lighthouse Kazancı
-· 11. Beklenen GEO Kazancı · 12. Beklenen Crawlability Kazancı · 13. Riskli Değişiklikler
-· 14. Sonraki Önerilen Adım
+Bölümler: İş Hedefi & Dönüşüm · Rakip/İçerik Boşluğu · Kritik Problemler · GEO · Entity/Knowledge Graph ·
+Teknik SEO · Yerel SEO · Core Web Vitals · CRO · Accessibility · AI Crawler · Yapılan Değişiklikler ·
+Oluşturulan Dosyalar · Beklenen Lighthouse/GEO/Crawlability Kazancı · **AI Visibility Score (önce→sonra)** ·
+Riskli Değişiklikler · Sonraki Önerilen Adım.
 
 ## REFERANS DOKÜMANLAR
 - `references/code-safety.md` — değişiklik güvenlik protokolü
+- `references/business-goal.md` — iş hedefi & dönüşüm önceliklendirme (Başlık A)
+- `references/competitor-content-gap.md` — rakip & içerik boşluğu analizi (Başlık B)
+- `references/topical-authority.md` — topic cluster / pillar haritası (Başlık C)
 - `references/geo-citation.md` — AI citation optimization (alıntılanabilir içerik mimarisi)
-- `references/entity-graph.md` — varlık haritası ve Knowledge Graph
+- `references/entity-graph.md` — varlık haritası, Knowledge Graph, knowledge conflict & sameAs mühürleme
 - `references/ai-crawler-audit.md` — AI bot erişim denetimi + robots şablonları
 - `references/core-web-vitals.md` — CWV hedefleri, teşhis ve framework bazlı çözümler
+- `references/llms-txt-generator.md` — `/llms.txt`, `/llms-full.txt`, `/ai-agents.json` oluşturma standardı
+- `references/schema-jsonld.md` — Schema.org/JSON-LD referansı ve sayfa bazlı şema eşleştirme
+- `references/eeat-quality-rater.md` — E-E-A-T & Google Search Quality Rater Guidelines
+- `references/resource-hints.md` — preload, prefetch, preconnect, dns-prefetch, fetchpriority
+- `references/framework-performance.md` — framework'e özel performans desenleri (Next.js, Astro, Nuxt, SvelteKit, HTML)
+- `references/lighthouse-rubric.md` — Lighthouse puanlama rubriği, metrik ağırlıkları ve hedef tablosu
+- `references/semantic-structure.md` — H1-H6 başlık hiyerarşisi & semantik HTML5 landmark kuralları
+- `references/local-seo.md` — yerel SEO, NAP, yerel schema, landing page'ler (Başlık G)
+- `references/cloudflare-edge.md` — Cloudflare Polish/Fonts/Early Hints/Cache + AI bot bloklama (Başlık I & H)
+- `references/cro-audit.md` — dönüşüm optimizasyonu: CTA/form/telefon/WhatsApp (Başlık J)
+- `references/offsite-setup.md` — Search Console / Bing / GA4 / GBP kurulum rehberi (Başlık K)
+- `references/audit-tools.md` — PageSpeed / Pingdom / DebugBear / GTmetrix ve hedef skor döngüsü (Başlık L)
+- `references/ai-visibility-score.md` — AI Visibility Score (0-100) skorlama metodolojisi
 - `templates/kesif-raporu.template.md` — Faz 0 keşif raporu şablonu
+- `templates/gorev-listesi.template.md` — rehberli görev listesi (on-site + off-site + doğrulama)
 - `templates/son-rapor.template.md` — 14 maddelik son rapor şablonu
+- `templates/llms.txt.template` · `llms-full.txt.template` · `ai-agents.json.template` · `robots-ai.txt.template` — hazır artefakt şablonları (placeholder'ları gerçek veriyle doldur)
+
+## UZMAN AJANLAR (derin mod — plugin `agents/` altında)
+- `growth-strategy-agent` — Başlık A, B, C, J
+- `seo-geo-agent` — Başlık D, F, G, H
+- `entity-knowledge-graph-agent` — Başlık E
+- `performance-cwv-agent` — Başlık I
 
 Erişilemeyen harici standartlar için hafızandaki en güncel W3C / Google Core Web Vitals (INP dahil)
 / schema.org / `llms.txt` standartlarını baz al.
