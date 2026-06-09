@@ -1,0 +1,46 @@
+# robots.txt — AI trafiği İSTENİYORSA (botlara açık erişim)
+# {SITE} — doldururken admin/api gibi özel yolları kendi projene göre uyarla.
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# --- AI arama & ajan botları (açık erişim) ---
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+
+# --- Keşif dosyaları ---
+Sitemap: https://{SITE}/sitemap.xml
+# AI agent erişim dosyası (yaygınlaşan convention):
+LLMs: https://{SITE}/llms.txt
+
+# ===========================================================================
+# ALTERNATİF: AI EĞİTİMİNE KAPATMAK istiyorsan (iş kararı — kullanıcıya sor),
+# yukarıdaki Allow bloklarını kaldırıp şunu kullan:
+#
+# User-agent: GPTBot
+# Disallow: /
+# User-agent: Google-Extended
+# Disallow: /
+# User-agent: CCBot
+# Disallow: /
+# User-agent: Applebot-Extended
+# Disallow: /
+# User-agent: Bytespider
+# Disallow: /
+# ===========================================================================

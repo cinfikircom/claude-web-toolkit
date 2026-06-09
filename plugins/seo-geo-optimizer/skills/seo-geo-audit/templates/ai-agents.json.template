@@ -1,0 +1,22 @@
+{
+  "name": "{SITE_ADI}",
+  "description": "{Site açıklaması — 1-2 cümle}",
+  "url": "https://{SITE}",
+  "llms": {
+    "llms.txt": "https://{SITE}/llms.txt",
+    "llmsFull": "https://{SITE}/llms-full.txt"
+  },
+  "api": {
+    "search": "https://{SITE}/api/search?q={query}",
+    "docs": "https://{SITE}/api/docs"
+  },
+  "rules": {
+    "allow": ["GPTBot", "OAI-SearchBot", "PerplexityBot", "ClaudeBot", "Google-Extended"],
+    "crawlDelay": 5,
+    "maxTokensPerPage": 16000
+  },
+  "categories": ["{kategori-1}", "{kategori-2}"],
+  "sitemap": "https://{SITE}/sitemap.xml",
+  "language": "tr",
+  "lastModified": "{YYYY-AA-GGThh:mm:ss+03:00}"
+}

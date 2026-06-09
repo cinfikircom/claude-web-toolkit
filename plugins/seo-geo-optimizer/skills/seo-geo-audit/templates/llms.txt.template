@@ -1,0 +1,30 @@
+# {SITE_ADI}
+
+> {Tek cümlelik site açıklaması — LLM'ler burayı citation preamble olarak kullanır.}
+
+## Hakkımızda
+- [Hakkımızda](https://{SITE}/hakkimizda): {Şirket {sektör} alanında {yıl}'dan beri...}
+- [İletişim](https://{SITE}/iletisim): {Adres, telefon, e-posta — NAP tutarlı}
+
+## Hizmetler
+- [{Hizmet 1}](https://{SITE}/hizmet/{slug-1}): {tek cümle değer önermesi}
+- [{Hizmet 2}](https://{SITE}/hizmet/{slug-2}): {tek cümle}
+
+## Ürünler
+- [{Ürün 1}](https://{SITE}/urun/{slug-1}): {tek cümle}
+
+## Önemli İçerik / Kaynak Gösterilebilir Sayfalar
+- [{Rehber/Yazı}](https://{SITE}/blog/{slug}): {somut, sayısal veri içeren özet}
+
+## Daha Fazla
+- Tam metin: https://{SITE}/llms-full.txt
+- AI manifest: https://{SITE}/ai-agents.json
+- Sitemap: https://{SITE}/sitemap.xml
+
+<!--
+KURALLAR (doldururken sil):
+- Mutlak URL kullan (göreceli değil).
+- Her linkte kısa, bilgilendirici açıklama olsun (LLM içeriği tahmin edebilsin).
+- En önemli 10-50 sayfayı listele; navigasyon/footer linklerini koyma.
+- Kökte yayınla: https://{SITE}/llms.txt (robots.txt ile aynı seviye).
+-->

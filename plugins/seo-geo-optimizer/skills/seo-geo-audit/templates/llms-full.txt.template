@@ -1,0 +1,32 @@
+# {SITE_ADI} — Tam İçerik (llms-full.txt)
+
+> Bu dosya sitenin en önemli sayfalarının tam metin temsilidir. AI ajanları artık özet değil,
+> tam kaynak istiyor — her sayfa yalnızca öz içerik (nav/header/footer/sidebar/reklam ATILMIŞ).
+
+---
+
+# {Sayfa 1 Başlığı}
+URL: https://{SITE}/{yol-1}
+Last-Modified: {YYYY-AA-GG}
+
+{Sayfanın temiz markdown gövdesi — 12-15 cümle. Birincil cevap ilk paragrafta,
+bağlamsız ve net. Sayısal/somut veri (tarih, fiyat aralığı, adres) varsa koru.
+Pazarlama dolgusunu at; LLM yalnızca alıntılanabilir öz metni ister. Hedef: 3-5 KB.}
+
+---
+
+# {Sayfa 2 Başlığı}
+URL: https://{SITE}/{yol-2}
+Last-Modified: {YYYY-AA-GG}
+
+{...}
+
+---
+
+<!--
+KURALLAR (doldururken sil):
+- YALNIZCA içerik: nav, header, footer, sidebar, reklam, çerez banner'ı = ATIL.
+- Her sayfa "---" ile ayrılır; URL + Last-Modified zorunlu.
+- Sayfa başına ~3-5 KB öz. Tüm site değil; llms.txt'teki önemli sayfalar.
+- Markdown başlık hiyerarşisini koru (chunking için kritik).
+-->
