@@ -3,6 +3,12 @@
 Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plugins/*/.claude-plugin/plugin.json`'dan.
 
 ## [Unreleased]
+### Düzeltildi
+- Scorer artık mutlak yol / CWD-göreli output dosyası kabul ediyor (önceden yalnızca suite dizinine
+  göre çözüyordu — gerçek test turunda tespit edildi).
+### Bilinen sınır
+- `decisionAccuracy`/`wrongDecisions` henüz gradlenen output'tan değil `decision-matrix.json`'daki
+  statik örnek kararlardan geliyor (→ ROADMAP).
 
 ## [2.1.0] — 2026-06-10
 ### Eklendi

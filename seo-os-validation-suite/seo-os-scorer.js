@@ -20,12 +20,20 @@ const fs = require("fs");
 const path = require("path");
 
 const DIR = __dirname;
-const read = (f) => JSON.parse(fs.readFileSync(path.join(DIR, f), "utf8"));
+// suite files are resolved next to this script; the output arg may also be an
+// absolute path or relative to the caller's CWD
+const read = (f) => JSON.parse(fs.readFileSync(path.resolve(DIR, f), "utf8"));
+const readOutput = (f) => {
+  for (const candidate of [path.resolve(f), path.resolve(DIR, f)]) {
+    if (fs.existsSync(candidate)) return JSON.parse(fs.readFileSync(candidate, "utf8"));
+  }
+  throw new Error(`output file not found: ${f}`);
+};
 
 const baseline = read("seo-baseline.json");
 const matrix = read("decision-matrix.json");
 const outputPath = process.argv[2] || "sample-seo-os-output.json";
-const output = read(outputPath);
+const output = readOutput(outputPath);
 
 const detected = new Set(output.detected || []);
 const actionCorrect = new Set(output.actionCorrect || []);

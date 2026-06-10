@@ -29,6 +29,10 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
       alanları o gün için hazır)
 
 ### Validation suite genişletme
+- [ ] **Decision matrix'i gerçek koşuya bağla** — `decision-matrix.json`'daki `seoOsDecision` alanları şu an
+      statik örnek; scorer karar doğruluğunu (decisionAccuracy/wrongDecisions) gradlenen output'tan değil
+      bu sabit değerlerden hesaplıyor. Scorer, matrix kararlarını output'un `detected`/`actionCorrect`/
+      `falsePositives` alanlarından türetmeli (2026-06-10 gerçek test turunda tespit edildi).
 - [ ] **Gerçek Lighthouse/PSI entegrasyonu** — golden site'a karşı gerçek CWV ölçümü
 - [ ] **Before/after delta scoring** — optimizasyon öncesi/sonrası skor farkı raporu
 - [ ] **Yeni golden fixture'lar** — e-ticaret, çok dilli, Cloudflare Pages varyantları
