@@ -40,8 +40,9 @@ MODE: ANALYZE   CURRENT TASK: → —   BLOCKED: → None   AI VISIBILITY: {önc
 - [ ] (C) tek H1 + sıralı başlık + semantik HTML; E-E-A-T/Trust sinyalleri
 ### G. Yerel SEO — `references/local-seo.md`
 - [ ] (C) NAP tutarlılığı + `LocalBusiness`/`GeoCoordinates` schema + yerel landing page
-### H. Metadata & Crawlability — `references/ai-crawler-audit.md`
+### H. Metadata & Crawlability — `references/ai-crawler-audit.md`, `crawl-budget.md`
 - [ ] (C) robots/sitemap, kırık link, redirect zinciri, orphan sayfa
+- [ ] (C) Crawl budget (büyük site/e-ticaret: faceted URL, pagination, noindex tutarlılığı)
 - [ ] (C) AI bot erişimi (Cloudflare bot bloklaması dahil → `cloudflare-edge.md`)
 
 ## PERFORMANS KATMANI
@@ -63,6 +64,7 @@ MODE: ANALYZE   CURRENT TASK: → —   BLOCKED: → None   AI VISIBILITY: {önc
 ### L. Harici Doğrulama & Hedef Skor *(en son — döngü)* — `references/audit-tools.md`
 - [ ] (C+K) PageSpeed Insights: Mobil ≥90 · Desktop ≥90 · CWV Passed
 - [ ] (C+K) DebugBear (CWV yeşil) · Pingdom (A) · GTmetrix (A) · Lighthouse (Perf 90+ / SEO/A11y/BP 100)
+- [ ] (C) Release Readiness Gate: PASS (`/seo-audit gate` → `references/release-gate.md`)
 
 ---
 

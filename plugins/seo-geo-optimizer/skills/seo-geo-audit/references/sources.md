@@ -54,4 +54,4 @@ Tek seferde tüm denetim geniş sitelerde yüzeysel kalabilir. Daha derin sonuç
 
 > Bu ajanlar **mevcuttur** (`plugins/seo-geo-optimizer/agents/`). Kullanımı SKILL.md "DERİN MOD"
 > bölümünde: Faz 0 keşfini ana akışta yap, başlıkları ilgili ajana devret. **Bellek:** her ajan
-> `seo-gorev-listesi.md`'yi okuyup günceller (bağlam devri). Off-site (K) + doğrulama (L) ana akışta.
+> `.seo-os/seo-gorev-listesi.md`'yi okuyup günceller (bağlam devri). Off-site (K) + doğrulama (L) ana akışta.

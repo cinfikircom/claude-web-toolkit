@@ -11,19 +11,29 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
   deterministic dashboard, phase locking, safety layer, Faz 0-A/0-B bölme
 - **AI Visibility Score (0-100)**
 - **SEO-OS Validation Suite** — golden broken site + baseline + scorer + decision-matrix + geo-simulation
-- **Terminal CLI tracker** — `tools/seo-os-tracker.js`: `seo-os-state.json`'u okuyup deterministic
+- **Terminal CLI tracker** — `tools/seo-os-tracker.js`: `.seo-os/seo-os-state.json`'u okuyup deterministic
   dashboard'u render eder (`--detail` / `--watch` / `--json`, bağımlılıksız saf Node)
+- **Yayın hijyeni & taşınabilirlik (v2.0.1)** — `${CLAUDE_PLUGIN_ROOT}` yolları, `.seo-os/` artefakt
+  klasörü, sürüm senkronu, CI workflow (`validate`), CONTRIBUTING + CHANGELOG, FAZ 0-B 4+4 soru bölmesi
+- **Denetim derinleştirme (v2.1.0)** — golden regression testi (CI), AI Visibility scoring model
+  `aivs/v1` (5×5×4 sabit matematik), Knowledge Conflict Detector, Crawl Budget Audit,
+  Cloudflare native modül genişletmesi (APO/Tiered Cache/Zaraz/Turnstile…), Release Readiness Gate
+  (`/seo-audit gate` → PASS/FAIL)
 
 ## 🔜 Planlanan (ileride)
 ### Operasyon / tooling
 - [ ] **Notion + GitHub sync** — state/raporları Notion DB'ye ve GitHub Issues'a yazan opsiyonel köprü
-- [ ] **Otomatik ajan-run harness** — SEO-OS'u ANALYZE modda çalıştırıp `seo-os-output.json` üretip scorer'a besleyen uçtan uca pipeline
+- [ ] **Otomatik ajan-run harness** — SEO-OS'u ANALYZE modda çalıştırıp `seo-os-output.json` üretip
+      scorer'a besleyen uçtan uca pipeline (deterministik yarısı v2.1.0'da: golden regression CI testi;
+      bu madde LLM çağrılı gerçek-run kısmını kapsar — `golden-tests/expected-score.json` tolerance
+      alanları o gün için hazır)
 
 ### Validation suite genişletme
 - [ ] **Gerçek Lighthouse/PSI entegrasyonu** — golden site'a karşı gerçek CWV ölçümü
 - [ ] **Before/after delta scoring** — optimizasyon öncesi/sonrası skor farkı raporu
 - [ ] **Yeni golden fixture'lar** — e-ticaret, çok dilli, Cloudflare Pages varyantları
-- [ ] **CI workflow** — PR'da scorer'ı otomatik çalıştır, eşik altı skorda uyar
+- [x] **CI workflow** — PR'da syntax + JSON + sürüm senkronu + scorer smoke (`.github/workflows/validate.yml`);
+      eşik-altı-skor uyarısı gerçek agent-run harness'ı geldiğinde eklenecek
 
 ### Plugin
 - [ ] Ek schema tipleri (Event, Recipe, JobPosting…) için copy-paste şablonlar

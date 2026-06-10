@@ -1,48 +1,84 @@
-# AI Visibility Score (0-100)
+# AI Visibility Score (0-100) — Scoring Model v1
 
 Amaç: Sitenin **AI arama motorlarında kaynak gösterilmeye hazırlık** seviyesini tek bir bileşik
 skorla ölçmek. Son raporda öncesi/sonrası gösterilir — somut, sunulabilir bir çıktı.
 
-## 5 alt boyut (her biri 0-20) = toplam 100
-| Boyut | Ne ölçer | İlgili başlık/referans |
-|-------|----------|------------------------|
-| **Citation Readiness** | Alıntılanabilir yapı: birincil cevap bloğu, 40-60 kelime özet, FAQ, somut veri | D + `geo-citation.md` |
-| **Entity Strength** | Entity grafı bütünlüğü, `@id` bağları, `sameAs`, Wikidata eşlemesi | E + `entity-graph.md` |
-| **Schema Coverage** | Sayfa tiplerinin geçerli JSON-LD kapsama oranı | E + `schema-jsonld.md` |
-| **Content Extractability** | Semantik HTML, başlık hiyerarşisi, temiz chunking | F/H + `semantic-structure.md` |
-| **AI Crawlability** | `llms.txt`/`ai-agents.json`, AI bot erişimi, sitemap | D/H + `ai-crawler-audit.md`, `llms-txt-generator.md` |
+> **Standardizasyon:** Bu skorun matematiği aşağıda **sabittir** (`scoringModel: "aivs/v1"`).
+> Skoru üreten her rapor bu model sürümünü belirtir; model değişirse sürüm artar (aivs/v2 …)
+> ve CHANGELOG'a işlenir. Böylece farklı zamanlarda/farklı oturumlarda üretilen skorlar
+> karşılaştırılabilir kalır. Bant/izlenim bazlı puanlama **yasaktır** — yalnızca aşağıdaki
+> kontrol kalemleri sayılır.
 
-## Skorlama bantları (her boyut için)
-| Puan | Anlam | Kriter |
-|------|-------|--------|
-| **17-20** 🟢 | Güçlü | Tam uygulanmış, doğrulanmış |
-| **11-16** 🟡 | Orta | Kısmi; önemli boşluklar var |
-| **5-10** 🟠 | Zayıf | Temel eksik |
-| **0-4** 🔴 | Yok | Hiç yok |
+## 5 boyut × 5 kontrol × 4 puan = 100
 
-### Boyut bazlı somut kriterler (özet)
-- **Citation Readiness:** her önemli sayfada birincil cevap + özet + FAQ varsa 17-20; sadece bazılarında 11-16; jenerik pazarlama dili 0-10.
-- **Entity Strength:** bütünleşik `@graph` + `sameAs` + Wikidata 17-20; izole schema 11-16; entity yok 0-10.
-- **Schema Coverage:** sayfa tiplerinin %90+'ı geçerli schema 17-20; %50-90 → 11-16; <%50 → 0-10.
-- **Content Extractability:** tek H1 + sıralı başlık + semantik landmark + temiz içerik 17-20; düzensiz 11-16; div-soup 0-10.
-- **AI Crawlability:** llms.txt + ai-agents.json + bot erişimi açık + sitemap 17-20; kısmi 11-16; bot engelli/dosya yok 0-10.
+Her boyutta 5 **ikili (var/yok) kontrol** vardır; her kontrol **4 puan**. Kontrol "kısmen" ise
+**2 puan** (yalnızca tabloda ★ işaretli kalemlerde kısmilik mümkündür; diğerleri 0 veya 4).
+"Önemli sayfalar" = Faz 0'da belirlenen dönüşüm-kritik sayfa tipleri (ana sayfa + hizmet/ürün + iletişim).
+
+### 1. Citation Readiness (20) — `geo-citation.md`
+| # | Kontrol | Puan |
+|---|---------|------|
+| 1.1 | Önemli sayfaların ≥%80'inde **birincil cevap bloğu** (ilk 1-2 cümlede bağlamsız cevap) | 4 ★ |
+| 1.2 | Önemli sayfaların ≥%80'inde **40-60 kelimelik alıntılanabilir özet** | 4 ★ |
+| 1.3 | En az bir sayfada **FAQ bölümü + `FAQPage` JSON-LD** | 4 |
+| 1.4 | İçerikte **somut/sayısal veri** (fiyat aralığı, süre, sayı, tarih) — jenerik dil değil | 4 ★ |
+| 1.5 | Görünür **güncellik sinyali** (`dateModified` + sayfada güncelleme tarihi) | 4 |
+
+### 2. Entity Strength (20) — `entity-graph.md`, `knowledge-conflict.md`
+| # | Kontrol | Puan |
+|---|---------|------|
+| 2.1 | Tüm sayfalarda **aynı `@id`** ile tek Organization | 4 |
+| 2.2 | **Bütünleşik `@graph`** (WebSite→publisher, Article→author/publisher bağları) | 4 ★ |
+| 2.3 | `sameAs` ≥3 **doğrulanmış** profil (canlı + aynı varlık) | 4 ★ |
+| 2.4 | **Wikidata** eşlemesi var (veya uygunluk yoksa belgelenmiş) | 4 |
+| 2.5 | **Knowledge conflict taraması** yapılmış, kritik çelişki kalmamış | 4 ★ |
+
+### 3. Schema Coverage (20) — `schema-jsonld.md`
+| # | Kontrol | Puan |
+|---|---------|------|
+| 3.1 | Sayfa tiplerinin ≥%90'ında **geçerli** JSON-LD | 4 ★ |
+| 3.2 | Şemalar **validator hatasız** (validator.schema.org / Rich Results) | 4 |
+| 3.3 | İşletme tipine uygun **özel şema** (LocalBusiness/Product/Service…) | 4 |
+| 3.4 | `BreadcrumbList` (çok seviyeli sitelerde) | 4 |
+| 3.5 | **Uydurma veri yok** (rating/review yalnızca gerçek kaynaktan) | 4 |
+
+### 4. Content Extractability (20) — `semantic-structure.md`
+| # | Kontrol | Puan |
+|---|---------|------|
+| 4.1 | Her sayfada **tek H1** + atlamasız hiyerarşi | 4 ★ |
+| 4.2 | **Semantik landmark'lar** (header/nav/main/footer; div-soup değil) | 4 ★ |
+| 4.3 | Bölümler **self-contained chunk** ("yukarıda bahsettiğimiz" yok) | 4 ★ |
+| 4.4 | Liste/tablo gibi **yapısal içerik** kullanımı | 4 |
+| 4.5 | Görsellerde **anlamlı alt** metin (≥%80) | 4 ★ |
+
+### 5. AI Crawlability (20) — `ai-crawler-audit.md`, `llms-txt-generator.md`
+| # | Kontrol | Puan |
+|---|---------|------|
+| 5.1 | `/llms.txt` mevcut ve standarda uygun | 4 |
+| 5.2 | `/llms-full.txt` + `/ai-agents.json` mevcut | 4 ★ |
+| 5.3 | robots.txt **AI botlarına açık** (GPTBot, ClaudeBot, PerplexityBot…) | 4 |
+| 5.4 | **Edge/WAF engeli yok** (Cloudflare AI bot bloklaması kapalı; UA testi geçer) | 4 |
+| 5.5 | Güncel **sitemap.xml** + önemli sayfalar indekslenebilir | 4 ★ |
 
 ## Hesaplama & sunum
-1. Her boyutu denetim bulgularına göre 0-20 puanla (gerekçeyle).
-2. Topla (0-100).
-3. Son raporda tablo olarak göster:
+1. Her kontrolü denetim bulgusuna bağla (hangi dosya/sayfa kanıt). Kanıtsız puan verme.
+2. Boyut puanı = kontrollerin toplamı; toplam skor = 5 boyutun toplamı (0-100).
+3. State'e yaz: `aiVisibilityScore: { before, current }` (+ rapora `scoringModel: aivs/v1`).
+4. Son raporda tablo:
 
 ```
-## AI VISIBILITY SCORE: {önce} → {sonra} / 100
+## AI VISIBILITY SCORE: {önce} → {sonra} / 100   (model: aivs/v1)
 | Boyut                  | Önce | Sonra | Not |
 |------------------------|------|-------|-----|
-| Citation Readiness     | 8    | 18    | FAQ + özet blokları eklendi |
-| Entity Strength        | 5    | 17    | @graph + sameAs + Wikidata |
-| Schema Coverage        | 10   | 19    | 9 sayfa tipine JSON-LD |
-| Content Extractability | 12   | 18    | başlık hiyerarşisi + semantik HTML |
-| AI Crawlability        | 6    | 20    | llms.txt + ai-agents.json + bot allow |
-| **TOPLAM**             | 41   | 92    | |
+| Citation Readiness     | 8    | 18    | FAQ + özet blokları eklendi (1.3, 1.2) |
+| Entity Strength        | 4    | 16    | @graph + sameAs (2.2, 2.3) |
+| Schema Coverage        | 10   | 20    | 9 sayfa tipine JSON-LD |
+| Content Extractability | 12   | 18    | hiyerarşi + landmark (4.1, 4.2) |
+| AI Crawlability        | 6    | 20    | llms.txt + bot allow (5.1-5.4) |
+| **TOPLAM**             | 40   | 92    | |
 ```
+Notlarda hangi kontrol kalemlerinin (#) durum değiştirdiğini belirt — skor denetlenebilir olsun.
 
 > Skor **tahminî bir hazırlık göstergesidir**, garantili sıralama değil. Optimizasyon sonrası
-> yeniden ölç; kazanımı `templates/son-rapor.template.md` içinde raporla.
+> yeniden ölç; kazanımı `templates/son-rapor.template.md` içinde raporla. Release Readiness
+> eşikleri için → `references/release-gate.md`.

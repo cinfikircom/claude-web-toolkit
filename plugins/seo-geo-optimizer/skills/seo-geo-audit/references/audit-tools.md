@@ -47,5 +47,5 @@ kullanıcıdan URL'yi açıp sonucu/paylaşmasını ister, sonra çıktıyı yor
 
 ## Raporlama
 Her araç turunda: önceki skor → yeni skor, hangi düzeltme neyi kazandırdı, kalan açık maddeler.
-`templates/son-rapor.template.md` madde 10 (Lighthouse kazancı) ve `seo-gorev-listesi.md` doğrulama
+`templates/son-rapor.template.md` madde 10 (Lighthouse kazancı) ve `.seo-os/seo-gorev-listesi.md` doğrulama
 bölümünü güncelle.

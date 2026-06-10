@@ -6,8 +6,9 @@ description: "AI Search & Growth Optimization denetimini başlatır (SEO + GEO +
 
 Kullanıcı bu projede SEO + GEO denetimi başlatmak istiyor.
 
-`seo-geo-audit` becerisini (skill) uygula. **Önce skill'in tamamını + `references/execution-model.md`'i oku.**
-SEO-OS v2 protokolüyle çalış: `seo-os-state.json`'u boot'ta oku/oluştur, deterministic dashboard göster,
+`seo-geo-audit` becerisini (skill) uygula. **Önce skill'in tamamını + skill'in `references/execution-model.md`
+dosyasını oku** (plugin kurulumunda: `${CLAUDE_PLUGIN_ROOT}/skills/seo-geo-audit/references/execution-model.md`).
+SEO-OS v2 protokolüyle çalış: `.seo-os/seo-os-state.json`'u boot'ta oku/oluştur, deterministic dashboard göster,
 ANALYZE → PROPOSE → EXECUTE modlarıyla ilerle. **Faz 0 İKİ ayrı tur:** önce 0-A (Tech Scan, kod taraması),
 state'i yaz; sonra 0-B'de kullanıcıya hedef/rakip/risk sorularını (AskUserQuestion) sor.
 
@@ -34,7 +35,8 @@ yoksa Faz 0 keşiften başla. Geçerli argümanlar (başlık eşlemesi):
 | `cro` / `donusum` | J | Dönüşüm optimizasyonu: CTA, form, telefon/WhatsApp |
 | `setup` / `kurulum` | K | Off-site: Search Console, Bing, GA4, Google Business, sitemap gönderimi |
 | `dogrula` / `verify` | L | Harici skor döngüsü: PageSpeed/Pingdom/DebugBear → hedef skor |
-| `score` / `skor` | — | AI Visibility Score (0-100) hesapla ve raporla |
+| `score` / `skor` | — | AI Visibility Score (0-100, model aivs/v1) hesapla ve raporla |
+| `gate` / `release` | — | Release Readiness Gate: hard check'ler + skor eşikleri → PASS/FAIL (`references/release-gate.md`; ANALYZE — kod değiştirmez) |
 | `rapor` | — | Mevcut tespitlerle son rapor üret (kod değiştirme) |
 | `derin` / `deep` | — | Derin mod: 4 uzman ajana böl (growth/seo-geo/entity/performance) |
 

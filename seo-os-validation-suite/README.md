@@ -17,6 +17,8 @@ schema reasoning, and decision quality vs an expert baseline.
 | `geo-simulation.json` | Mock AI-visibility simulation (ChatGPT/Perplexity/Gemini/AI Overviews) |
 | `sample-seo-os-output.json` | Example agent output (replace with a real run) |
 | `INJECTED-ISSUES.md` | Answer key: every intentional failure, per page |
+| `golden-tests/expected-score.json` | Committed scoring baseline for CI regression |
+| `golden-tests/check-regression.js` | Runs the scorer, compares vs baseline with per-field tolerance; exit 1 on regression |
 
 ## How to run a validation
 1. **Run the SEO-OS agent in ANALYZE mode** against `golden-seo-test-site/` and capture its audit as
@@ -29,6 +31,19 @@ schema reasoning, and decision quality vs an expert baseline.
    ```
 3. Read `totalScore` + `breakdown` + `correctDecisions`/`wrongDecisions`.
 4. Compare GEO read against `geo-simulation.json` (expected LOW before optimization).
+
+## Golden regression (runs in CI on every PR)
+```bash
+cd seo-os-validation-suite
+node golden-tests/check-regression.js                 # uses sample-seo-os-output.json
+node golden-tests/check-regression.js real-run.json   # or a real agent run
+```
+Compares the scorer result against `golden-tests/expected-score.json`. Tolerance is **0** while
+the input is the static sample (scorer is deterministic); raise per-field `tolerance` only when
+the input becomes a real agent run. If you intentionally change the scorer/baseline/sample,
+**update `expected-score.json` in the same PR** and explain why.
+> The end-to-end "run the SEO-OS agent in CI" harness (LLM call) is a separate roadmap item —
+> this check covers the deterministic half (scoring + decision aggregation).
 
 ## Scoring model (0–100)
 SEO Accuracy 25 · GEO Readiness 25 · Schema Correctness 25 · Performance Logic 25.

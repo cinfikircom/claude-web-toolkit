@@ -19,6 +19,49 @@ Amaç: SEO trafik getirir; **CRO para kazandırır.** Trafiği lead/satış/aram
 - **Telefon/WhatsApp:** sticky tıkla-ara/WA, çalışma saatleri, hızlı yanıt vaadi.
 - **Rezervasyon:** müsaitlik netliği, az adımlı booking, iptal politikası.
 
+## Önce / sonra örnekleri
+
+### 1. Tıklanabilir telefon + WhatsApp (en sık eksik, en ucuz kazanç)
+```html
+<!-- ❌ ÖNCE — düz metin, mobilde tıklanamaz -->
+<p>Bize ulaşın: 0312 555 44 33</p>
+
+<!-- ✅ SONRA — tek tık arama + ön-dolu WhatsApp -->
+<a href="tel:+903125554433">0312 555 44 33</a>
+<a href="https://wa.me/903125554433?text=Merhaba%2C%20teklif%20almak%20istiyorum"
+   aria-label="WhatsApp ile yaz">WhatsApp'tan yaz</a>
+```
+
+### 2. CTA netliği
+```html
+<!-- ❌ ÖNCE — belirsiz fiil, fold altında -->
+<button>Gönder</button>
+
+<!-- ✅ SONRA — net değer + eylem, ekranın üstünde tekrar -->
+<button>Ücretsiz Keşif Randevusu Al</button>
+```
+
+### 3. CLS yaratmayan sticky CTA
+```css
+/* ❌ ÖNCE — geç yüklenen sticky bar içeriği iter (CLS) */
+/* ✅ SONRA — yer baştan rezerve edilir, bar transform ile girer */
+.sticky-cta { position: fixed; bottom: 0; transform: translateY(100%);
+              transition: transform .2s; }
+.sticky-cta.visible { transform: translateY(0); }
+body { padding-bottom: var(--sticky-cta-height, 64px); } /* alan rezerve */
+```
+
+### 4. Form sürtünmesi
+- ❌ 9 alanlı tek form, hepsi zorunlu, hata mesajı submit sonrası.
+- ✅ 3-4 alan (ad, telefon, ihtiyaç), yalnızca telefon zorunlu, inline doğrulama,
+  `autocomplete`/`inputmode` öznitelikleri (mobil klavye doğru açılır).
+
+## Ölçüm — tahmin değil veri
+- GA4 kuruluysa (Başlık K): dönüşüm event'lerini (form_submit, tel_click, wa_click) tanımlat;
+  öneri etkisini bu event'lerle doğrula. Kurulu değilse önce K'yi öne çekmeyi öner.
+- `tel:`/`wa.me` tıklamaları için GTM/GA4 event örneği ver; "tahmini iyileşme" yerine
+  **önce → sonra event sayısı** raporla.
+
 ## Performans/SEO ile çatışmama (kritik)
 - Sticky CTA / WhatsApp widget → **CLS yaratmasın** (yer rezerve et) ve **INP'yi bloklamasın**
   (ağır 3. parti chat widget'ı lazy/defer) → bkz. `references/core-web-vitals.md`, `resource-hints.md`.

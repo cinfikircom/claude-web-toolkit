@@ -1,0 +1,49 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Syntax check (pure-Node tools)
+        run: |
+          node --check plugins/seo-geo-optimizer/tools/seo-os-tracker.js
+          node --check seo-os-validation-suite/seo-os-scorer.js
+          node --check seo-os-validation-suite/golden-tests/check-regression.js
+
+      - name: JSON files parse
+        run: |
+          for f in \
+            .claude-plugin/marketplace.json \
+            plugins/seo-geo-optimizer/.claude-plugin/plugin.json \
+            plugins/seo-geo-optimizer/skills/seo-geo-audit/templates/seo-os-state.template.json \
+            seo-os-validation-suite/seo-baseline.json \
+            seo-os-validation-suite/decision-matrix.json \
+            seo-os-validation-suite/geo-simulation.json \
+            seo-os-validation-suite/sample-seo-os-output.json \
+            seo-os-validation-suite/golden-tests/expected-score.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" \
+              && echo "OK  $f" || { echo "FAIL $f"; exit 1; }
+          done
+
+      - name: Version sync (plugin.json == SKILL.md)
+        run: |
+          PV=$(node -p "require('./plugins/seo-geo-optimizer/.claude-plugin/plugin.json').version")
+          SV=$(grep -m1 '^version:' plugins/seo-geo-optimizer/skills/seo-geo-audit/SKILL.md | awk '{print $2}')
+          echo "plugin.json=$PV  SKILL.md=$SV"
+          [ "$PV" = "$SV" ] || { echo "Version mismatch!"; exit 1; }
+
+      - name: Golden regression (scorer output vs committed baseline)
+        run: |
+          cd seo-os-validation-suite
+          node golden-tests/check-regression.js

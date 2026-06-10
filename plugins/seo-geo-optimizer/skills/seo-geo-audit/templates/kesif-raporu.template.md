@@ -11,7 +11,7 @@ G [ ]  H [ ]  I [ ]   J [ ]  K [ ]  L [ ]
 MODE: ANALYZE   CURRENT TASK: → Tech scan   BLOCKED: → None   AI VISIBILITY: — → — / 100
 ========================
 ```
-> SSOT: `seo-os-state.json` · görünüm: `seo-gorev-listesi.md` · runtime: `references/execution-model.md`
+> SSOT: `.seo-os/seo-os-state.json` · görünüm: `.seo-os/seo-gorev-listesi.md` · runtime: `references/execution-model.md`
 
 ## 0. FRAMEWORK & TEKNOLOJİ TESPİTİ
 | Konu | Tespit |

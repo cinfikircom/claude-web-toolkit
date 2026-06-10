@@ -14,7 +14,8 @@
  *   node seo-os-tracker.js --json          # machine-readable summary, then exit
  *
  * State auto-discovery (when no path given): walks up from CWD looking for
- * `seo-os-state.json`, so it works from anywhere inside a project.
+ * `.seo-os/seo-os-state.json` (and the legacy root location `seo-os-state.json`),
+ * so it works from anywhere inside a project.
  *
  * No external dependencies. Pure Node. Matches references/execution-model.md.
  */
@@ -51,17 +52,23 @@ if (opt.help) {
 
 // ---- locate state file -----------------------------------------------------
 const STATE_NAME = "seo-os-state.json";
+const STATE_DIR = ".seo-os";
 function findStateFile(explicit) {
   if (explicit) return path.resolve(explicit);
   let dir = process.cwd();
   for (let i = 0; i < 12; i++) {
-    const candidate = path.join(dir, STATE_NAME);
-    if (fs.existsSync(candidate)) return candidate;
+    // preferred location first, then legacy root location
+    for (const candidate of [
+      path.join(dir, STATE_DIR, STATE_NAME),
+      path.join(dir, STATE_NAME),
+    ]) {
+      if (fs.existsSync(candidate)) return candidate;
+    }
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;
   }
-  return path.resolve(STATE_NAME); // best-effort default (may not exist)
+  return path.resolve(STATE_DIR, STATE_NAME); // best-effort default (may not exist)
 }
 const STATE_PATH = findStateFile(positional[0]);
 

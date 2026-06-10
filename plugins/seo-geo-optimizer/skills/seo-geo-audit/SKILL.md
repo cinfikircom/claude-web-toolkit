@@ -1,7 +1,7 @@
 ---
 name: seo-geo-audit
-description: Use this skill as a full Growth Optimization Framework — SEO + GEO (Generative Engine Optimization) + Entity/Knowledge Graph + Core Web Vitals + AI Crawler + Business Goal + Competitor/Content Gap + Topical Authority + Local SEO + CRO — on ANY website/codebase. Triggers when the user asks to "improve SEO", "do an SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO optimization", "AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads/conversions", or runs /seo-audit. Framework-agnostic (Next.js, Astro, React, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Acts as a guided consultant: asks goal/risk/competitor questions, detects the framework, walks tasks one-by-one WITH approval, and guides off-site steps (Search Console, GA4, target scores) the user must do.
-version: 2.0.0
+description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
+version: 2.1.0
 ---
 
 # AI Search & Growth Optimization Framework
@@ -17,7 +17,7 @@ mimariye uygun öneri üretir ve bir **danışman gibi adım adım yönlendirir*
 1. **Onay almadan kod değiştirme.** Her değişiklikten önce: (a) etkilenecek dosyaları listele,
    (b) değişikliği açıkla, (c) risk seviyesini belirt — `Low / Medium / High Risk`.
 2. **Her başlığı tek tek uygula.** Hepsini birden yapma. Bir başlığı uygula → raporla → onay al → sonrakine geç.
-   İlerlemeyi `seo-gorev-listesi.md`'de durum işaretleriyle (`[ ] [~] [✓] [!]`) takip et — bkz. "DURUM MODELİ".
+   İlerlemeyi `.seo-os/seo-gorev-listesi.md`'de durum işaretleriyle (`[ ] [~] [✓] [!]`) takip et — bkz. "DURUM MODELİ".
 3. **Framework değiştirmeyi ÖNERME.** (Next.js'e Astro tavsiye etme.) Mimari değişikliği yalnızca açıkça istenirse sun.
 4. **%5 kuralı:** Beklenen SEO/performans kazanımı %5'in altındaysa kodu değiştirme — gereksiz risk alma.
 5. **Mevcut çalışan fonksiyonelliği bozma.** Riskli refactor'dan kaçın. Çoklu dosya değişiminde bütünü teslim et.
@@ -31,7 +31,7 @@ Detaylı güvenlik protokolü → `references/code-safety.md`
 
 Faz 0 **iki ayrı tura** bölünür (tek mesajda her şeyi sıkıştırma — bu SEO-OS v2 kuralıdır):
 - **FAZ 0-A — Tech Scan:** yalnızca otomatik teknik tespit (ANALYZE modu, kod değişmez). Sonunda
-  `seo-os-state.json`'u oluştur/güncelle ve dashboard'u göster.
+  `.seo-os/seo-os-state.json`'u oluştur/güncelle ve dashboard'u göster.
 - **FAZ 0-B — Business Input:** kullanıcıya hedef/rakip/risk sorularını sor; cevapları state'e yaz.
 
 Çalışma protokolü (state, 3 mod, phase locking, deterministic dashboard, safety) → **`references/execution-model.md`**.
@@ -49,7 +49,10 @@ Faz 0 **iki ayrı tura** bölünür (tek mesajda her şeyi sıkıştırma — bu
 - **Veri kaynağı:** içerik nereden geliyor (DB, CMS, markdown, statik)
 
 ### FAZ 0-B) Kullanıcıya sorulacak hedef soruları (AskUserQuestion ile, ayrı tur)
-0-A bitip state yazıldıktan **sonra** sor — cevaplar tüm sonraki adımları şekillendirir ve state'e yazılır:
+0-A bitip state yazıldıktan **sonra** sor — cevaplar tüm sonraki adımları şekillendirir ve state'e yazılır.
+> ⚠️ **AskUserQuestion bir çağrıda en fazla 4 soru destekler.** 8 soruyu **iki çağrıya böl**:
+> **Tur 1** = soru 1–4 (kelimeler · coğrafya/dil · hedef motorlar · risk), **Tur 2** = soru 5–8
+> (iş hedefi · rakipler · öncelik/trafik · off-site). Sıra ve içerik sabittir — doğaçlama yapma.
 
 1. **Hedef anahtar kelimeler / temalar:** Hangi aramalarda üst sırada olmak istiyorsun?
    (marka adı, kategori, lokasyon, ürün vb. — "değişken" kalıplar dahil)
@@ -66,20 +69,24 @@ Faz 0 **iki ayrı tura** bölünür (tek mesajda her şeyi sıkıştırma — bu
 > Framework tespitini de bu soruların içinde **kullanıcıya doğrulat** ("X tespit ettim, doğru mu?").
 
 ### Faz 0 çıktısı
-ÜÇ dosya üret, onay iste, **henüz kod değiştirme:**
-1. `templates/seo-os-state.template.json` → **`seo-os-state.json`**: makine-okunur **tek doğruluk
+ÜÇ dosya üret, onay iste, **henüz kod değiştirme.** Tüm SEO-OS artefaktları kullanıcının proje
+kökünü kirletmemek için **`.seo-os/` klasöründe** toplanır (yoksa oluştur):
+1. `templates/seo-os-state.template.json` → **`.seo-os/seo-os-state.json`**: makine-okunur **tek doğruluk
    kaynağı** (mode, faz durumları, tech/business, competitors, score, blocked, log). 0-A'da oluşturulur.
-2. `templates/kesif-raporu.template.md` → `seo-kesif-raporu.md`: mevcut durum + tüm başlıkların
+2. `templates/kesif-raporu.template.md` → `.seo-os/seo-kesif-raporu.md`: mevcut durum + tüm başlıkların
    (A–L) ön analizi + iş hedefi + rakip özeti + öncelik + risk + **başlangıç AI Visibility Score**.
-3. `templates/gorev-listesi.template.md` → `seo-gorev-listesi.md`: state'in **insan-okunur görünümü**
+3. `templates/gorev-listesi.template.md` → `.seo-os/seo-gorev-listesi.md`: state'in **insan-okunur görünümü**
    (12 başlıklı rehberli checklist). Çelişirse `seo-os-state.json` kazanır.
+
+> `.seo-os/` oluşturulduğunda kullanıcıya **bir kez** sor: bu klasör `.gitignore`'a eklensin mi
+> (kişisel çalışma) yoksa commit'lensin mi (ekip görünürlüğü)? Cevabı state `log`'una not et.
 
 ## 🧭 REHBERLİ YÜRÜTME (bu beceri bir danışman gibi yönlendirir)
 Kullanıcıyı elinden tutup **adım adım** ilerlet — sadece kod yazma, **yol göster**:
 - Görevleri **tek tek** sun (hepsini birden değil). Her görev için: ne, neden, nasıl, risk.
 - **Claude'un yapabileceğini yap** (kod, dosya üretimi). **Kullanıcının yapması gerekeni** (hesap
   açma, panelden gönderim, DNS kaydı) net talimat + tam URL ile iste ve **"tamamlandı" onayını bekle**.
-- Her görev bitince `seo-gorev-listesi.md`'de durumu güncelle (`[~]`→`[✓]`, dış aksiyonda `[!]`) ve bir sonrakine geç.
+- Her görev bitince `.seo-os/seo-gorev-listesi.md`'de durumu güncelle (`[~]`→`[✓]`, dış aksiyonda `[!]`) ve bir sonrakine geç.
 - Harici skor (PageSpeed/Pingdom/DebugBear) için: kullanıcıdan URL'yi açıp sonucu paylaşmasını iste,
   çıktıyı yorumla, düzelt, **hedefe ulaşana kadar** döngüyü tekrarla (→ `references/audit-tools.md`).
 
@@ -88,7 +95,7 @@ Kullanıcıyı elinden tutup **adım adım** ilerlet — sadece kod yazma, **yol
 ## 📊 DURUM MODELİ & YÜRÜTME (SEO-OS v2)
 
 Bu beceri bir **SEO Operating System** gibi çalışır. Tam runtime protokolü → **`references/execution-model.md`**.
-Tek doğruluk kaynağı diskteki **`seo-os-state.json`** (insan görünümü: `seo-gorev-listesi.md`).
+Tek doğruluk kaynağı diskteki **`.seo-os/seo-os-state.json`** (insan görünümü: `.seo-os/seo-gorev-listesi.md`).
 
 ### Durum işaretleri (JSON `status` → sembol)
 `not_started [ ]` · `in_progress [~]` · `completed [✓]` · `blocked [!]` (dış aksiyon bekliyor).
@@ -99,7 +106,7 @@ Onaysız EXECUTE yok.
 
 ### Kritik davranış kuralları
 1. **Tek faz `in_progress`.** Tüm sistemi tek seferde bitirme; atomic ilerle.
-2. **State güncellemeden ilerleme yok.** Her EXECUTE sonrası `seo-os-state.json` + `seo-gorev-listesi.md` yaz.
+2. **State güncellemeden ilerleme yok.** Her EXECUTE sonrası `.seo-os/seo-os-state.json` + `.seo-os/seo-gorev-listesi.md` yaz.
 3. **Onay kapıları:** onaysız ❌ kod değiştirme ❌ dosya oluşturma ❌ deploy.
 4. **Checklist dışına çıkma.** Yeni iş → önce state'e ekle.
 5. **Dış entegrasyon varsayma:** GSC/sitemap/GA4 "tamam" denip doğrulanmadan `completed` yapma; gerekirse `blocked`.
@@ -142,6 +149,7 @@ I en riskli (madde madde onay), L en sonda (gerçek skor ancak optimizasyon sonr
 ### BAŞLIK E — ENTITY SEO, SCHEMA & KNOWLEDGE GRAPH
 - Ana varlıkları çıkar (Organization, Brand, Product, Service, Person, Location, FAQ, Article); `@id` ile bağlı bütünleşik `@graph`.
 - **Knowledge Conflict Audit · sameAs Validation · Wikidata Mapping · Brand Consistency Audit** — dijital ayak izini çapraz mühürle.
+- Çelişki tespiti: çapraz karşılaştırma matrisi + sabit "⚠ ENTITY CONFLICT DETECTED" raporu → `references/knowledge-conflict.md`
 - Detay → `references/entity-graph.md` ve `references/schema-jsonld.md`
 
 ### BAŞLIK F — KLASİK SEO & MARKA + E-E-A-T
@@ -154,6 +162,7 @@ I en riskli (madde madde onay), L en sonda (gerçek skor ancak optimizasyon sonr
 
 ### BAŞLIK H — METADATA TUTARLILIĞI & CRAWLABILITY
 - Canonical mutlak URL tutarlılığı, kırık link, redirect zinciri, orphan sayfa, sitemap kapsamı.
+- **Crawl budget** (büyük site/e-ticaret: faceted URL, pagination, noindex tutarlılığı) → `references/crawl-budget.md`
 - **AI bot erişimi & robots** → `references/ai-crawler-audit.md` · Cloudflare arkasındaysa bot bloklaması → `references/cloudflare-edge.md`
 
 > **— PERFORMANS KATMANI (I) —**
@@ -178,6 +187,8 @@ I en riskli (madde madde onay), L en sonda (gerçek skor ancak optimizasyon sonr
 ### BAŞLIK L — HARİCİ DOĞRULAMA & HEDEF SKOR  *(en son — döngü)*
 - PageSpeed Insights (≥90 mobil/desktop, CWV Passed), DebugBear, Pingdom (A), GTmetrix.
 - Ölç → en ağır metriği düzelt → yeniden ölç, **hedefe ulaşana kadar**. Detay → `references/audit-tools.md`
+- Yayın/merge öncesi tek-komut karar: **Release Readiness Gate** (`/seo-audit gate`, ANALYZE —
+  hard check'ler + skor eşikleri → PASS/FAIL) → `references/release-gate.md`
 
 ---
 
@@ -199,7 +210,7 @@ Tek seferde tüm denetim geniş sitelerde yüzeysel kalabilir. Daha derin sonuç
 **Nasıl:** Faz 0 keşfini ana akışta yap (framework + hedefler + rakipler tek yerden netleşsin), sonra
 başlıkları ilgili ajana devret (`Agent` aracı). Her ajan **onay alarak** uygular.
 
-**🧠 Bellek güvencesi (kritik):** Her ajan görevini bitirince kök dizindeki `seo-gorev-listesi.md`'yi
+**🧠 Bellek güvencesi (kritik):** Her ajan görevini bitirince `.seo-os/seo-gorev-listesi.md`'yi
 günceller (`[~]`→`[✓]`, dış aksiyonda `[!]` + not). Bir sonraki ajan işe başlamadan **bu dosyayı okuyarak bağlamı devralır**
 (önceki kararlar, üretilen dosyalar, açık maddeler). Böylece ajanlar arası geçişte hafıza kaybı/
 dosya çakışması olmaz. Tek-tur denetim isteniyorsa bölme atlanır.
@@ -224,7 +235,9 @@ Riskli Değişiklikler · Sonraki Önerilen Adım.
 - `references/topical-authority.md` — topic cluster / pillar haritası (Başlık C)
 - `references/geo-citation.md` — AI citation optimization (alıntılanabilir içerik mimarisi)
 - `references/entity-graph.md` — varlık haritası, Knowledge Graph, knowledge conflict & sameAs mühürleme
+- `references/knowledge-conflict.md` — entity conflict detector: çapraz matris + sabit rapor formatı (Başlık E)
 - `references/ai-crawler-audit.md` — AI bot erişim denetimi + robots şablonları
+- `references/crawl-budget.md` — crawl budget: faceted URL, canonical hijyeni, pagination, orphan (Başlık H)
 - `references/core-web-vitals.md` — CWV hedefleri, teşhis ve framework bazlı çözümler
 - `references/llms-txt-generator.md` — `/llms.txt`, `/llms-full.txt`, `/ai-agents.json` oluşturma standardı
 - `references/schema-jsonld.md` — Schema.org/JSON-LD referansı ve sayfa bazlı şema eşleştirme
@@ -238,7 +251,8 @@ Riskli Değişiklikler · Sonraki Önerilen Adım.
 - `references/cro-audit.md` — dönüşüm optimizasyonu: CTA/form/telefon/WhatsApp (Başlık J)
 - `references/offsite-setup.md` — Search Console / Bing / GA4 / GBP kurulum rehberi (Başlık K)
 - `references/audit-tools.md` — PageSpeed / Pingdom / DebugBear / GTmetrix ve hedef skor döngüsü (Başlık L)
-- `references/ai-visibility-score.md` — AI Visibility Score (0-100) skorlama metodolojisi
+- `references/ai-visibility-score.md` — AI Visibility Score (0-100): sabit scoring model `aivs/v1` (5 boyut × 5 kontrol × 4 puan)
+- `references/release-gate.md` — Release Readiness Gate: hard check'ler + skor eşikleri → PASS/FAIL (`/seo-audit gate`)
 - `templates/seo-os-state.template.json` — makine-okunur state (tek doğruluk kaynağı)
 - `templates/kesif-raporu.template.md` — Faz 0 keşif raporu şablonu
 - `templates/gorev-listesi.template.md` — rehberli görev listesi (state'in insan görünümü)

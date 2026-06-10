@@ -17,12 +17,43 @@ göre kurgula.
 | **Mirage** | Mobilde görsel lazy/adaptif yükleme | Düşük bağlantıda LCP'ye yardım |
 | **Cloudflare Fonts** | Google Fonts'u edge'den, gizlilik dostu sunar | 3. parti font isteğini kaldırır → LCP/CLS |
 | **Early Hints (103)** | `Link: rel=preload/preconnect` erken gönderir | CF destekler; `_headers` ile besle → `resource-hints.md` |
-| **Cache Rules / Tiered Cache** | Statik içeriği edge'de tut, origin yükünü azalt | "Cache Everything" yalnızca gerçekten statik yollarda |
+| **Cache Rules** | Yol bazlı edge cache politikası | "Cache Everything" yalnızca gerçekten statik yollarda |
+| **Tiered Cache** | Edge'ler arası katmanlı cache — origin isteğini azaltır | Ücretsiz, tek tık; TTFB + cache hit oranı |
+| **Cache Reserve** | R2 tabanlı kalıcı cache katmanı (eviction'a karşı) | Ücretli; büyük statik kataloglarda hit oranını korur |
+| **APO** (WordPress) | HTML'i edge'de cache'ler, origin'e gitmez | Yalnızca WP; çıkış yapan kullanıcı için TTFB devrimi |
 | **R2** | Sıfır-egress nesne deposu (görsel/asset) | Asset dağıtımını R2 + CDN'den yap |
 | **Workers** | Edge'de SSR/transform/redirect | Origin TTFB'yi edge'e taşır |
+| **Speed Brain** | Speculation Rules'u edge'den enjekte eder | `resource-hints.md` ile çakışmasın — tek kaynaktan yönet |
 
 > **Not (Auto Minify):** Cloudflare Auto Minify 2024'te kaldırıldı — **minify'ı build aşamasında** yap
 > (framework bundler'ı). CF'ye güvenme.
+
+### Protokol & teslim katmanı (genelde "aç ve unut")
+| Özellik | Kontrol | Not |
+|---------|---------|-----|
+| **Brotli / Zstandard** | Yanıtta `content-encoding: br` veya `zstd` var mı? | Varsayılan açık; origin'in `Accept-Encoding`'i ezmediğini doğrula |
+| **HTTP/3 (QUIC)** | Dashboard → Network; `alt-svc: h3` header'ı | Mobil/kayıplı ağda TTFB iyileşir |
+| **0-RTT** | Network → 0-RTT Connection Resumption | Tekrarlayan ziyaretçide TLS gecikmesini düşürür |
+| **Early Hints** | yukarıdaki tablo — 103 | `_headers` Link satırı olmadan etkisiz |
+
+### 3. parti script & güvenlik katmanı (INP/TBT ile ilişkili)
+| Özellik | Ne yapar | SEO/CWV bağlamı |
+|---------|----------|------------------|
+| **Zaraz** | GA4/GTM/pikselleri **edge'de** çalıştırır | Ana thread'den 3.parti JS'i kaldırır → INP/TBT kazancı; GA4 kurulumunda (Başlık K) Cloudflare varsa öncelikli seçenek olarak değerlendir |
+| **Turnstile** | CAPTCHA alternatifi (görünmez doğrulama) | Form dönüşümünü (Başlık J) reCAPTCHA'ya göre az sürtünmeyle korur; reCAPTCHA JS yükünü kaldırır |
+
+### Cloudflare denetim kontrol listesi (Başlık I'da CF tespit edildiyse)
+```
+[ ] Polish açık mı (cf-polished header)?       [ ] Mirage (mobil ağırlıklı trafik varsa)
+[ ] Cloudflare Fonts / font self-host          [ ] Early Hints + _headers Link satırları
+[ ] Tiered Cache açık mı (ücretsiz)?           [ ] Cache Rules yol bazlı doğru mu?
+[ ] Cache Reserve gerekli mi (büyük katalog)?  [ ] APO (yalnızca WordPress)
+[ ] Brotli/Zstd aktif mi?                      [ ] HTTP/3 + 0-RTT açık mı?
+[ ] Zaraz'a taşınabilir 3.parti script var mı? [ ] Turnstile ile reCAPTCHA değişimi?
+[ ] Speed Brain ↔ manuel Speculation Rules çakışması yok
+[ ] AI bot bloklaması KAPALI mı? (aşağıdaki bölüm — GEO için kritik)
+```
+Her madde için: mevcut durum → önerilen durum → beklenen metrik etkisi (LCP/TTFB/INP) → risk.
 
 ### `_headers` örneği (Pages — cache + preload)
 ```

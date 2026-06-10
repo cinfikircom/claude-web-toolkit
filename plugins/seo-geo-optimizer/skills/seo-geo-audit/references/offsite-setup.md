@@ -5,7 +5,7 @@ hesaplarına giriş yapamaz; ama **adım adım yönlendirir**, kod tarafını ha
 etiketi, sitemap, analytics tag'i) ve sonucu kontrol eder.
 
 > **Rehberli kural:** Her adımı **tek tek** sun. Claude'un yapabileceğini yap; kullanıcının yapması
-> gerekeni net talimatla iste, **"tamamlandı"** onayını bekle, doğrula, `seo-gorev-listesi.md`'de işaretle,
+> gerekeni net talimatla iste, **"tamamlandı"** onayını bekle, doğrula, `.seo-os/seo-gorev-listesi.md`'de işaretle,
 > sonra bir sonraki adıma geç. Sırayı atlamayı kullanıcı isterse atla.
 
 ## Sorumluluk paylaşımı

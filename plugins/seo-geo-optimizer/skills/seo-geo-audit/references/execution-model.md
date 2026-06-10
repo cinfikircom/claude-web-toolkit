@@ -4,16 +4,19 @@ Bu beceri bir **prompt** değil, Claude Code içinde çalışan bir **SEO Operat
 kalıcı state, deterministik dashboard, mod-tabanlı yürütme ve katı güvenlik kapıları.
 
 ## 1. File-based state (TEK DOĞRULUK KAYNAĞI)
-State **diske** yazılır: proje kökünde **`seo-os-state.json`** (şablon: `templates/seo-os-state.template.json`).
-- **Boot'ta oku:** her oturum/ajan başlangıcında `seo-os-state.json`'u oku — belleğe değil **dosyaya** güven.
+State **diske** yazılır: proje kökündeki **`.seo-os/`** klasöründe **`seo-os-state.json`**
+(şablon: `templates/seo-os-state.template.json`). Tüm SEO-OS artefaktları (state, keşif raporu,
+görev listesi, son rapor) bu klasörde toplanır — kullanıcının proje kökü kirletilmez.
+- **Boot'ta oku:** her oturum/ajan başlangıcında `.seo-os/seo-os-state.json`'u oku — belleğe değil **dosyaya** güven.
 - **Her aksiyondan sonra yaz:** faz durumu, currentTask, log, blocked, score güncellensin.
-- `seo-gorev-listesi.md` bu JSON'un **insan-okunur görünümüdür** (türetilir); çelişirse JSON kazanır.
-- Yoksa Faz 0-A'da şablondan oluştur.
+- `.seo-os/seo-gorev-listesi.md` bu JSON'un **insan-okunur görünümüdür** (türetilir); çelişirse JSON kazanır.
+- Yoksa Faz 0-A'da klasörü + dosyayı şablondan oluştur (geri uyumluluk: proje kökünde eski bir
+  `seo-os-state.json` bulursan onu `.seo-os/` altına taşımayı öner).
 
 Durum değerleri: `not_started · in_progress · completed · blocked` → dashboard sembolleri `[ ] [~] [✓] [!]`.
 
 ## 2. Üç yürütme modu (execution modes)
-Her başlık bu üç moddan geçer; mod `seo-os-state.json.mode`'da tutulur:
+Her başlık bu üç moddan geçer; mod `.seo-os/seo-os-state.json` içindeki `mode`'da tutulur:
 
 | Mod | Ne yapar | Yapamaz |
 |-----|----------|---------|
@@ -43,8 +46,10 @@ AI VISIBILITY: {before} → {current} / 100
 ```
 Format sabittir — markdown başlık/emoji ile bozma; terminalde tutarlı okunur.
 
-> Bu bloğu state'ten otomatik render eden bir CLI vardır: `tools/seo-os-tracker.js`
-> (`node seo-os-tracker.js --watch` ile canlı izleme; `--json` ile makine-okunur özet).
+> Bu bloğu state'ten otomatik render eden bir CLI vardır: plugin'in `tools/seo-os-tracker.js` dosyası.
+> Plugin kurulumunda gerçek yol `${CLAUDE_PLUGIN_ROOT}/tools/seo-os-tracker.js`'tir:
+> `node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-tracker.js" --watch` (canlı izleme) · `--json` (makine-okunur özet).
+> Araç state dosyasını CWD'den yukarı doğru `.seo-os/seo-os-state.json` (ve eski kök konumu) arayarak bulur.
 
 ## 4. Strict phase locking & atomic execution
 - **Aynı anda tek faz `in_progress`.** Yeni faza geçmeden öncekini `completed` veya `blocked` yap.
@@ -59,10 +64,10 @@ Format sabittir — markdown başlık/emoji ile bozma; terminalde tutarlı okunu
 - ASLA onaysız kod değiştir / dosya oluştur / deploy öner.
 
 ## 6. Boot sırası (her oturumda)
-1. `seo-os-state.json` var mı? Yoksa Faz 0-A'da oluştur.
+1. `.seo-os/seo-os-state.json` var mı? Yoksa Faz 0-A'da oluştur.
 2. Oku → dashboard render et → `currentPhase`/`currentTask`/`mode`'u bildir.
 3. Mod ANALYZE'da başla; kullanıcı yönüne göre PROPOSE→EXECUTE'a geç.
-4. Her EXECUTE sonrası: `phases[x].status`, `log[]`, `updatedAt` yaz; `seo-gorev-listesi.md`'yi senkronla.
+4. Her EXECUTE sonrası: `phases[x].status`, `log[]`, `updatedAt` yaz; `.seo-os/seo-gorev-listesi.md`'yi senkronla.
 
-> Derin modda her ajan da bu protokole uyar: boot'ta `seo-os-state.json` oku, kendi faz(lar)ını
+> Derin modda her ajan da bu protokole uyar: boot'ta `.seo-os/seo-os-state.json` oku, kendi faz(lar)ını
 > ANALYZE→PROPOSE→EXECUTE ile işle, state'i yaz. Böylece ajanlar arası bağlam kaybı olmaz.

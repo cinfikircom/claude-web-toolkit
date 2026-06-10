@@ -98,6 +98,9 @@ AI motorları (ChatGPT Search, Perplexity, Gemini) markan hakkında internetteki
 kaynaklardan çelişkili bilgi toplayabilir (eski adres, kapanmış şube, yanlış kuruluş yılı). Amaç,
 sitenin yapısal verisini **otoriter ve çapraz doğrulanabilir** kılarak bu çelişkileri çözmek.
 
+> **Tam tespit prosedürü, çapraz karşılaştırma matrisi ve sabit "⚠ ENTITY CONFLICT DETECTED"
+> rapor formatı → `references/knowledge-conflict.md`** (bu bölüm özet; çekirdek denetim orada).
+
 ### 1. Knowledge Conflict Audit
 - Markanın dijital ayak izini (site + sosyal + dizinler + Google Business) tara, **tutarsızlıkları** listele:
   ad yazımı, adres, telefon (NAP → `references/local-seo.md`), kuruluş yılı, kategori, logo.
