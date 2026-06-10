@@ -43,6 +43,9 @@ AI VISIBILITY: {before} → {current} / 100
 ```
 Format sabittir — markdown başlık/emoji ile bozma; terminalde tutarlı okunur.
 
+> Bu bloğu state'ten otomatik render eden bir CLI vardır: `tools/seo-os-tracker.js`
+> (`node seo-os-tracker.js --watch` ile canlı izleme; `--json` ile makine-okunur özet).
+
 ## 4. Strict phase locking & atomic execution
 - **Aynı anda tek faz `in_progress`.** Yeni faza geçmeden öncekini `completed` veya `blocked` yap.
 - **Atomic task:** bir görevi tamamla → state yaz → sonraki. Yarım bırakma; çoklu fazı tek seferde değiştirme.

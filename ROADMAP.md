@@ -11,10 +11,11 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
   deterministic dashboard, phase locking, safety layer, Faz 0-A/0-B bölme
 - **AI Visibility Score (0-100)**
 - **SEO-OS Validation Suite** — golden broken site + baseline + scorer + decision-matrix + geo-simulation
+- **Terminal CLI tracker** — `tools/seo-os-tracker.js`: `seo-os-state.json`'u okuyup deterministic
+  dashboard'u render eder (`--detail` / `--watch` / `--json`, bağımlılıksız saf Node)
 
 ## 🔜 Planlanan (ileride)
 ### Operasyon / tooling
-- [ ] **Terminal CLI tracker** — `seo-os-state.json`'u okuyup deterministic dashboard'u canlı render eden küçük CLI
 - [ ] **Notion + GitHub sync** — state/raporları Notion DB'ye ve GitHub Issues'a yazan opsiyonel köprü
 - [ ] **Otomatik ajan-run harness** — SEO-OS'u ANALYZE modda çalıştırıp `seo-os-output.json` üretip scorer'a besleyen uçtan uca pipeline
 

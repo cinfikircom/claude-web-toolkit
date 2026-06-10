@@ -102,6 +102,8 @@ claude-web-toolkit/
   plugins/seo-geo-optimizer/
     .claude-plugin/plugin.json
     commands/seo-audit.md
+    tools/
+      seo-os-tracker.js              README.md
     agents/
       growth-strategy-agent.md       seo-geo-agent.md
       entity-knowledge-graph-agent.md performance-cwv-agent.md
