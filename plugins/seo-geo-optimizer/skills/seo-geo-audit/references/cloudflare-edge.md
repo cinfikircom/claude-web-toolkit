@@ -64,11 +64,37 @@ Her madde için: mevcut durum → önerilen durum → beklenen metrik etkisi (LC
 ```
 
 ## Crawlability uyarısı (Başlık H) — ÇOK ÖNEMLİ
-Cloudflare'in **"Block AI Bots / AI Scrapers and Crawlers"** özelliği (Dashboard → Security → Bots,
-veya WAF managed rule) GPTBot, ClaudeBot, PerplexityBot, CCBot gibi botları **engeller**.
-- AI motorlarında **kaynak gösterilmek istiyorsan** bu özelliği **açma** (ya da ilgili botlara izin ver).
-- "Bot Fight Mode" / "Super Bot Fight Mode" da meşru arama botlarını yanlışlıkla engelleyebilir → AI/arama UA'larını allowlist'e al.
-- Doğrula: `curl -A "GPTBot" https://SITE/` edge'den 403/challenge dönüyor mu? (→ `references/ai-crawler-audit.md`)
+
+Cloudflare AI botlarını **iki ayrı katmanda** engelleyebilir; ikisi de ayrı ayrı kapatılmalıdır.
+Kullanıcıyı **tam ekran/ayar adıyla** yönlendir (gerçek vakada doğrulandı, 2026-06):
+
+### Katman 1 — Yönetilen robots.txt (AI Crawl Control)
+**Dashboard → zone → AI Crawl Control → "Managed robots.txt"** — açıklaması:
+*"When enabled, Cloudflare creates or updates your robots.txt file to signal that your content
+should not be used for AI training."* Bu özellik **varsayılan/teşvikli olarak açık gelebilir** ve
+origin'in robots.txt'inin ÖNÜNE şunları enjekte eder: `Content-Signal: search=yes,ai-train=no` +
+ClaudeBot/GPTBot/CCBot/Amazonbot/Google-Extended/meta-externalagent için `Disallow: /`.
+- AI motorlarında **kaynak gösterilmek istiyorsan bu tiki KALDIRT.** (Koddaki robots dosyası doğru
+  olsa bile ezilir; deploy ile düzelmez — yalnızca bu panel ayarıyla düzelir.)
+- Belirti: canlı robots.txt'in başında "content signals" yorum bloğu + AI bot Disallow listesi varken
+  repo'daki robots çıktısı en altta duruyordur.
+
+### Katman 2 — Edge 403 (bot bloklama)
+Robots düzelse bile **AI Crawl Control'deki crawler listesi** (her bot için satır bazında
+Allow/Block) veya **Security → Bots → "Block AI Bots" / Super Bot Fight Mode** belirli botlara
+(sık görülen: ClaudeBot, PerplexityBot) edge'den **403** döndürmeye devam edebilir — istek origin'e
+hiç ulaşmaz (`server: cloudflare` + `cf-ray` ile ayırt edilir). İlgili botları **Allow** yaptırt.
+
+### Doğrulama (iki katmanı ayrı ayrı test et)
+```bash
+# Katman 1: robots enjeksiyonu kalktı mı?
+curl -s https://SITE/robots.txt | grep -iE "content-signal|claudebot|ccbot|gptbot"   # boş dönmeli
+# Katman 2: edge 403 kalktı mı? (hepsi 200 olmalı)
+for ua in ClaudeBot GPTBot CCBot PerplexityBot Google-Extended; do
+  printf "%-16s %s\n" "$ua:" "$(curl -s -o /dev/null -w '%{http_code}' -A "$ua" https://SITE/)"
+done
+```
+Robots temiz + tüm UA'lar 200 olmadan Başlık H'nin bu maddesini `completed` yapma (→ `references/ai-crawler-audit.md`).
 
 ## Framework + Cloudflare
 - **Next.js:** `@cloudflare/next-on-pages` (Pages) — edge runtime uyumlu route'lar; `next/image` loader'ını CF'ye uyarla.
