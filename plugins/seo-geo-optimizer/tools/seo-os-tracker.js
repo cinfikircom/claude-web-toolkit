@@ -186,10 +186,14 @@ function render(state) {
   const pct = Math.round((done / total) * 100);
   const blocks = Math.round((pct / 100) * 20);
   const progressBar = "█".repeat(blocks) + "░".repeat(20 - blocks);
+  // "blocked" counts phases with status=blocked; state.blocked[] entries are
+  // external waits not tied to a phase status — shown separately as "waiting"
+  const waiting = Array.isArray(state.blocked) ? state.blocked.length : 0;
   lines.push(
     C.dim(
       `progress: ${progressBar} ${pct}%  (${done}/${total} done, ` +
-        `${counts.in_progress || 0} active, ${counts.blocked || 0} blocked)`
+        `${counts.in_progress || 0} active, ${counts.blocked || 0} blocked` +
+        `${waiting ? `, ${waiting} waiting` : ""})`
     )
   );
 
@@ -245,6 +249,7 @@ function summary(state) {
     completed: counts.completed || 0,
     inProgress: counts.in_progress || 0,
     blocked: counts.blocked || 0,
+    waiting: Array.isArray(state.blocked) ? state.blocked.length : 0,
     notStarted: counts.not_started || 0,
     total: ALL_KEYS.length,
     progressPct: Math.round(((counts.completed || 0) / ALL_KEYS.length) * 100),
