@@ -19,29 +19,28 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
   `aivs/v1` (5×5×4 sabit matematik), Knowledge Conflict Detector, Crawl Budget Audit,
   Cloudflare native modül genişletmesi (APO/Tiered Cache/Zaraz/Turnstile…), Release Readiness Gate
   (`/seo-audit gate` → PASS/FAIL)
+- **Validation suite v2 + entegrasyonlar (v2.2.0)** —
+  **decision matrix v2:** scorer kararları artık statik `correct` alanlarından değil, gradlenen
+  output'un `detected`/`actionCorrect`/`falsePositives`/`prioritization` alanlarından dinamik türetiyor ·
+  **E2E agent-run harness:** `harness/run-agent-harness.js` (kör AUDIT → LLM-judge GRADE → SCORE,
+  `claude -p`; `agent-run.yml` workflow_dispatch CI job'u) ·
+  **gerçek Lighthouse/PSI:** `lighthouse-runner.js` (lokal `npx lighthouse` + PSI API, CrUX field INP) ·
+  **before/after delta:** `delta-report.js` (skor/kategori/karar deltaları + markdown rapor) ·
+  **3 yeni golden fixture:** `fixtures/` e-ticaret / çok dilli / Cloudflare Pages (baseline + v2 matrix;
+  scorer `--baseline=`/`--matrix=`) ·
+  **Notion + GitHub sync:** `tools/seo-os-sync.js` (tracking issue upsert + Notion DB upsert, dry-run varsayılan) ·
+  **ek schema şablonları:** Event, Recipe, JobPosting, Course, VideoObject ·
+  **yeni framework desenleri:** Remix, SolidStart
+- **CI workflow** — PR'da syntax + JSON + sürüm senkronu + golden regression
+  (`.github/workflows/validate.yml`); LLM'li eşik-altı-skor kontrolü `agent-run.yml`'de (manuel tetik)
 
 ## 🔜 Planlanan (ileride)
-### Operasyon / tooling
-- [ ] **Notion + GitHub sync** — state/raporları Notion DB'ye ve GitHub Issues'a yazan opsiyonel köprü
-- [ ] **Otomatik ajan-run harness** — SEO-OS'u ANALYZE modda çalıştırıp `seo-os-output.json` üretip
-      scorer'a besleyen uçtan uca pipeline (deterministik yarısı v2.1.0'da: golden regression CI testi;
-      bu madde LLM çağrılı gerçek-run kısmını kapsar — `golden-tests/expected-score.json` tolerance
-      alanları o gün için hazır)
+### Plugin
+- [ ] İngilizce doküman çevirisi (şu an TR)
 
 ### Validation suite genişletme
-- [ ] **Decision matrix'i gerçek koşuya bağla** — `decision-matrix.json`'daki `seoOsDecision` alanları şu an
-      statik örnek; scorer karar doğruluğunu (decisionAccuracy/wrongDecisions) gradlenen output'tan değil
-      bu sabit değerlerden hesaplıyor. Scorer, matrix kararlarını output'un `detected`/`actionCorrect`/
-      `falsePositives` alanlarından türetmeli (2026-06-10 gerçek test turunda tespit edildi).
-- [ ] **Gerçek Lighthouse/PSI entegrasyonu** — golden site'a karşı gerçek CWV ölçümü
-- [ ] **Before/after delta scoring** — optimizasyon öncesi/sonrası skor farkı raporu
-- [ ] **Yeni golden fixture'lar** — e-ticaret, çok dilli, Cloudflare Pages varyantları
-- [x] **CI workflow** — PR'da syntax + JSON + sürüm senkronu + scorer smoke (`.github/workflows/validate.yml`);
-      eşik-altı-skor uyarısı gerçek agent-run harness'ı geldiğinde eklenecek
-
-### Plugin
-- [ ] Ek schema tipleri (Event, Recipe, JobPosting…) için copy-paste şablonlar
-- [ ] İngilizce doküman çevirisi (şu an TR)
-- [ ] Ek framework desenleri (Remix, SolidStart)
+- [ ] Yeni fixture'lar için committed golden-tests baseline'ları (şu an yalnızca ana golden site
+      CI regression'a bağlı; fixture'lar harness/manuel koşu ile skorlanıyor)
+- [ ] Harness GRADE fazı için judge-tutarlılık testi (aynı audit'i N kez gradeleyip varyansı ölçme)
 
 > Yeni fikirler buraya eklenir; tamamlananlar ✅'ya taşınır.

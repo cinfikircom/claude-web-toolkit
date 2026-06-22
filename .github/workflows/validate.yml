@@ -18,8 +18,12 @@ jobs:
       - name: Syntax check (pure-Node tools)
         run: |
           node --check plugins/seo-geo-optimizer/tools/seo-os-tracker.js
+          node --check plugins/seo-geo-optimizer/tools/seo-os-sync.js
           node --check seo-os-validation-suite/seo-os-scorer.js
           node --check seo-os-validation-suite/golden-tests/check-regression.js
+          node --check seo-os-validation-suite/harness/run-agent-harness.js
+          node --check seo-os-validation-suite/lighthouse-runner.js
+          node --check seo-os-validation-suite/delta-report.js
 
       - name: JSON files parse
         run: |
@@ -31,9 +35,26 @@ jobs:
             seo-os-validation-suite/decision-matrix.json \
             seo-os-validation-suite/geo-simulation.json \
             seo-os-validation-suite/sample-seo-os-output.json \
-            seo-os-validation-suite/golden-tests/expected-score.json; do
+            seo-os-validation-suite/golden-tests/expected-score.json \
+            seo-os-validation-suite/fixtures/ecommerce-broken-site/baseline.json \
+            seo-os-validation-suite/fixtures/ecommerce-broken-site/decision-matrix.json \
+            seo-os-validation-suite/fixtures/multilingual-broken-site/baseline.json \
+            seo-os-validation-suite/fixtures/multilingual-broken-site/decision-matrix.json \
+            seo-os-validation-suite/fixtures/cloudflare-pages-broken-site/baseline.json \
+            seo-os-validation-suite/fixtures/cloudflare-pages-broken-site/decision-matrix.json; do
             node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" \
               && echo "OK  $f" || { echo "FAIL $f"; exit 1; }
+          done
+
+      - name: Fixture scorer smoke (each fixture baseline/matrix loads + scores)
+        run: |
+          cd seo-os-validation-suite
+          echo '{"detected":[],"actionCorrect":[],"falsePositives":[]}' > /tmp/empty-output.json
+          for fx in ecommerce-broken-site multilingual-broken-site cloudflare-pages-broken-site; do
+            node seo-os-scorer.js /tmp/empty-output.json \
+              --baseline=fixtures/$fx/baseline.json \
+              --matrix=fixtures/$fx/decision-matrix.json > /dev/null \
+              && echo "OK  $fx" || { echo "FAIL $fx"; exit 1; }
           done
 
       - name: Version sync (plugin.json == SKILL.md)

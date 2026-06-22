@@ -98,13 +98,16 @@ Kurallar: tek faz `[~]`, atomic ilerleme, state güncellenmeden geçiş yok, ona
 ```
 claude-web-toolkit/
   .claude-plugin/marketplace.json
-  .github/workflows/validate.yml    ← CI: syntax + JSON + sürüm senkronu + scorer smoke
+  .github/workflows/validate.yml    ← CI: syntax + JSON + sürüm senkronu + golden regression + fixture smoke
+  .github/workflows/agent-run.yml   ← manuel tetik: E2E gerçek-LLM koşusu (claude -p, min-score gate)
   LICENSE  CONTRIBUTING.md  CHANGELOG.md
+  seo-os-validation-suite/          ← benchmark: golden site + fixtures/ (e-ticaret, çok dilli, CF Pages)
+                                       + scorer + harness/ + lighthouse-runner + delta-report
   plugins/seo-geo-optimizer/
     .claude-plugin/plugin.json
     commands/seo-audit.md
     tools/
-      seo-os-tracker.js              README.md
+      seo-os-tracker.js  seo-os-sync.js  README.md
     agents/
       growth-strategy-agent.md       seo-geo-agent.md
       entity-knowledge-graph-agent.md performance-cwv-agent.md

@@ -3,12 +3,40 @@
 Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plugins/*/.claude-plugin/plugin.json`'dan.
 
 ## [Unreleased]
+
+## [2.2.0] — 2026-06-12
+### Eklendi
+- **Decision matrix v2 (dinamik karar):** `decision-matrix.json` artık yalnızca uzman beklentisi
+  tutuyor (statik `correct`/`seoOSAction` yok); scorer kararları gradlenen output'un
+  `detected`/`actionCorrect`/`falsePositives`/`prioritization` alanlarından türetiyor.
+  Entry tipleri: `detection` · `prioritization` · `false-positive-trap` (regex `match`).
+  Golden baseline birebir korundu (69 puan, 10✓/6✗, %63).
+- **E2E agent-run harness:** `harness/run-agent-harness.js` — `claude -p` ile kör (cevap anahtarı
+  sızdırmayan) AUDIT + LLM-judge GRADE + deterministic SCORE zinciri; `--site`/`--min-score`/
+  `--audit-json`/`--dry-run` bayrakları. Manuel tetiklenen `agent-run.yml` CI workflow'u
+  (workflow_dispatch, `ANTHROPIC_API_KEY` secret).
+- **Gerçek CWV ölçümü:** `lighthouse-runner.js` — lokal `npx lighthouse` modu (`--start` ile
+  golden site'ı boot'lar) + PSI API modu (`--psi`, CrUX field INP dahil); baseline
+  `performanceTargets` ile karşılaştırıp PASS/FAIL raporu (`--enforce`).
+- **Before/after delta raporu:** `delta-report.js` — iki agent output'unu skorlayıp toplam/kategori/
+  FP/karar-doğruluğu deltaları + newly-fixed/newly-detected/regressed listeleri; `--md` çıktısı.
+- **3 yeni golden fixture:** `fixtures/ecommerce-broken-site` (faceted canonical, Product schema
+  fiyat çelişkisi), `fixtures/multilingual-broken-site` (hreflang/lang/parity),
+  `fixtures/cloudflare-pages-broken-site` (`_headers` global noindex, redirect zinciri,
+  AI-bot/GEO çelişkisi). Her biri INJECTED-ISSUES + baseline + v2 matrix ile; scorer'a
+  `--baseline=`/`--matrix=` bayrakları eklendi.
+- **Notion + GitHub sync köprüsü:** `tools/seo-os-sync.js` — state'i GitHub tracking issue'suna
+  (gh CLI, `seo-os` etiketi, %100'de otomatik kapatma) ve Notion DB'ye (REST, upsert) senkronlar;
+  varsayılan dry-run, `--apply` ile gönderir, `--md` önizleme.
+- **Ek schema şablonları:** `schema-jsonld.md`'ye Event, Recipe, JobPosting, Course, VideoObject
+  kopyala-yapıştır şablonları + sayfa-tipi tablosu satırları.
+- **Yeni framework desenleri:** `framework-performance.md`'ye Remix (defer/Await streaming,
+  prefetch=intent, Cache-Control/SWR) ve SolidStart (fine-grained reactivity, route preload,
+  deferStream) bölümleri.
 ### Düzeltildi
 - Scorer artık mutlak yol / CWD-göreli output dosyası kabul ediyor (önceden yalnızca suite dizinine
   göre çözüyordu — gerçek test turunda tespit edildi).
-### Bilinen sınır
-- `decisionAccuracy`/`wrongDecisions` henüz gradlenen output'tan değil `decision-matrix.json`'daki
-  statik örnek kararlardan geliyor (→ ROADMAP).
+- "decisionAccuracy statik matristen geliyor" bilinen sınırı kapatıldı (yukarıdaki decision matrix v2).
 
 ## [2.1.0] — 2026-06-10
 ### Eklendi

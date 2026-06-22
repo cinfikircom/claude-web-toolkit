@@ -1,7 +1,7 @@
 ---
 name: seo-geo-audit
 description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
-version: 2.1.0
+version: 2.2.0
 ---
 
 # AI Search & Growth Optimization Framework
