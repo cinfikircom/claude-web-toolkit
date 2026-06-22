@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- INJECTED: thin/duplicate-ish title, no meta description, no canonical -->
+  <title>Product</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- INJECTED: Product JSON-LD with WRONG price (page shows $49.99) + missing required fields:
+       no image, no offer availability, no aggregateRating, no brand, dangling seller @id -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Blue Widget",
+    "offers": {
+      "@type": "Offer",
+      "price": "39.99",
+      "priceCurrency": "USD",
+      "seller": { "@id": "https://acme-store.example/#org" }
+    }
+  }
+  </script>
+</head>
+<body>
+  <h1>Blue Widget</h1>
+  <h1>Only $49.99</h1>
+  <!-- INJECTED: multiple h1 + on-page price ($49.99) contradicts schema price (39.99) -->
+
+  <!-- INJECTED: product gallery, huge originals, no dims, no lazy -->
+  <img src="images/blue-widget-1.jpg" alt="">
+  <img src="images/blue-widget-2.jpg" alt="">
+
+  <!-- INJECTED: thin product description, no citable spec/FAQ block for AI answers -->
+  <p>Great widget. Buy now!</p>
+
+  <!-- INJECTED: no BreadcrumbList schema; visual breadcrumb only -->
+  <div>Home &gt; Widgets &gt; Blue Widget</div>
+
+  <a href="index.html">back</a>
+</body>
+</html>

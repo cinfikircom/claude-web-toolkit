@@ -1,0 +1,54 @@
+{
+  "$schema": "seo-os-validation/baseline-v1",
+  "site": "multilingual-broken-site",
+  "purpose": "Gold-standard CORRECT state for the multilingual (EN/TR/DE subdirectory) fixture.",
+  "performanceTargets": { "LCP_s": 2.5, "INP_ms": 200, "CLS": 0.1, "TTFB_ms": 800 },
+
+  "categories": {
+    "seo": {
+      "weight": 25,
+      "checks": [
+        { "id": "seo.hreflang", "desc": "hreflang alternates (en/tr/de) + x-default on every locale page", "severity": "high" },
+        { "id": "seo.html-lang", "desc": "Correct lang attribute per locale (tr page lang=tr, de page lang=de)", "severity": "high" },
+        { "id": "seo.localized-titles", "desc": "Localized unique <title> + meta description per locale", "severity": "high" },
+        { "id": "seo.canonical-locales", "desc": "Self-referencing canonical per locale page", "severity": "medium" },
+        { "id": "seo.locale-graph", "desc": "Bidirectional language switcher; no orphan locale (DE)", "severity": "medium" }
+      ]
+    },
+    "geo": {
+      "weight": 25,
+      "checks": [
+        { "id": "geo.llms-txt", "desc": "/llms.txt present, covering all locales", "severity": "high" },
+        { "id": "geo.locale-summaries", "desc": "AI-readable summary per locale in that locale's language", "severity": "high" },
+        { "id": "geo.content-parity", "desc": "Full translation parity (no mixed-language half-translations)", "severity": "high" },
+        { "id": "geo.ai-agents-json", "desc": "/ai-agents.json present", "severity": "medium" },
+        { "id": "geo.citation-paragraphs", "desc": "Citation-ready factual paragraphs per locale", "severity": "medium" }
+      ]
+    },
+    "schema": {
+      "weight": 25,
+      "checks": [
+        { "id": "schema.organization", "desc": "Organization with stable @id + sameAs on all locales", "severity": "high" },
+        { "id": "schema.inlanguage", "desc": "inLanguage set per locale page schema", "severity": "medium" },
+        { "id": "schema.all-locales", "desc": "Schema present on TR and DE pages (not EN-only)", "severity": "high" },
+        { "id": "schema.webpage-translation", "desc": "WebPage w/ translationOfWork or consistent localized @id strategy", "severity": "medium" },
+        { "id": "schema.contact-local", "desc": "LocalBusiness/ContactPoint per office (London/Istanbul/Berlin)", "severity": "medium" }
+      ]
+    },
+    "performance": {
+      "weight": 25,
+      "checks": [
+        { "id": "perf.image-optimization", "desc": "Optimized hero image with dimensions (shared across locales)", "severity": "high" },
+        { "id": "perf.font-loading", "desc": "Webfont not display:block; subset covers TR/DE diacritics", "severity": "medium" },
+        { "id": "perf.lazy-loading", "desc": "Below-the-fold media lazy-loaded", "severity": "medium" },
+        { "id": "perf.render-blocking", "desc": "No render-blocking third-party resources", "severity": "high" },
+        { "id": "perf.cls", "desc": "Reserved dimensions, no layout shift", "severity": "high" }
+      ]
+    }
+  },
+
+  "scoring": {
+    "perCheckPoints": 5,
+    "note": "Each category has 5 checks x 5 pts = 25. Full points when detected AND correct action; half when detected only; zero when missed."
+  }
+}

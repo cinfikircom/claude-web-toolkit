@@ -1,0 +1,6 @@
+# INJECTED: redirect CHAIN — /docs-old/* -> /docs/* -> /guide.html (2 hops, both 301)
+/docs-old/* /docs/:splat 301
+/docs/* /guide.html 301
+
+# INJECTED: temporary 302 used for a permanent move (should be 301)
+/start /guide.html 302

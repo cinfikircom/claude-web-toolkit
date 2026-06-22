@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<!-- INJECTED: <html> has no lang attribute -->
+<head>
+  <meta charset="utf-8">
+  <!-- INJECTED: duplicate title (same as category page), no meta description, no canonical, no OG -->
+  <title>Acme Store</title>
+  <!-- INJECTED: render-blocking jQuery in <head>, no defer/async -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- INJECTED: render-blocking webfont CSS -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=block">
+</head>
+<body>
+  <!-- INJECTED: multiple h1 on one page -->
+  <h1>Acme Store</h1>
+  <h1>Big Summer Sale!</h1>
+
+  <!-- INJECTED: hero image: no width/height (CLS), no srcset, eager-loaded huge JPEG (LCP) -->
+  <img src="images/hero-banner.jpg" alt="">
+
+  <h3>Featured products</h3>
+  <!-- INJECTED: heading skip h1 -> h3 -->
+  <ul>
+    <!-- INJECTED: non-descriptive anchors -->
+    <li><a href="product-blue-widget.html">click here</a></li>
+    <li><a href="category-widgets.html?sort=price&color=blue">here</a></li>
+  </ul>
+
+  <!-- INJECTED: below-the-fold product grid images, all eager (no loading="lazy"), no dims -->
+  <img src="images/product-1.jpg" alt="product">
+  <img src="images/product-2.jpg" alt="product">
+  <img src="images/product-3.jpg" alt="product">
+
+  <!-- INJECTED: late-loading promo banner injected via JS pushes content down (CLS) -->
+  <div id="promo"></div>
+  <script>
+    setTimeout(function () {
+      document.getElementById('promo').innerHTML =
+        '<div style="height:140px;background:#fde047">FREE SHIPPING THIS WEEK ONLY</div>';
+    }, 1800);
+  </script>
+
+  <!-- INJECTED: Organization schema missing entirely; no llms.txt / ai-agents.json on site -->
+</body>
+</html>

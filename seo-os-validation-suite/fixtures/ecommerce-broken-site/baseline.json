@@ -1,0 +1,54 @@
+{
+  "$schema": "seo-os-validation/baseline-v1",
+  "site": "ecommerce-broken-site",
+  "purpose": "Gold-standard CORRECT state for the e-commerce fixture. Static HTML store with faceted-navigation, product-schema and CWV traps.",
+  "performanceTargets": { "LCP_s": 2.5, "INP_ms": 200, "CLS": 0.1, "TTFB_ms": 800 },
+
+  "categories": {
+    "seo": {
+      "weight": 25,
+      "checks": [
+        { "id": "seo.canonical-facets", "desc": "Canonical on category page pointing to clean URL; faceted params handled (no infinite crawl space)", "severity": "high" },
+        { "id": "seo.unique-titles", "desc": "Unique descriptive <title> per page (home != category, product not 'Product')", "severity": "high" },
+        { "id": "seo.meta-description", "desc": "Unique meta description on every page", "severity": "high" },
+        { "id": "seo.single-h1", "desc": "Exactly one <h1> per page, ordered heading descent", "severity": "medium" },
+        { "id": "seo.crawl-budget", "desc": "No crawlable duplicate URLs (?ref=, ?sort= permutations); pagination strategy defined", "severity": "medium" }
+      ]
+    },
+    "geo": {
+      "weight": 25,
+      "checks": [
+        { "id": "geo.llms-txt", "desc": "/llms.txt present and valid", "severity": "high" },
+        { "id": "geo.ai-agents-json", "desc": "/ai-agents.json present", "severity": "medium" },
+        { "id": "geo.product-facts", "desc": "Citation-ready product spec paragraphs (facts AI can quote)", "severity": "high" },
+        { "id": "geo.faq", "desc": "Product FAQ blocks for AI answers", "severity": "medium" },
+        { "id": "geo.summaries", "desc": "AI-readable primary-answer summary per page", "severity": "high" }
+      ]
+    },
+    "schema": {
+      "weight": 25,
+      "checks": [
+        { "id": "schema.product-complete", "desc": "Product schema complete: image, brand, offers w/ availability, aggregateRating", "severity": "high" },
+        { "id": "schema.price-consistency", "desc": "Schema price matches on-page price (no knowledge conflict)", "severity": "high" },
+        { "id": "schema.organization", "desc": "Organization defined w/ stable @id (no dangling seller @id)", "severity": "high" },
+        { "id": "schema.breadcrumb", "desc": "BreadcrumbList schema matching visual breadcrumb", "severity": "medium" },
+        { "id": "schema.itemlist", "desc": "CollectionPage/ItemList on category page", "severity": "medium" }
+      ]
+    },
+    "performance": {
+      "weight": 25,
+      "checks": [
+        { "id": "perf.image-optimization", "desc": "Optimized responsive images with dimensions (hero = LCP preload)", "severity": "high" },
+        { "id": "perf.render-blocking", "desc": "jQuery + webfont CSS not render-blocking (defer/async, font-display swap)", "severity": "high" },
+        { "id": "perf.lazy-loading", "desc": "Below-the-fold product images lazy-loaded", "severity": "medium" },
+        { "id": "perf.cls-banner", "desc": "JS-injected promo banner reserves space (no layout shift)", "severity": "high" },
+        { "id": "perf.font-preload", "desc": "Self-hosted/preloaded font, no display:block webfont", "severity": "medium" }
+      ]
+    }
+  },
+
+  "scoring": {
+    "perCheckPoints": 5,
+    "note": "Each category has 5 checks x 5 pts = 25. Full points when detected AND correct action; half when detected only; zero when missed."
+  }
+}
