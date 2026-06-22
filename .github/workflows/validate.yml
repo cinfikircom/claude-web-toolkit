@@ -22,6 +22,8 @@ jobs:
           node --check seo-os-validation-suite/seo-os-scorer.js
           node --check seo-os-validation-suite/golden-tests/check-regression.js
           node --check seo-os-validation-suite/harness/run-agent-harness.js
+          node --check seo-os-validation-suite/harness/grade-lib.js
+          node --check seo-os-validation-suite/harness/judge-consistency.js
           node --check seo-os-validation-suite/lighthouse-runner.js
           node --check seo-os-validation-suite/delta-report.js
 

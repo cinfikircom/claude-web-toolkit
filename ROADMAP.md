@@ -36,12 +36,13 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
 - **Fixture golden regression** — 3 fixture artık committed `expected-score.json` + deterministik
   `sample-output.json` ile CI golden regression'a dahil; `check-regression.js` çoklu-config
   (ana site + `fixtures/*/expected-score.json` otomatik keşif), boş-output smoke step'i kaldırıldı
+- **Judge-tutarlılık testi** — `harness/judge-consistency.js`: tek sabit audit'i GRADE judge'a N kez
+  verip skorlama kararlılığını ölçer (totalScore stddev + check başına agreement + "flapping" listesi,
+  `--min-agreement`/`--max-stddev` gate). Ortak GRADE mantığı `harness/grade-lib.js`'e çıkarıldı
+  (harness + judge-consistency paylaşır)
 
 ## 🔜 Planlanan (ileride)
 ### Plugin
 - [ ] İngilizce doküman çevirisi (şu an TR)
-
-### Validation suite genişletme
-- [ ] Harness GRADE fazı için judge-tutarlılık testi (aynı audit'i N kez gradeleyip varyansı ölçme)
 
 > Yeni fikirler buraya eklenir; tamamlananlar ✅'ya taşınır.
