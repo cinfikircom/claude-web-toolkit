@@ -133,6 +133,83 @@ export const ssr = false            // CSR (SPA)
 <!-- hover'da sonraki sayfa verisi ön-yükleme -->
 ```
 
+## Remix (React Router v7)
+
+### Veri yükleme — paralel loader'lar
+```tsx
+// app/routes/blog.$slug.tsx — loader sunucuda koşar, waterfall yok
+export async function loader({ params }: LoaderFunctionArgs) {
+  // ✅ Bağımsız istekleri Promise.all ile paralelle
+  const [post, related] = await Promise.all([getPost(params.slug), getRelated(params.slug)]);
+  return { post, related };
+}
+```
+
+### Streaming — kritik olmayan veriyi `defer` ile aktar
+```tsx
+import { defer, Await } from 'react-router';
+export async function loader() {
+  return defer({
+    post: await getPost(),        // kritik: bekle
+    comments: getComments(),      // kritik değil: Promise olarak stream et
+  });
+}
+// component'te:
+<Suspense fallback={<Skeleton />}>
+  <Await resolve={comments}>{(c) => <Comments data={c} />}</Await>
+</Suspense>
+```
+
+### Prefetch
+```tsx
+<Link to="/pricing" prefetch="intent" />
+// intent = hover/focus'ta sonraki rotanın JS+verisi ön-yüklenir ("viewport" da var)
+```
+
+### Cache başlıkları (CDN/ISR muadili)
+```tsx
+export function headers() {
+  return { 'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400' };
+}
+// Remix'te ISR yok — denge CDN'de kurulur (s-maxage + SWR). Cloudflare önünde çok etkili.
+```
+> Görsel/font için Remix'in kendi bileşeni yok — "Düz HTML / Statik" bölümündeki `<picture>` +
+> self-host font desenini uygula (`unstable_img` benzeri topluluk paketlerini dayatma).
+
+## SolidStart
+
+### Sıfır hydration maliyeti — fine-grained reactivity
+```tsx
+// Solid VDOM kullanmaz; component bir kez koşar, sadece sinyaller günceller.
+// INP/TBT doğal olarak düşük — "memo ekle" tarzı React refleksleri ÖNERME.
+const [count, setCount] = createSignal(0);
+```
+
+### Render stratejisi
+```ts
+// app.config.ts
+export default defineConfig({
+  server: { prerender: { routes: ['/', '/about'] } }  // SSG — statik sayfalar
+});
+// Varsayılan SSR + streaming; rota bazlı "use server" ile veri sunucuda kalır
+```
+
+### Veri yükleme — route preload + tek uçuş
+```tsx
+// rota tanımında preload: navigasyonda veri JS ile PARALEL yüklenir
+export const route = { preload: () => getPost() } satisfies RouteDefinition;
+const post = createAsync(() => getPost());  // component'te
+```
+
+### Lazy + deferStream
+```tsx
+const Heavy = lazy(() => import('./Heavy'));
+// SSR'da kritik olmayan async sınırı: <Suspense> stream edilir, TTFB bloklanmaz
+<Suspense fallback={<Skeleton />}><Heavy /></Suspense>
+```
+> Görsel için resmi bileşen yok — "Düz HTML / Statik" desenini uygula. `@solidjs/start`
+> projelerinde `client:*` directive'leri YOK (o Astro'dur) — karıştırma.
+
 ## Düz HTML / Statik
 
 ```html
