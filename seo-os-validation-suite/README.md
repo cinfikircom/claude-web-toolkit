@@ -23,6 +23,8 @@ schema reasoning, and decision quality vs an expert baseline.
 | `harness/run-agent-harness.js` | E2E real-LLM run: blind AUDIT (`claude -p`) → LLM-judge GRADE → deterministic SCORE |
 | `lighthouse-runner.js` | REAL CWV measurement: local `npx lighthouse` or PSI API; compares vs `performanceTargets` |
 | `delta-report.js` | Before/after scoring delta (total/category/decision moves) + optional markdown report |
+| `harness/grade-lib.js` | Shared GRADE primitives (claude shell-out, JSON extraction, AUDIT/GRADE prompts) used by both harness tools |
+| `harness/judge-consistency.js` | Re-runs the GRADE judge N times on ONE fixed audit to measure scoring stability (stddev + per-check agreement) |
 
 ## How to run a validation
 1. **Run the SEO-OS agent in ANALYZE mode** against `golden-seo-test-site/` and capture its audit as
@@ -53,6 +55,20 @@ node harness/run-agent-harness.js --site=fixtures/ecommerce-broken-site \
 Blind AUDIT (`claude -p`, no answer key leaked) → LLM-judge GRADE → deterministic SCORE.
 Requires an authenticated `claude` CLI (billed). In CI it runs as the manually-dispatched
 `agent-run` workflow (`ANTHROPIC_API_KEY` secret). Outputs land in `harness/runs/` (gitignored).
+
+## Judge consistency (how deterministic is the GRADE judge?)
+```bash
+cd seo-os-validation-suite
+# 1. capture one audit (its findings become the fixed input)
+node harness/run-agent-harness.js --out=harness/runs/r.json
+# 2. re-grade that SAME audit N times and measure the spread
+node harness/judge-consistency.js --audit-json=harness/runs/r.json --runs=5 --md=judge.md
+# optionally gate: fail if judges disagree too much
+node harness/judge-consistency.js --audit-json=harness/runs/r.json --min-agreement=0.9 --max-stddev=3
+```
+Holds ONE audit constant (removing AUDIT-phase variance) and re-runs only the GRADE judge,
+reporting totalScore min/mean/max/stddev, mean per-check agreement, and the "flapping" check ids
+that judges disagree on. Billed (N `claude -p` calls); deterministic aggregation core.
 
 ## Real CWV measurement (Lighthouse / PSI)
 ```bash
