@@ -40,9 +40,12 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
   verip skorlama kararlılığını ölçer (totalScore stddev + check başına agreement + "flapping" listesi,
   `--min-agreement`/`--max-stddev` gate). Ortak GRADE mantığı `harness/grade-lib.js`'e çıkarıldı
   (harness + judge-consistency paylaşır)
+- **Çift dil README** — `README.md` İngilizce ana dile çevrildi, Türkçe içerik `README.tr.md`'de
+  korundu; karşılıklı dil linkleri
 
 ## 🔜 Planlanan (ileride)
 ### Plugin
-- [ ] İngilizce doküman çevirisi (şu an TR)
+- [ ] İç dokümanların İngilizce'si (CHANGELOG/ROADMAP, SKILL.md gövdesi, 22+ referans hâlâ TR;
+      üst-düzey README artık çift dil)
 
 > Yeni fikirler buraya eklenir; tamamlananlar ✅'ya taşınır.

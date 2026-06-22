@@ -1,79 +1,82 @@
 # Claude Web Toolkit
 
-Site-bağımsız **Growth Optimization Framework** — Claude Code eklenti koleksiyonu.
-Amaç sadece "Google'da yükselmek" veya trafik değil; siteyi **Google + AI arama motorları (ChatGPT
-Search, Gemini, Perplexity, Claude, AI Overviews) + Core Web Vitals + Knowledge Graph** açısından üst
-seviyeye çıkarıp **daha fazla lead/satış** üretmek. Strateji → Arama Görünürlüğü → Performans → Büyüme
-akışıyla çalışır. Tek repo, her proje/sitede yeniden kullanılır.
+**English** · [Türkçe](./README.tr.md)
 
-## Yetenekler (plugins)
+A site-agnostic **Growth Optimization Framework** — a collection of Claude Code plugins.
+The goal isn't just "ranking higher on Google" or traffic; it's lifting a site to the top tier across
+**Google + AI search engines (ChatGPT Search, Gemini, Perplexity, Claude, AI Overviews) + Core Web
+Vitals + Knowledge Graph** to generate **more leads/sales**. It runs as Strategy → Search Visibility →
+Performance → Growth. One repo, reused on every project/site.
 
-| Plugin | Ne yapar |
+## Capabilities (plugins)
+
+| Plugin | What it does |
 |--------|----------|
-| **seo-geo-optimizer** | 12 başlıklı denetim: İş Hedefi · Rakip/İçerik Boşluğu · Topical Authority · GEO · Entity/Knowledge Graph · Klasik SEO · Yerel SEO · Crawlability · Core Web Vitals · CRO · Off-site · Doğrulama. Bir **danışman gibi yönlendirir**: framework'ü (+Cloudflare) tespit eder, sorular sorar, görevleri tek tek sunar, kod tarafını yapar, off-site adımları (Search Console, GA4, Bing, hedef skor) adım adım yaptırır, işaretler ve **AI Visibility Score (0-100)** üretir. |
+| **seo-geo-optimizer** | A 12-area audit: Business Goal · Competitor/Content Gap · Topical Authority · GEO · Entity/Knowledge Graph · Classic SEO · Local SEO · Crawlability · Core Web Vitals · CRO · Off-site · Validation. It **acts like a consultant**: detects the framework (+Cloudflare), asks questions, presents tasks one by one, does the code side, walks you through off-site steps (Search Console, GA4, Bing, target score), checks them off, and produces an **AI Visibility Score (0-100)**. |
 
-> Yeni yetenekler `plugins/` altına eklenir ve `.claude-plugin/marketplace.json`'a kaydedilir.
+> New capabilities are added under `plugins/` and registered in `.claude-plugin/marketplace.json`.
 
-## Kurulum
+## Installation
 
-### Yöntem 1 — Marketplace olarak ekle (önerilen, her projede kullanılır)
+### Method 1 — Add as a marketplace (recommended, reusable on every project)
 ```
 /plugin marketplace add cinfikircom/claude-web-toolkit
 /plugin install seo-geo-optimizer@claude-web-toolkit
 ```
-Kurulumdan sonra her projede `/seo-audit` komutu ve `seo-geo-audit` becerisi hazırdır.
+After installation the `/seo-audit` command and the `seo-geo-audit` skill are ready in every project.
 
-### Yöntem 2 — Yerel test (repo klonluyken)
+### Method 2 — Local testing (with the repo cloned)
 ```
 /plugin marketplace add /path/to/claude-web-toolkit
 /plugin install seo-geo-optimizer@claude-web-toolkit
 ```
 
-## Kullanım
-Herhangi bir web projesinde:
+## Usage
+In any web project:
 ```
 /seo-audit
 ```
-veya bir başlıktan başlamak için (12 başlık):
+or, to start from a specific area (12 areas):
 `/seo-audit hedef · rakip · topical · geo · entity · seo · local · metadata · cwv · cro · setup · dogrula`
-ek: `score` (AI Visibility Score) · `gate` (Release Readiness: PASS/FAIL) · `derin` (4 ajana böl) · `rapor`
+extras: `score` (AI Visibility Score) · `gate` (Release Readiness: PASS/FAIL) · `derin` (split into 4 agents) · `rapor`
 
-Akış:
-1. **Faz 0 — İnteraktif Keşif:** Claude framework'ü (+Cloudflare) + mevcut SEO/off-site durumunu tespit eder,
-   chat'ten iş hedefi/rakip/risk/off-site sorularını sorar, `.seo-os/seo-kesif-raporu.md` + `.seo-os/seo-gorev-listesi.md`
-   (rehberli checklist) + başlangıç AI Visibility Score üretir. (Kod değişmez; tüm artefaktlar `.seo-os/` klasöründe toplanır.)
-2. **Rehberli, başlık başlık uygulama** — Strateji → Arama Görünürlüğü → Performans → Büyüme → Off-site → Doğrulama:
-   A İş Hedefi → B Rakip → C Topical → D GEO → E Entity/KG → F SEO → G Yerel → H Crawlability → I CWV → J CRO →
-   K Off-site → L Doğrulama. Görevler **tek tek** sunulur; her biri: açıklama + risk → **onay** → uygula/yaptır →
-   `.seo-os/seo-gorev-listesi.md`'de işaretle → sonraki.
+Flow:
+1. **Phase 0 — Interactive Discovery:** Claude detects the framework (+Cloudflare) and the current SEO/off-site
+   state, asks business-goal/competitor/risk/off-site questions in chat, and produces `.seo-os/seo-kesif-raporu.md`
+   + `.seo-os/seo-gorev-listesi.md` (a guided checklist) + an initial AI Visibility Score. (No code changes; all
+   artifacts are collected in the `.seo-os/` folder.)
+2. **Guided, area-by-area execution** — Strategy → Search Visibility → Performance → Growth → Off-site → Validation:
+   A Business Goal → B Competitor → C Topical → D GEO → E Entity/KG → F SEO → G Local → H Crawlability → I CWV → J CRO →
+   K Off-site → L Validation. Tasks are presented **one at a time**; each one: description + risk → **approval** →
+   apply/delegate → check off in `.seo-os/seo-gorev-listesi.md` → next.
 
-### Rehberli mod — Claude bir danışman gibi yönlendirir
-Sadece kod yazmaz; **yapamayacağı işleri sana yaptırır.** Örnekler:
-- Google Search Console üyeliği + doğrulama + `sitemap.xml` gönderimi
-- Bing Webmaster kaydı (DuckDuckGo/Yahoo bu indeksi kullanır) + IndexNow
-- Google Analytics 4 bağlantısı, Google Business Profile
-- PageSpeed Insights / Pingdom / DebugBear'da ölç → düzelt → **hedef skora ulaşana kadar** döngü
-- Favicon, görsel/CSS/JS optimizasyonu, H1-H6 hiyerarşi kuralları
+### Guided mode — Claude acts like a consultant
+It doesn't just write code; **it has you do the things it can't.** Examples:
+- Google Search Console membership + verification + `sitemap.xml` submission
+- Bing Webmaster registration (DuckDuckGo/Yahoo use this index) + IndexNow
+- Google Analytics 4 connection, Google Business Profile
+- Measure on PageSpeed Insights / Pingdom / DebugBear → fix → loop **until the target score is reached**
+- Favicon, image/CSS/JS optimization, H1-H6 hierarchy rules
 
-### Derin mod — 4 uzman ajan
-Büyük/kapsamlı sitelerde tek-tur denetim yüzeysel kalabilir. İş, 4 uzman ajana bölünebilir:
+### Deep mode — 4 expert agents
+On large/comprehensive sites a single-pass audit can stay shallow. The work can be split across 4 expert agents:
 
-| Ajan | Başlık | Odak |
+| Agent | Areas | Focus |
 |------|--------|------|
-| `growth-strategy-agent` | A, B, C, J | İş hedefi, rakip/içerik boşluğu, topical authority, CRO |
-| `seo-geo-agent` | D, F, G, H | GEO/llms.txt, klasik SEO, yerel SEO, crawlability |
-| `entity-knowledge-graph-agent` | E | Entity, JSON-LD graf, Knowledge Graph, knowledge conflict |
+| `growth-strategy-agent` | A, B, C, J | Business goal, competitor/content gap, topical authority, CRO |
+| `seo-geo-agent` | D, F, G, H | GEO/llms.txt, classic SEO, local SEO, crawlability |
+| `entity-knowledge-graph-agent` | E | Entity, JSON-LD graph, Knowledge Graph, knowledge conflict |
 | `performance-cwv-agent` | I | Core Web Vitals, Lighthouse, resource hints, Cloudflare |
 
-Faz 0 ana akışta yapılır; başlıklar ilgili ajana devredilir. **Bellek:** her ajan `.seo-os/seo-gorev-listesi.md`'yi
-okuyup günceller (bağlam devri) — geçişte hafıza kaybı olmaz (detay: SKILL.md "DERİN MOD").
+Phase 0 runs in the main flow; areas are delegated to the relevant agent. **Memory:** each agent reads and
+updates `.seo-os/seo-gorev-listesi.md` (context handoff) — no memory loss on transitions (details: SKILL.md "DEEP MODE").
 
-### SEO-OS v2 — bir "SEO Operating System"
-Skill yalnızca öneri sunmaz; **çalışır, durumu diske yazar, mod-tabanlı ilerler.** (Runtime: `references/execution-model.md`.)
-- **File-based state (SSOT):** `.seo-os/seo-os-state.json` projenin tek doğruluk kaynağı (boot'ta okunur, her aksiyonda yazılır). `.seo-os/seo-gorev-listesi.md` onun insan-okunur görünümü. Tüm SEO-OS artefaktları `.seo-os/` klasöründe — proje kökü kirlenmez.
-- **3 yürütme modu:** **ANALYZE** (yalnız okur) → **PROPOSE** (diff + risk, onay bekler) → **EXECUTE** (uygular + state yazar). Onaysız EXECUTE yok.
-- **Durum:** `[ ]` Not Started · `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting.
-- **Deterministic dashboard** her raporda render edilir:
+### SEO-OS v2 — an "SEO Operating System"
+The skill doesn't only offer suggestions; **it runs, writes state to disk, and progresses by mode.** (Runtime: `references/execution-model.md`.)
+- **File-based state (SSOT):** `.seo-os/seo-os-state.json` is the project's single source of truth (read on boot, written on every action). `.seo-os/seo-gorev-listesi.md` is its human-readable view. All SEO-OS artifacts live in the `.seo-os/` folder — the project root stays clean.
+- **3 execution modes:** **ANALYZE** (read-only) → **PROPOSE** (diff + risk, waits for approval) → **EXECUTE** (applies + writes state). No EXECUTE without approval.
+- **Status:** `[ ]` Not Started · `[~]` In Progress · `[✓]` Completed · `[!]` Blocked/Waiting.
+- A **deterministic dashboard** is rendered in every report:
 ```
 === SEO-OS DASHBOARD ===
 FAZ 0A [~]   FAZ 0B [ ]
@@ -82,26 +85,26 @@ G [ ]  H [ ]  I [ ]   J [ ]  K [ ]  L [ ]
 MODE: ANALYZE   CURRENT TASK: →   BLOCKED: → None   AI VISIBILITY: 0 → 0 / 100
 ========================
 ```
-Kurallar: tek faz `[~]`, atomic ilerleme, state güncellenmeden geçiş yok, onay kapısı atlanmaz, dış entegrasyon (GSC/sitemap/GA4) doğrulanmadan `completed` sayılmaz. **Faz 0 iki tur:** 0-A Tech Scan → 0-B Business Input.
+Rules: exactly one phase `[~]`, atomic progress, no transition without a state update, the approval gate is never skipped, nothing counts as `completed` until external integrations (GSC/sitemap/GA4) are verified. **Phase 0 has two rounds:** 0-A Tech Scan → 0-B Business Input.
 
-### Üretilen hazır artefaktlar
-`/llms.txt`, `/llms-full.txt`, `/ai-agents.json`, AI-dostu `robots.txt` ve sayfa bazlı JSON-LD
-şemaları — `skills/seo-geo-audit/templates/` altındaki şablonlardan gerçek veriyle doldurularak üretilir.
+### Ready-made generated artifacts
+`/llms.txt`, `/llms-full.txt`, `/ai-agents.json`, an AI-friendly `robots.txt`, and per-page JSON-LD
+schemas — produced by filling the templates under `skills/seo-geo-audit/templates/` with real data.
 
-## Güvenlik ilkeleri
-- Onay almadan kod değişmez.
-- Framework değiştirilmez; yalnızca mevcut mimariye uygun öneri.
-- Kazanım %5'in altındaysa dokunulmaz.
-- Her değişiklik Low/Medium/High risk etiketiyle sunulur.
+## Safety principles
+- No code changes without approval.
+- The framework is never swapped; only suggestions that fit the existing architecture.
+- If the gain is below 5%, leave it untouched.
+- Every change is presented with a Low/Medium/High risk label.
 
-## Yapı
+## Structure
 ```
 claude-web-toolkit/
   .claude-plugin/marketplace.json
-  .github/workflows/validate.yml    ← CI: syntax + JSON + sürüm senkronu + golden regression + fixture smoke
-  .github/workflows/agent-run.yml   ← manuel tetik: E2E gerçek-LLM koşusu (claude -p, min-score gate)
+  .github/workflows/validate.yml    ← CI: syntax + JSON + version sync + golden regression (main site + fixtures)
+  .github/workflows/agent-run.yml   ← manual trigger: E2E real-LLM run (claude -p, min-score gate)
   LICENSE  CONTRIBUTING.md  CHANGELOG.md
-  seo-os-validation-suite/          ← benchmark: golden site + fixtures/ (e-ticaret, çok dilli, CF Pages)
+  seo-os-validation-suite/          ← benchmark: golden site + fixtures/ (e-commerce, multilingual, CF Pages)
                                        + scorer + harness/ + lighthouse-runner + delta-report
   plugins/seo-geo-optimizer/
     .claude-plugin/plugin.json
@@ -130,18 +133,18 @@ claude-web-toolkit/
         ai-agents.json.template     robots-ai.txt.template
 ```
 
-## Kapsam (12 başlık)
-**Strateji:** İş Hedefi & dönüşüm önceliklendirme · Rakip & içerik boşluğu · Topical authority (pillar/cluster).
-**Arama görünürlüğü:** GEO (llms.txt/llms-full.txt/ai-agents.json, AI citation, chunking) · Entity SEO &
-Knowledge Graph (JSON-LD `@graph`, Wikidata/`sameAs`, knowledge conflict, brand consistency) · Klasik SEO
-(metadata, H1-H6 & semantik HTML, E-E-A-T) · Yerel SEO (NAP, LocalBusiness, GBP) · Crawlability (AI crawler,
-robots, crawl budget, Cloudflare bot). **Performans:** Core Web Vitals (LCP/INP/CLS/TTFB, resource hints,
-Speculation Rules, Early Hints, Cloudflare edge: Polish/APO/Tiered Cache/Zaraz/Turnstile). **Büyüme:** CRO
-(CTA, form, telefon/WhatsApp). **Off-site:** Search Console, Bing/DuckDuckGo, GA4, Google Business.
-**Doğrulama:** PageSpeed, Pingdom, DebugBear, GTmetrix + **AI Visibility Score (0-100, sabit model `aivs/v1`)** +
-**Release Readiness Gate** (`/seo-audit gate` → hard check'ler + skor eşikleri → PASS/FAIL).
-Entity tarafında **Knowledge Conflict Detector**: marka kimliği site + schema + sosyal + Wikidata genelinde
-çapraz karşılaştırılır, çelişkiler "⚠ ENTITY CONFLICT DETECTED" raporuyla çözülür.
+## Scope (12 areas)
+**Strategy:** Business Goal & conversion prioritization · Competitor & content gap · Topical authority (pillar/cluster).
+**Search visibility:** GEO (llms.txt/llms-full.txt/ai-agents.json, AI citation, chunking) · Entity SEO &
+Knowledge Graph (JSON-LD `@graph`, Wikidata/`sameAs`, knowledge conflict, brand consistency) · Classic SEO
+(metadata, H1-H6 & semantic HTML, E-E-A-T) · Local SEO (NAP, LocalBusiness, GBP) · Crawlability (AI crawler,
+robots, crawl budget, Cloudflare bot). **Performance:** Core Web Vitals (LCP/INP/CLS/TTFB, resource hints,
+Speculation Rules, Early Hints, Cloudflare edge: Polish/APO/Tiered Cache/Zaraz/Turnstile). **Growth:** CRO
+(CTA, form, phone/WhatsApp). **Off-site:** Search Console, Bing/DuckDuckGo, GA4, Google Business.
+**Validation:** PageSpeed, Pingdom, DebugBear, GTmetrix + **AI Visibility Score (0-100, fixed model `aivs/v1`)** +
+**Release Readiness Gate** (`/seo-audit gate` → hard checks + score thresholds → PASS/FAIL).
+On the entity side, a **Knowledge Conflict Detector**: brand identity is cross-compared across site + schema +
+social + Wikidata, and conflicts are resolved with a "⚠ ENTITY CONFLICT DETECTED" report.
 
-## Lisans
+## License
 [MIT](./LICENSE)
