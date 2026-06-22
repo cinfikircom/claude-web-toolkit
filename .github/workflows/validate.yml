@@ -46,17 +46,6 @@ jobs:
               && echo "OK  $f" || { echo "FAIL $f"; exit 1; }
           done
 
-      - name: Fixture scorer smoke (each fixture baseline/matrix loads + scores)
-        run: |
-          cd seo-os-validation-suite
-          echo '{"detected":[],"actionCorrect":[],"falsePositives":[]}' > /tmp/empty-output.json
-          for fx in ecommerce-broken-site multilingual-broken-site cloudflare-pages-broken-site; do
-            node seo-os-scorer.js /tmp/empty-output.json \
-              --baseline=fixtures/$fx/baseline.json \
-              --matrix=fixtures/$fx/decision-matrix.json > /dev/null \
-              && echo "OK  $fx" || { echo "FAIL $fx"; exit 1; }
-          done
-
       - name: Version sync (plugin.json == SKILL.md)
         run: |
           PV=$(node -p "require('./plugins/seo-geo-optimizer/.claude-plugin/plugin.json').version")
@@ -64,7 +53,7 @@ jobs:
           echo "plugin.json=$PV  SKILL.md=$SV"
           [ "$PV" = "$SV" ] || { echo "Version mismatch!"; exit 1; }
 
-      - name: Golden regression (scorer output vs committed baseline)
+      - name: Golden regression (main site + fixtures vs committed baselines)
         run: |
           cd seo-os-validation-suite
           node golden-tests/check-regression.js

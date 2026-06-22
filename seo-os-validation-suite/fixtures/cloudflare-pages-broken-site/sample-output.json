@@ -1,0 +1,28 @@
+{
+  "$schema": "seo-os-validation/agent-output-v1",
+  "_note": "DETERMINISTIC reference output for the cloudflare-pages-broken-site fixture golden regression. Represents a competent ANALYZE run that catches the matrix-critical issues, proposes correct actions, avoids the false-positive traps, and prioritizes correctly. Not a real LLM run — a fixed input that guards scorer determinism. Regenerate via the same recipe if the matrix changes.",
+  "site": "cloudflare-pages-broken-site",
+  "mode": "ANALYZE",
+  "detected": [
+    "seo.noindex-header",
+    "geo.ai-crawlers-allowed",
+    "seo.redirect-chain",
+    "perf.cache-control",
+    "geo.llms-txt",
+    "perf.render-blocking"
+  ],
+  "actionCorrect": [
+    "seo.noindex-header",
+    "geo.ai-crawlers-allowed",
+    "seo.redirect-chain",
+    "perf.cache-control",
+    "geo.llms-txt",
+    "perf.render-blocking"
+  ],
+  "missed": [],
+  "falsePositives": [],
+  "prioritization": {
+    "correct": true,
+    "summary": "Strategy/SEO/GEO first, high-risk performance staged last"
+  }
+}

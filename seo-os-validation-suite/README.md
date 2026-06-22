@@ -11,7 +11,7 @@ schema reasoning, and decision quality vs an expert baseline.
 | Path | Role |
 |------|------|
 | `golden-seo-test-site/` | Broken-by-design Next.js (App Router) site — 5 pages with injected SEO/GEO/Schema/CWV failures |
-| `fixtures/` | Additional broken-by-design variants: e-commerce, multilingual (EN/TR/DE), Cloudflare Pages — each with its own answer key, baseline and matrix |
+| `fixtures/` | Additional broken-by-design variants: e-commerce, multilingual (EN/TR/DE), Cloudflare Pages — each with its own answer key, baseline, matrix, deterministic `sample-output.json` and committed `expected-score.json` (in the CI regression) |
 | `seo-baseline.json` | Gold-standard correct state + 4×25 category checks |
 | `seo-os-scorer.js` | 0–100 scoring engine (SEO/GEO/Schema/Performance); `--baseline=` / `--matrix=` flags for fixtures |
 | `decision-matrix.json` | Expert decision expectations (v2) — the scorer derives correctness dynamically from the graded output |
@@ -72,13 +72,16 @@ Reports score/category/decision deltas + newly-fixed / newly-detected / regresse
 ## Golden regression (runs in CI on every PR)
 ```bash
 cd seo-os-validation-suite
-node golden-tests/check-regression.js                 # uses sample-seo-os-output.json
-node golden-tests/check-regression.js real-run.json   # or a real agent run
+node golden-tests/check-regression.js                 # main site + every fixture
+node golden-tests/check-regression.js real-run.json   # main config only, custom input
 ```
-Compares the scorer result against `golden-tests/expected-score.json`. Tolerance is **0** while
-the input is the static sample (scorer is deterministic); raise per-field `tolerance` only when
-the input becomes a real agent run. If you intentionally change the scorer/baseline/sample,
-**update `expected-score.json` in the same PR** and explain why.
+With no argument it scores **the main golden site and every fixture** (auto-discovered from
+`fixtures/<name>/expected-score.json`) and compares each against its committed baseline. Each
+fixture config carries suite-relative `scorerInput` / `baseline` / `matrix` plus a deterministic
+`sample-output.json` reference run. Tolerance is **0** (scorer is deterministic); raise per-field
+`tolerance` only when an input becomes a real agent run. If you intentionally change the
+scorer, a baseline/matrix, or a sample output, **update the relevant `expected-score.json` in the
+same PR** and explain why.
 > The end-to-end "run the SEO-OS agent in CI" harness (LLM call) is a separate roadmap item —
 > this check covers the deterministic half (scoring + decision aggregation).
 

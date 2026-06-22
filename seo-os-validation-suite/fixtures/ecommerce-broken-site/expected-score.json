@@ -1,0 +1,26 @@
+{
+  "$comment": "Golden regression baseline for the ecommerce-broken-site fixture. Scorer is deterministic for a fixed input, so tolerance 0. scorerInput/baseline/matrix are suite-relative. If you intentionally change the scorer, this fixture's baseline/matrix, or sample-output.json, update these values in the same PR and explain why.",
+  "scorerInput": "fixtures/ecommerce-broken-site/sample-output.json",
+  "baseline": "fixtures/ecommerce-broken-site/baseline.json",
+  "matrix": "fixtures/ecommerce-broken-site/decision-matrix.json",
+  "expected": {
+    "totalScore": 30,
+    "breakdown": {
+      "seo": 5,
+      "geo": 5,
+      "schema": 10,
+      "performance": 10
+    },
+    "falsePositiveCount": 0,
+    "decisionAccuracy": "100%",
+    "correctDecisionCount": 10,
+    "wrongDecisionCount": 0
+  },
+  "tolerance": {
+    "totalScore": 0,
+    "breakdown": 0,
+    "falsePositiveCount": 0,
+    "correctDecisionCount": 0,
+    "wrongDecisionCount": 0
+  }
+}
