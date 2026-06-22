@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- INJECTED: duplicate title (same as home), no meta description -->
+  <title>Acme Store</title>
+  <!-- INJECTED: NO canonical — yet this page is reachable under infinite faceted
+       variants (?sort=, &color=, &page=) => duplicate-content / crawl-budget trap -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <h1>Widgets</h1>
+
+  <!-- INJECTED: faceted navigation generates crawlable parameter permutations -->
+  <p>
+    Sort: <a href="category-widgets.html?sort=price">price</a> ·
+    <a href="category-widgets.html?sort=name">name</a> ·
+    <a href="category-widgets.html?sort=price&color=blue">blue first</a> ·
+    <a href="category-widgets.html?sort=price&color=blue&page=2">page 2</a>
+  </p>
+
+  <ul>
+    <li><a href="product-blue-widget.html">Blue Widget — $49.99</a></li>
+    <li><a href="product-blue-widget.html?ref=cat">Blue Widget (duplicate URL w/ ?ref=)</a></li>
+  </ul>
+
+  <!-- INJECTED: pagination with no rel canonical strategy, "page 2" links loop back here -->
+  <p><a href="category-widgets.html?page=2">Next page</a></p>
+
+  <!-- INJECTED: no ItemList/CollectionPage schema -->
+</body>
+</html>

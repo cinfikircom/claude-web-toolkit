@@ -1,0 +1,54 @@
+{
+  "$schema": "seo-os-validation/baseline-v1",
+  "site": "cloudflare-pages-broken-site",
+  "purpose": "Gold-standard CORRECT state for the Cloudflare Pages fixture (_headers/_redirects platform traps).",
+  "performanceTargets": { "LCP_s": 2.5, "INP_ms": 200, "CLS": 0.1, "TTFB_ms": 800 },
+
+  "categories": {
+    "seo": {
+      "weight": 25,
+      "checks": [
+        { "id": "seo.noindex-header", "desc": "_headers must NOT send X-Robots-Tag: noindex site-wide", "severity": "high" },
+        { "id": "seo.redirect-chain", "desc": "_redirects resolves in one hop, 301 for permanent moves (no 302)", "severity": "high" },
+        { "id": "seo.unique-titles", "desc": "Unique title + meta description per page", "severity": "high" },
+        { "id": "seo.canonical", "desc": "Absolute canonical per page", "severity": "medium" },
+        { "id": "seo.internal-links", "desc": "Internal links point to final URLs (not redirected legacy paths)", "severity": "medium" }
+      ]
+    },
+    "geo": {
+      "weight": 25,
+      "checks": [
+        { "id": "geo.ai-crawlers-allowed", "desc": "robots.txt allows desired AI crawlers (GPTBot/ClaudeBot/PerplexityBot) consistent with GEO goal", "severity": "high" },
+        { "id": "geo.llms-txt", "desc": "/llms.txt present", "severity": "high" },
+        { "id": "geo.ai-agents-json", "desc": "/ai-agents.json present", "severity": "medium" },
+        { "id": "geo.sitemap", "desc": "sitemap.xml exists + Sitemap: line in robots.txt", "severity": "medium" },
+        { "id": "geo.summaries", "desc": "AI-readable primary-answer summaries on docs pages", "severity": "medium" }
+      ]
+    },
+    "schema": {
+      "weight": 25,
+      "checks": [
+        { "id": "schema.organization", "desc": "Organization with stable @id", "severity": "high" },
+        { "id": "schema.techarticle", "desc": "TechArticle/Article schema on docs pages", "severity": "medium" },
+        { "id": "schema.breadcrumb", "desc": "BreadcrumbList for docs hierarchy", "severity": "medium" },
+        { "id": "schema.website", "desc": "WebSite schema linked to Organization @id", "severity": "medium" },
+        { "id": "schema.faq", "desc": "FAQPage where Q&A content exists", "severity": "low" }
+      ]
+    },
+    "performance": {
+      "weight": 25,
+      "checks": [
+        { "id": "perf.cache-control", "desc": "_headers sets long-TTL immutable Cache-Control for static assets", "severity": "high" },
+        { "id": "perf.render-blocking", "desc": "Third-party analytics deferred (not render-blocking in <head>)", "severity": "high" },
+        { "id": "perf.image-optimization", "desc": "Optimized images with dimensions (WebP/AVIF, Cloudflare Polish-aware)", "severity": "high" },
+        { "id": "perf.security-headers", "desc": "Security headers present (CSP, X-Content-Type-Options, Referrer-Policy)", "severity": "medium" },
+        { "id": "perf.early-hints", "desc": "Early Hints / preload for critical assets (Cloudflare-native)", "severity": "low" }
+      ]
+    }
+  },
+
+  "scoring": {
+    "perCheckPoints": 5,
+    "note": "Each category has 5 checks x 5 pts = 25. Full points when detected AND correct action; half when detected only; zero when missed."
+  }
+}

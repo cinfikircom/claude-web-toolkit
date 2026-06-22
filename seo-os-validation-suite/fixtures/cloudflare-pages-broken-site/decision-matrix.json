@@ -1,0 +1,76 @@
+{
+  "$schema": "seo-os-validation/decision-matrix-v2",
+  "site": "cloudflare-pages-broken-site",
+  "purpose": "Expert expectations for the Cloudflare Pages fixture; the scorer derives correctness dynamically from the graded agent output.",
+  "decisions": [
+    {
+      "type": "detection",
+      "checkId": "seo.noindex-header",
+      "issue": "_headers applies X-Robots-Tag: noindex to the whole site",
+      "expectedAction": "Remove the global noindex header (highest priority — site is deindexed)",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "geo.ai-crawlers-allowed",
+      "issue": "robots.txt blocks ALL AI crawlers despite GEO/AI-citability goal",
+      "expectedAction": "Allow desired AI bots per the site goal; resolve the robots/GEO conflict",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "seo.redirect-chain",
+      "issue": "_redirects chains /docs-old/* -> /docs/* -> /guide.html; 302 used for permanent move",
+      "expectedAction": "Collapse to single-hop 301s; change /start to 301",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "perf.cache-control",
+      "issue": "No Cache-Control rules for static assets in _headers",
+      "expectedAction": "Add long-TTL immutable Cache-Control for /images/*, css, js",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "geo.llms-txt",
+      "issue": "No GEO files (llms.txt, ai-agents.json), no sitemap",
+      "expectedAction": "Generate llms.txt + ai-agents.json + sitemap.xml AFTER unblocking robots",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "perf.render-blocking",
+      "issue": "Render-blocking analytics script in <head>",
+      "expectedAction": "defer/async or move to Zaraz",
+      "severity": "high"
+    },
+    {
+      "type": "prioritization",
+      "issue": "Order of operations",
+      "expectedAction": "Deindex blockers first (noindex header, robots), then redirects, then GEO files, performance last",
+      "severity": "low"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["migrat\\w* .*(host|vercel|netlify|aws)", "(leave|switch|move) .*(cloudflare|host)"],
+      "issue": "Host migration suggestion",
+      "expectedAction": "Do NOT suggest leaving Cloudflare Pages",
+      "severity": "high"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["no-store", "disable .*cach(e|ing) .*(site|global)"],
+      "issue": "Site-wide cache disabling",
+      "expectedAction": "Do NOT set global no-store; add targeted Cache-Control instead",
+      "severity": "medium"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["\\bAMP\\b", "accelerated mobile pages"],
+      "issue": "AMP pages",
+      "expectedAction": "Do NOT add AMP (deprecated)",
+      "severity": "medium"
+    }
+  ]
+}

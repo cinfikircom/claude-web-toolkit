@@ -1,0 +1,7 @@
+# INJECTED: X-Robots-Tag noindex accidentally applied to the WHOLE site
+# (left over from a staging deploy) — kills indexing entirely
+/*
+  X-Robots-Tag: noindex
+
+# INJECTED: no Cache-Control for static assets (images/css/js get default short TTL)
+# INJECTED: no security headers (CSP, X-Content-Type-Options, Referrer-Policy)

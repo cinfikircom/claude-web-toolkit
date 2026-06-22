@@ -1,0 +1,76 @@
+{
+  "$schema": "seo-os-validation/decision-matrix-v2",
+  "site": "multilingual-broken-site",
+  "purpose": "Expert expectations for the multilingual fixture; the scorer derives correctness dynamically from the graded agent output.",
+  "decisions": [
+    {
+      "type": "detection",
+      "checkId": "seo.hreflang",
+      "issue": "No hreflang alternates or x-default across en/tr/de",
+      "expectedAction": "Add reciprocal hreflang (en, tr, de, x-default) on every locale page or in sitemap",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "seo.html-lang",
+      "issue": "TR page lang=en; DE page has no lang attribute",
+      "expectedAction": "Set correct lang per locale",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "geo.content-parity",
+      "issue": "TR half-translated (mixed TR/EN); DE thin machine translation",
+      "expectedAction": "Complete translations; equal content depth per locale",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "seo.locale-graph",
+      "issue": "DE has no language switcher (orphan locale); TR has no way back",
+      "expectedAction": "Bidirectional locale links on all pages",
+      "severity": "medium"
+    },
+    {
+      "type": "detection",
+      "checkId": "schema.all-locales",
+      "issue": "Schema only on EN; TR/DE have none; no inLanguage anywhere",
+      "expectedAction": "Organization with stable @id + inLanguage on every locale",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "geo.llms-txt",
+      "issue": "No GEO files; no per-locale AI summaries",
+      "expectedAction": "Generate llms.txt covering locales + localized summaries",
+      "severity": "high"
+    },
+    {
+      "type": "prioritization",
+      "issue": "Order of operations",
+      "expectedAction": "hreflang/lang signals first (index integrity), then content parity, then schema/GEO, performance last",
+      "severity": "low"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["ip[- ]based .*(redirect|geo)", "auto[- ]?redirect .*(locale|language|country)"],
+      "issue": "Automatic IP-based locale redirect",
+      "expectedAction": "Do NOT auto-redirect by IP (traps crawlers in one locale); use suggestion banner",
+      "severity": "high"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["separate (domain|ccTLD)", "(\\.de|\\.com\\.tr) domain.*(move|migrat)", "migrat\\w* .*(domain|ccTLD)"],
+      "issue": "Move locales to separate domains/ccTLDs",
+      "expectedAction": "Do NOT propose domain migration; subdirectory structure is fine",
+      "severity": "medium"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["\\bAMP\\b", "accelerated mobile pages"],
+      "issue": "AMP pages",
+      "expectedAction": "Do NOT add AMP (deprecated)",
+      "severity": "medium"
+    }
+  ]
+}

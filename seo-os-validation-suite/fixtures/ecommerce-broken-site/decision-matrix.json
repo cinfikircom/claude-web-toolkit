@@ -1,0 +1,76 @@
+{
+  "$schema": "seo-os-validation/decision-matrix-v2",
+  "site": "ecommerce-broken-site",
+  "purpose": "Expert expectations for the e-commerce fixture; the scorer derives correctness dynamically from the graded agent output.",
+  "decisions": [
+    {
+      "type": "detection",
+      "checkId": "seo.canonical-facets",
+      "issue": "Faceted URLs (?sort/&color/&page/?ref=) crawlable with no canonical",
+      "expectedAction": "Add canonical to clean URL + define faceted param handling",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "schema.price-consistency",
+      "issue": "Product schema price (39.99) contradicts on-page price (49.99)",
+      "expectedAction": "Sync schema price with the rendered price (single source)",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "schema.product-complete",
+      "issue": "Product schema missing image/brand/availability/aggregateRating; dangling seller @id",
+      "expectedAction": "Complete Product+Offer; define Organization with stable @id",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "geo.llms-txt",
+      "issue": "No GEO files (llms.txt, ai-agents.json)",
+      "expectedAction": "Generate /llms.txt + /ai-agents.json",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "perf.cls-banner",
+      "issue": "JS-injected promo banner shifts layout after 1.8s",
+      "expectedAction": "Reserve banner space (fixed-height container) or render server-side",
+      "severity": "high"
+    },
+    {
+      "type": "detection",
+      "checkId": "perf.render-blocking",
+      "issue": "Render-blocking jQuery + display:block webfont in <head>",
+      "expectedAction": "defer/async scripts; font-display:swap or self-host + preload",
+      "severity": "high"
+    },
+    {
+      "type": "prioritization",
+      "issue": "Order of operations",
+      "expectedAction": "Index-safety first (canonical/facets), then schema consistency, performance staged last",
+      "severity": "low"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["robots\\.txt .*(disallow|block).*(param|facet|\\?)", "disallow: ?/\\*\\?"],
+      "issue": "Blanket robots.txt Disallow of all parameterized URLs",
+      "expectedAction": "Do NOT blanket-block params in robots.txt; use canonical + param handling",
+      "severity": "high"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["\\bAMP\\b", "accelerated mobile pages"],
+      "issue": "AMP pages",
+      "expectedAction": "Do NOT add AMP (deprecated)",
+      "severity": "medium"
+    },
+    {
+      "type": "false-positive-trap",
+      "match": ["migrat\\w* .*(shopify|headless|next\\.?js|astro)", "platform (change|migration|switch)"],
+      "issue": "Platform/framework migration suggestion",
+      "expectedAction": "Do NOT suggest platform change",
+      "severity": "high"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!-- INJECTED: site has EN (/), TR (/tr/), DE (/de/) versions but NO hreflang anywhere, no x-default -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- INJECTED: same title reused by all three locales -->
+  <title>Acme Consulting</title>
+  <!-- INJECTED: no meta description, no canonical, no OG locale tags -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=block">
+</head>
+<body>
+  <h1>Acme Consulting</h1>
+  <p>We help companies grow with data-driven strategy. Offices in London, Istanbul and Berlin.</p>
+
+  <!-- INJECTED: language switcher links exist but engines get no hreflang signal -->
+  <p>
+    <a href="tr/index.html">Türkçe</a> ·
+    <a href="de/index.html">Deutsch</a>
+  </p>
+
+  <!-- INJECTED: hero image no dims, no lazy -->
+  <img src="../images/office.jpg" alt="">
+
+  <!-- INJECTED: Organization schema missing inLanguage / no localized @id strategy; only on EN page -->
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "Organization", "name": "Acme Consulting" }
+  </script>
+</body>
+</html>
