@@ -45,3 +45,30 @@ Durum sembolleri (`phases[x].status` → sembol):
 Çıktı, `=== SEO-OS DASHBOARD ===` bloğu için sabit formatı korur; altına türetilmiş
 ilerleme çubuğu (% ve done/active/blocked sayıları) ekler. `--detail` ayrıca faz
 etiketlerini, notları ve son log girdilerini gösterir.
+
+## seo-os-sync.js
+
+`.seo-os/seo-os-state.json`'u (SSOT) **GitHub Issues** ve/veya **Notion** veritabanına
+senkronlayan opsiyonel köprü. Varsayılan **dry-run**'dır — ne gönderileceğini yazar, göndermez.
+
+```bash
+SYNC="${CLAUDE_PLUGIN_ROOT}/tools/seo-os-sync.js"
+
+# Önizleme (markdown'ı bas, hiçbir yere gönderme)
+node "$SYNC" --md
+
+# Dry-run: ne yapılacağını göster
+node "$SYNC" --github --notion
+
+# Gerçekten gönder
+node "$SYNC" --github --apply                 # gh CLI + gh auth login gerekir
+NOTION_TOKEN=... NOTION_DATABASE_ID=... \
+node "$SYNC" --notion --apply
+```
+
+- **GitHub:** "SEO-OS: <proje> durum takibi" başlıklı **tek** izleme issue'sunu `seo-os`
+  etiketiyle oluşturur/günceller; ilerleme %100 olunca kapatır. `gh` CLI gerekir.
+- **Notion:** Veritabanında proje adıyla sayfayı upsert eder. DB sözleşmesi
+  (property adı → tipi): `Name` → title · `Phase` → rich_text · `Mode` → rich_text ·
+  `Progress` → number · `UpdatedAt` → date.
+- State dosyası tracker ile aynı kuralla otomatik bulunur (CWD'den yukarı), açık yol da verilebilir.
