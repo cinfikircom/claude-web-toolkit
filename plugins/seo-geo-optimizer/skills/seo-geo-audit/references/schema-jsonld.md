@@ -19,6 +19,11 @@ Format: **JSON-LD** (`<script type="application/ld+json">`). Inline mikrodata ku
 | Haber/blog detay | `NewsArticle` / `Article` | `author`(Person), `publisher`(Organization), `BreadcrumbList` |
 | Liste/kategori | `ItemList` | her öğe → ilgili entity `@id` |
 | SSS | `FAQPage` | (AI Overviews alıntısı için en yüksek getiri) |
+| Etkinlik detay | `Event` | `Place`, `Offer`, `performer` |
+| Tarif | `Recipe` | `HowToStep`, `NutritionInformation`, `AggregateRating` |
+| İş ilanı | `JobPosting` | `Organization` (hiringOrganization), `Place` |
+| Kurs/eğitim | `Course` | `CourseInstance`, `Offer` |
+| Video içeren sayfa | `VideoObject` | `Clip`, `SeekToAction` |
 | Tüm sayfalar | `BreadcrumbList` | — |
 
 ## Temel kopya-yapıştır şablonlar (placeholder'ları doldur)
@@ -161,6 +166,131 @@ Format: **JSON-LD** (`<script type="application/ld+json">`). Inline mikrodata ku
 ```
 > `AggregateRating` tek başına değil **her zaman bir varlığa** (`Product`/`LocalBusiness`/`Service`)
 > gömülü verilir (yukarıdaki örneklerde olduğu gibi). Uydurma puan = manuel ceza riski.
+
+### Event (etkinlik detay)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "https://SITE/etkinlik/SLUG/#event",
+  "name": "ETKİNLİK ADI",
+  "description": "ETKİNLİK AÇIKLAMASI",
+  "startDate": "2026-07-15T19:00:00+03:00",
+  "endDate": "2026-07-15T22:00:00+03:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {
+    "@type": "Place",
+    "name": "MEKAN ADI",
+    "address": { "@type": "PostalAddress", "streetAddress": "ADRES", "addressLocality": "Ankara", "addressCountry": "TR" }
+  },
+  "image": "https://SITE/images/etkinlik.jpg",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://SITE/etkinlik/SLUG/bilet",
+    "price": "250",
+    "priceCurrency": "TRY",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2026-06-01"
+  },
+  "performer": { "@type": "PerformingGroup", "name": "SANATÇI/GRUP" },
+  "organizer": { "@id": "https://SITE/#organization" }
+}
+```
+> Online etkinlikte `eventAttendanceMode` → `OnlineEventAttendanceMode` + `location` yerine
+> `VirtualLocation` (`url`). İptal/erteleme durumunda `eventStatus` GÜNCELLENMELİ — eski tarihli
+> "Scheduled" etkinlik knowledge conflict yaratır.
+
+### Recipe (tarif)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "@id": "https://SITE/tarif/SLUG/#recipe",
+  "name": "TARİF ADI",
+  "image": ["https://SITE/images/tarif-1x1.jpg", "https://SITE/images/tarif-16x9.jpg"],
+  "author": { "@type": "Person", "name": "YAZAR ADI" },
+  "datePublished": "2026-06-09",
+  "description": "TARİF ÖZETİ",
+  "prepTime": "PT20M",
+  "cookTime": "PT45M",
+  "totalTime": "PT1H5M",
+  "recipeYield": "4 porsiyon",
+  "recipeCategory": "Ana yemek",
+  "recipeCuisine": "Türk",
+  "keywords": "ANAHTAR, KELİMELER",
+  "nutrition": { "@type": "NutritionInformation", "calories": "350 kalori" },
+  "recipeIngredient": ["2 su bardağı un", "1 yemek kaşığı zeytinyağı"],
+  "recipeInstructions": [
+    { "@type": "HowToStep", "name": "ADIM BAŞLIĞI", "text": "ADIM AÇIKLAMASI", "url": "https://SITE/tarif/SLUG/#adim-1" }
+  ],
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "127" }
+}
+```
+> `image` için 1:1, 4:3 ve 16:9 oranlarının üçü de önerilir (Google rich result). `aggregateRating`
+> yalnızca gerçek kullanıcı puanı varsa.
+
+### JobPosting (iş ilanı)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "JobPosting",
+  "title": "POZİSYON ADI",
+  "description": "<p>İLAN AÇIKLAMASI (HTML olabilir)</p>",
+  "datePosted": "2026-06-09",
+  "validThrough": "2026-08-09T23:59",
+  "employmentType": "FULL_TIME",
+  "hiringOrganization": { "@id": "https://SITE/#organization" },
+  "jobLocation": {
+    "@type": "Place",
+    "address": { "@type": "PostalAddress", "streetAddress": "ADRES", "addressLocality": "Ankara", "addressRegion": "Ankara", "postalCode": "06000", "addressCountry": "TR" }
+  },
+  "baseSalary": {
+    "@type": "MonetaryAmount",
+    "currency": "TRY",
+    "value": { "@type": "QuantitativeValue", "minValue": 60000, "maxValue": 90000, "unitText": "MONTH" }
+  },
+  "directApply": true
+}
+```
+> Uzaktan pozisyonda `jobLocationType: "TELECOMMUTE"` + `applicantLocationRequirements` ekle.
+> **Süresi dolan ilanın sayfası kaldırılmalı veya `validThrough` geçmişse schema silinmeli** —
+> Google süresi geçmiş ilan markup'ına manuel ceza uygular.
+
+### Course (kurs/eğitim)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "@id": "https://SITE/kurs/SLUG/#course",
+  "name": "KURS ADI",
+  "description": "KURS AÇIKLAMASI",
+  "provider": { "@id": "https://SITE/#organization" },
+  "offers": { "@type": "Offer", "price": "1500", "priceCurrency": "TRY", "category": "Paid" },
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "Online",
+    "courseWorkload": "PT10H",
+    "startDate": "2026-09-01"
+  }
+}
+```
+
+### VideoObject (video içeren sayfa)
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "VİDEO BAŞLIĞI",
+  "description": "VİDEO AÇIKLAMASI",
+  "thumbnailUrl": "https://SITE/images/video-thumb.jpg",
+  "uploadDate": "2026-06-09",
+  "duration": "PT4M30S",
+  "contentUrl": "https://SITE/videos/video.mp4",
+  "embedUrl": "https://www.youtube.com/embed/VIDEO_ID",
+  "publisher": { "@id": "https://SITE/#organization" }
+}
+```
 
 ## Doğrulama
 - Schema Markup Validator: https://validator.schema.org/
