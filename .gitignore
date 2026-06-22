@@ -2,5 +2,10 @@ node_modules/
 .DS_Store
 *.local.md
 
+# E2E harness gerçek-koşu çıktıları (LLM run'ları commit'lenmez)
+seo-os-validation-suite/harness/runs/
+# Lighthouse/PSI ölçüm raporları
+seo-os-validation-suite/cwv-reports/
+
 # Yanlış yapılandırılmış araçların literal "~" yoluna yazması ihtimaline karşı
 ~/
