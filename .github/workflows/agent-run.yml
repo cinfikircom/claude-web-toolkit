@@ -1,0 +1,50 @@
+name: agent-run (E2E, LLM)
+
+# Manuel tetiklenen, ücretli LLM çağrısı yapan uçtan uca değerlendirme.
+# Deterministik yarı (scorer + golden regression) her PR'da validate.yml'de koşar;
+# bu workflow gerçek `claude -p` koşusunu kapsar.
+on:
+  workflow_dispatch:
+    inputs:
+      min_score:
+        description: "Altında kalırsa job fail olan minimum totalScore (0 = sadece rapor)"
+        required: false
+        default: "60"
+      model:
+        description: "claude --model değeri (boş = varsayılan)"
+        required: false
+        default: ""
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run E2E harness (audit -> grade -> score)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd seo-os-validation-suite
+          MODEL_FLAG=""
+          [ -n "${{ inputs.model }}" ] && MODEL_FLAG="--model=${{ inputs.model }}"
+          node harness/run-agent-harness.js \
+            --min-score=${{ inputs.min_score }} \
+            --out=harness/runs/ci-run.json \
+            $MODEL_FLAG
+
+      - name: Upload graded output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-os-e2e-run
+          path: seo-os-validation-suite/harness/runs/ci-run.json
+          if-no-files-found: ignore
