@@ -1,0 +1,28 @@
+{
+  "$schema": "seo-os-validation/agent-output-v1",
+  "_note": "DETERMINISTIC reference output for the multilingual-broken-site fixture golden regression. Represents a competent ANALYZE run that catches the matrix-critical issues, proposes correct actions, avoids the false-positive traps, and prioritizes correctly. Not a real LLM run — a fixed input that guards scorer determinism. Regenerate via the same recipe if the matrix changes.",
+  "site": "multilingual-broken-site",
+  "mode": "ANALYZE",
+  "detected": [
+    "seo.hreflang",
+    "seo.html-lang",
+    "geo.content-parity",
+    "seo.locale-graph",
+    "schema.all-locales",
+    "geo.llms-txt"
+  ],
+  "actionCorrect": [
+    "seo.hreflang",
+    "seo.html-lang",
+    "geo.content-parity",
+    "seo.locale-graph",
+    "schema.all-locales",
+    "geo.llms-txt"
+  ],
+  "missed": [],
+  "falsePositives": [],
+  "prioritization": {
+    "correct": true,
+    "summary": "Strategy/SEO/GEO first, high-risk performance staged last"
+  }
+}

@@ -33,14 +33,15 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
   **yeni framework desenleri:** Remix, SolidStart
 - **CI workflow** — PR'da syntax + JSON + sürüm senkronu + golden regression
   (`.github/workflows/validate.yml`); LLM'li eşik-altı-skor kontrolü `agent-run.yml`'de (manuel tetik)
+- **Fixture golden regression** — 3 fixture artık committed `expected-score.json` + deterministik
+  `sample-output.json` ile CI golden regression'a dahil; `check-regression.js` çoklu-config
+  (ana site + `fixtures/*/expected-score.json` otomatik keşif), boş-output smoke step'i kaldırıldı
 
 ## 🔜 Planlanan (ileride)
 ### Plugin
 - [ ] İngilizce doküman çevirisi (şu an TR)
 
 ### Validation suite genişletme
-- [ ] Yeni fixture'lar için committed golden-tests baseline'ları (şu an yalnızca ana golden site
-      CI regression'a bağlı; fixture'lar harness/manuel koşu ile skorlanıyor)
 - [ ] Harness GRADE fazı için judge-tutarlılık testi (aynı audit'i N kez gradeleyip varyansı ölçme)
 
 > Yeni fikirler buraya eklenir; tamamlananlar ✅'ya taşınır.
