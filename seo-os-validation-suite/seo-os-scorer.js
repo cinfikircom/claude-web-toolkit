@@ -3,16 +3,18 @@
  * SEO-OS SCORING ENGINE (0-100)
  * ------------------------------------------------------------------
  * Evaluates an SEO-OS agent audit output against the gold baseline,
- * and aggregates decision correctness from the decision matrix.
+ * and derives decision correctness DYNAMICALLY from the graded output
+ * using the expert expectations in the decision matrix (v2).
  *
  * Usage:
- *   node seo-os-scorer.js [path/to/seo-os-output.json]
- *   (defaults to ./sample-seo-os-output.json)
+ *   node seo-os-scorer.js [path/to/seo-os-output.json] [--baseline=path] [--matrix=path]
+ *   (defaults: ./sample-seo-os-output.json, ./seo-baseline.json, ./decision-matrix.json)
  *
- * Inputs (same directory):
- *   - seo-baseline.json     (gold checks, 4 x 25)
- *   - decision-matrix.json  (expert vs SEO-OS decisions)
- *   - <output.json>         (agent run: detected / actionCorrect / missed / falsePositives)
+ * Decision derivation (matrix v2 — no static `correct` fields):
+ *   - detection:           correct if checkId ∈ output.detected
+ *   - prioritization:      correct if output.prioritization.correct === true
+ *   - false-positive-trap: correct if NO output.falsePositives entry matches
+ *                          any `match` regex (case-insensitive)
  *
  * No external dependencies. Pure Node.
  */
@@ -20,20 +22,29 @@ const fs = require("fs");
 const path = require("path");
 
 const DIR = __dirname;
-// suite files are resolved next to this script; the output arg may also be an
-// absolute path or relative to the caller's CWD
-const read = (f) => JSON.parse(fs.readFileSync(path.resolve(DIR, f), "utf8"));
-const readOutput = (f) => {
+// suite files are resolved next to this script; path args may also be absolute
+// or relative to the caller's CWD
+const readSuiteFile = (f) => {
   for (const candidate of [path.resolve(f), path.resolve(DIR, f)]) {
     if (fs.existsSync(candidate)) return JSON.parse(fs.readFileSync(candidate, "utf8"));
   }
-  throw new Error(`output file not found: ${f}`);
+  throw new Error(`file not found: ${f}`);
 };
 
-const baseline = read("seo-baseline.json");
-const matrix = read("decision-matrix.json");
-const outputPath = process.argv[2] || "sample-seo-os-output.json";
-const output = readOutput(outputPath);
+const args = process.argv.slice(2);
+const flag = (name, def) => {
+  const hit = args.find((a) => a.startsWith(`--${name}=`));
+  return hit ? hit.slice(name.length + 3) : def;
+};
+const positional = args.filter((a) => !a.startsWith("--"));
+
+const baselinePath = flag("baseline", "seo-baseline.json");
+const matrixPath = flag("matrix", "decision-matrix.json");
+const outputPath = positional[0] || "sample-seo-os-output.json";
+
+const baseline = readSuiteFile(baselinePath);
+const matrix = readSuiteFile(matrixPath);
+const output = readSuiteFile(outputPath);
 
 const detected = new Set(output.detected || []);
 const actionCorrect = new Set(output.actionCorrect || []);
@@ -65,16 +76,46 @@ for (const [cat, def] of Object.entries(baseline.categories)) {
 const falsePositives = output.falsePositives || [];
 for (const fp of falsePositives) warnings.push(`FALSE POSITIVE: ${fp}`);
 
-// Decision correctness from the matrix
+// Decision correctness: derived from the graded output per matrix v2 entry type
 const correctDecisions = [];
 const wrongDecisions = [];
 for (const e of matrix.decisions || []) {
-  (e.correct ? correctDecisions : wrongDecisions).push(
-    `[${e.severity}] ${e.issue}: expected "${e.expectedAction}" | seo-os "${e.seoOSAction}"`
+  let correct;
+  let seoOSAction;
+  const type = e.type || "detection";
+
+  if (type === "detection") {
+    if (actionCorrect.has(e.checkId)) {
+      correct = true;
+      seoOSAction = "detected; correct action proposed";
+    } else if (detected.has(e.checkId)) {
+      correct = true;
+      seoOSAction = "detected (action missing/incorrect)";
+    } else {
+      correct = false;
+      seoOSAction = "not reported (false negative)";
+    }
+  } else if (type === "prioritization") {
+    const prio = output.prioritization || {};
+    correct = prio.correct === true;
+    seoOSAction = prio.summary || (correct ? "correct order" : "not reported / incorrect order");
+  } else if (type === "false-positive-trap") {
+    const regexes = (e.match || []).map((p) => new RegExp(p, "i"));
+    const hit = falsePositives.find((fp) => regexes.some((re) => re.test(fp)));
+    correct = !hit;
+    seoOSAction = hit ? `TRAP TRIGGERED: ${hit}` : "trap avoided";
+  } else {
+    correct = false;
+    seoOSAction = `unknown decision type "${type}"`;
+  }
+
+  (correct ? correctDecisions : wrongDecisions).push(
+    `[${e.severity}] ${e.issue}: expected "${e.expectedAction}" | seo-os "${seoOSAction}"`
   );
 }
 
 const totalScore = Object.values(breakdown).reduce((a, b) => a + b, 0);
+const decisionTotal = (matrix.decisions || []).length;
 
 const result = {
   totalScore,
@@ -90,11 +131,12 @@ const result = {
   wrongDecisions,
   meta: {
     output: outputPath,
+    baseline: baselinePath,
+    matrix: matrixPath,
     falsePositiveCount: falsePositives.length,
-    decisionAccuracy:
-      matrix.decisions && matrix.decisions.length
-        ? Math.round((correctDecisions.length / matrix.decisions.length) * 100) + "%"
-        : "n/a",
+    decisionAccuracy: decisionTotal
+      ? Math.round((correctDecisions.length / decisionTotal) * 100) + "%"
+      : "n/a",
   },
 };
 

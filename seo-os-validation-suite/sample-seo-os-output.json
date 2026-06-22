@@ -1,6 +1,6 @@
 {
   "$schema": "seo-os-validation/agent-output-v1",
-  "_note": "SAMPLE SEO-OS audit output for the golden site. Replace with a REAL run to grade the agent. `detected` = issue ids the agent found; `actionCorrect` = ids where the proposed fix matches expert action; `falsePositives` = unnecessary optimizations the agent proposed.",
+  "_note": "SAMPLE SEO-OS audit output for the golden site. Replace with a REAL run to grade the agent. `detected` = issue ids the agent found; `actionCorrect` = ids where the proposed fix matches expert action; `falsePositives` = unnecessary optimizations the agent proposed; `prioritization` = whether the proposed order of operations was correct (strategy first, high-risk performance staged last).",
   "site": "golden-seo-test-site",
   "mode": "ANALYZE",
   "detected": [
@@ -44,5 +44,9 @@
   "falsePositives": [
     "Recommended switching framework from Next.js to Astro (out of scope / against rules)",
     "Proposed AMP pages (deprecated, unnecessary)"
-  ]
+  ],
+  "prioritization": {
+    "correct": true,
+    "summary": "Proposed GEO+SEO first, CWV last (correct)"
+  }
 }
