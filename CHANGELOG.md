@@ -4,6 +4,15 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.3.1] — 2026-07-03
+### Düzeltildi
+- **Panel görselleri yuvarlatıldı:** dönen enerji çekirdeği ve holografik platform halkalarındaki
+  kare JPEG kenarları daireye kırpıldı (`border-radius` + `aspect-ratio` + `object-fit`) ve
+  `radial-gradient` mask ile kenarlar hangar sahnesine yumuşak geçişli hale getirildi.
+### Doğrulandı
+- GitHub'dan taze klonla uçtan uca kurulum simülasyonu: manifest bütünlüğü, görsel varlıklar,
+  suite testleri, sıfır state'te oyun arayüzü + onboarding rehberi ve daemon yaşam döngüsü.
+
 ## [2.3.0] — 2026-07-03
 ### Eklendi
 - **HTML Fayda Paneli:** `tools/seo-os-dashboard.js` — state + ölçüm dosyalarını kendi kendine yeten

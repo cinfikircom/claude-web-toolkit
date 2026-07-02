@@ -1,6 +1,6 @@
 {
   "name": "seo-geo-optimizer",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Site-bağımsız SEO + GEO + Entity SEO + Core Web Vitals + AI Crawler denetim ve optimizasyon iş akışı. İnteraktif keşif (chat'ten soru-cevap) ile başlar, framework'ü tespit eder, başlık başlık onay alarak uygular.",
   "author": {
     "name": "cinfikircom"
