@@ -40,6 +40,12 @@ veya bir başlıktan başlamak için (12 başlık):
 `/seo-audit hedef · rakip · topical · geo · entity · seo · local · metadata · cwv · cro · setup · dogrula`
 ek: `score` (AI Visibility Score) · `gate` (Release Readiness: PASS/FAIL) · `derin` (4 ajana böl) · `rapor`
 
+**Komuta Merkezi paneli (oyun arayüzü):** Claude'a "paneli başlat" de (veya
+`node "$CLAUDE_PLUGIN_ROOT/tools/seo-os-dashboard.js" --serve --daemon --open` çalıştır) →
+**http://localhost:3928**'de (yalnızca localhost) oyun tarzı canlı panel açılır: görevler
+tamamlandıkça gelişen dört robot karakter, XP barı, görev günlüğü, başarım rozetleri — 14 görevin
+tümü bitince robotlar birleşip **Prime**'ı oluşturur. Yönetim: `--status` / `--stop`.
+
 Akış:
 1. **Faz 0 — İnteraktif Keşif:** Claude framework'ü (+Cloudflare) + mevcut SEO/off-site durumunu tespit eder,
    chat'ten iş hedefi/rakip/risk/off-site sorularını sorar, `.seo-os/seo-kesif-raporu.md` + `.seo-os/seo-gorev-listesi.md`
@@ -109,7 +115,7 @@ claude-web-toolkit/
     .claude-plugin/plugin.json
     commands/seo-audit.md
     tools/
-      seo-os-tracker.js  seo-os-sync.js  README.md
+      seo-os-tracker.js  seo-os-dashboard.js  seo-os-sync.js  README.md
     agents/
       growth-strategy-agent.md       seo-geo-agent.md
       entity-knowledge-graph-agent.md performance-cwv-agent.md

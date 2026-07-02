@@ -33,6 +33,7 @@
 "use strict";
 const { execFileSync } = require("child_process");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const { claude, extractJson, buildGradePrompt, baselineCheckIds } = require("./grade-lib");
 
@@ -74,7 +75,7 @@ if (!auditJson || !auditJson.findings) {
 const siteName = flag("site", auditJson.site || path.basename(SUITE_DIR));
 
 function scoreOutput(output) {
-  const tmp = path.join(SUITE_DIR, `.judge-tmp-${process.pid}.json`);
+  const tmp = path.join(os.tmpdir(), `seo-os-judge-tmp-${process.pid}.json`);
   fs.writeFileSync(tmp, JSON.stringify(output));
   try {
     return JSON.parse(
@@ -124,7 +125,12 @@ function fieldAgreement(field) {
 }
 const detectedAgree = fieldAgreement("detected");
 const actionAgree = fieldAgreement("actionCorrect");
-const meanAgreement = mean([...detectedAgree, ...actionAgree].map((c) => c.agreement));
+// Mean agreement is computed over the CONTESTED set only: ids marked in at
+// least one run. Unanimously-absent ids score 1.0 by construction and would
+// otherwise dominate the mean, inflating it toward 1.0 and making the
+// --min-agreement gate inert.
+const contested = [...detectedAgree, ...actionAgree].filter((c) => c.yes > 0);
+const meanAgreement = contested.length ? mean(contested.map((c) => c.agreement)) : 1;
 const flapping = [...detectedAgree.map((c) => ({ ...c, field: "detected" })),
                   ...actionAgree.map((c) => ({ ...c, field: "actionCorrect" }))]
   .filter((c) => c.agreement < 1)
@@ -143,6 +149,7 @@ const report = {
   model: model || "default",
   totalScore: { min: Math.min(...scores), max: Math.max(...scores), mean: Number(mean(scores).toFixed(2)), stddev: scoreStddev, range: Math.max(...scores) - Math.min(...scores), values: scores },
   meanCheckAgreement: Number(meanAgreement.toFixed(3)),
+  contestedChecks: contested.length,
   prioritizationCorrect: `${prioTrue}/${runs}`,
   falsePositiveCounts: fps,
   flapping: flapping.map((c) => `${c.field}:${c.id} (${c.yes}/${runs} → agree ${c.agreement.toFixed(2)})`),
@@ -156,7 +163,7 @@ if (mdPath) {
     ``,
     `- runs: **${runs}**, model: \`${report.model}\`, input: \`${report.auditInput}\``,
     `- totalScore: min ${report.totalScore.min} / mean ${report.totalScore.mean} / max ${report.totalScore.max} (stddev ${report.totalScore.stddev}, range ${report.totalScore.range})`,
-    `- mean per-check agreement: **${report.meanCheckAgreement}**`,
+    `- mean per-check agreement (contested set, ${report.contestedChecks} datapoints): **${report.meanCheckAgreement}**`,
     `- prioritization.correct: ${report.prioritizationCorrect} · falsePositive counts: ${fps.join(", ")}`,
     ``,
     `## Flapping checks (non-unanimous)`,

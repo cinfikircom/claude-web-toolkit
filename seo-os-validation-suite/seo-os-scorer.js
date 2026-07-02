@@ -46,8 +46,24 @@ const baseline = readSuiteFile(baselinePath);
 const matrix = readSuiteFile(matrixPath);
 const output = readSuiteFile(outputPath);
 
-const detected = new Set(output.detected || []);
-const actionCorrect = new Set(output.actionCorrect || []);
+// shape + cross-consistency guards: wrong-schema or mismatched fixture inputs
+// must fail loudly, not silently score as "everything missed"
+if (!Array.isArray(output.detected) || !Array.isArray(output.actionCorrect)) {
+  console.error(`! invalid output schema: detected[] and actionCorrect[] are required (${outputPath})`);
+  process.exit(2);
+}
+for (const [aName, a, bName, b] of [
+  ["output", output, "baseline", baseline],
+  ["matrix", matrix, "baseline", baseline],
+]) {
+  if (a.site && b.site && a.site !== b.site) {
+    console.error(`! site mismatch: ${aName} "${a.site}" != ${bName} "${b.site}" — wrong --baseline/--matrix for this output?`);
+    process.exit(2);
+  }
+}
+
+const detected = new Set(output.detected);
+const actionCorrect = new Set(output.actionCorrect);
 const PER = baseline.scoring.perCheckPoints; // 5
 
 const errors = [];
@@ -69,7 +85,10 @@ for (const [cat, def] of Object.entries(baseline.categories)) {
       );
     }
   }
-  breakdown[cat] = Math.round(pts);
+  // keep exact half-steps per category; round ONCE on the total so a
+  // detected-only check is worth exactly PER/2 (rounding per category
+  // over-credited halves upward)
+  breakdown[cat] = pts;
 }
 
 // False positives (unnecessary optimizations) penalize lightly + are surfaced
@@ -114,17 +133,14 @@ for (const e of matrix.decisions || []) {
   );
 }
 
-const totalScore = Object.values(breakdown).reduce((a, b) => a + b, 0);
+const totalScore = Math.round(Object.values(breakdown).reduce((a, b) => a + b, 0));
 const decisionTotal = (matrix.decisions || []).length;
 
 const result = {
   totalScore,
-  breakdown: {
-    seo: breakdown.seo,
-    geo: breakdown.geo,
-    schema: breakdown.schema,
-    performance: breakdown.performance,
-  },
+  // derived from baseline.categories — a 5th category shows up here too,
+  // not only inside the total
+  breakdown,
   errors,
   warnings,
   correctDecisions,

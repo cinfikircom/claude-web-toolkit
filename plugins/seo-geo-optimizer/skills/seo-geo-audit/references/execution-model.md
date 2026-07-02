@@ -51,6 +51,12 @@ Format sabittir — markdown başlık/emoji ile bozma; terminalde tutarlı okunu
 > `node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-tracker.js" --watch` (canlı izleme) · `--json` (makine-okunur özet).
 > Araç state dosyasını CWD'den yukarı doğru `.seo-os/seo-os-state.json` (ve eski kök konumu) arayarak bulur.
 
+> **HTML fayda paneli:** `tools/seo-os-dashboard.js` aynı state'i (+ varsa `.seo-os/metrics-history.jsonl`,
+> `geo-report.json`, `cwv-report.json`, `delta-report.json`) kendi kendine yeten bir `dashboard.html`'e çevirir:
+> önce→sonra AI Visibility, zaman içinde kazanım grafiği, AI motor alıntılanma skorları, CWV ve faz haritası.
+> Her faz `completed` olduğunda snapshot al:
+> `node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="D fazı tamamlandı"`.
+
 ## 4. Strict phase locking & atomic execution
 - **Aynı anda tek faz `in_progress`.** Yeni faza geçmeden öncekini `completed` veya `blocked` yap.
 - **Atomic task:** bir görevi tamamla → state yaz → sonraki. Yarım bırakma; çoklu fazı tek seferde değiştirme.
@@ -68,6 +74,7 @@ Format sabittir — markdown başlık/emoji ile bozma; terminalde tutarlı okunu
 2. Oku → dashboard render et → `currentPhase`/`currentTask`/`mode`'u bildir.
 3. Mod ANALYZE'da başla; kullanıcı yönüne göre PROPOSE→EXECUTE'a geç.
 4. Her EXECUTE sonrası: `phases[x].status`, `log[]`, `updatedAt` yaz; `.seo-os/seo-gorev-listesi.md`'yi senkronla.
+5. Faz `completed` olduysa metrik snapshot al (`seo-os-dashboard.js --snapshot`, bkz. §3 notu) — fayda geçmişi kesintisiz kalsın.
 
 > Derin modda her ajan da bu protokole uyar: boot'ta `.seo-os/seo-os-state.json` oku, kendi faz(lar)ını
 > ANALYZE→PROPOSE→EXECUTE ile işle, state'i yaz. Böylece ajanlar arası bağlam kaybı olmaz.

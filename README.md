@@ -40,6 +40,12 @@ or, to start from a specific area (12 areas):
 `/seo-audit hedef · rakip · topical · geo · entity · seo · local · metadata · cwv · cro · setup · dogrula`
 extras: `score` (AI Visibility Score) · `gate` (Release Readiness: PASS/FAIL) · `derin` (split into 4 agents) · `rapor`
 
+**Command Center panel (game UI):** ask Claude to "start the panel" (or run
+`node "$CLAUDE_PLUGIN_ROOT/tools/seo-os-dashboard.js" --serve --daemon --open`) →
+a live game-style dashboard opens at **http://localhost:3928** (localhost-only): four robot
+characters that level up as tasks complete, XP bar, quest log, achievements — and when all
+14 tasks are done they merge into **Prime**. Manage with `--status` / `--stop`.
+
 Flow:
 1. **Phase 0 — Interactive Discovery:** Claude detects the framework (+Cloudflare) and the current SEO/off-site
    state, asks business-goal/competitor/risk/off-site questions in chat, and produces `.seo-os/seo-kesif-raporu.md`
@@ -110,7 +116,7 @@ claude-web-toolkit/
     .claude-plugin/plugin.json
     commands/seo-audit.md
     tools/
-      seo-os-tracker.js  seo-os-sync.js  README.md
+      seo-os-tracker.js  seo-os-dashboard.js  seo-os-sync.js  README.md
     agents/
       growth-strategy-agent.md       seo-geo-agent.md
       entity-knowledge-graph-agent.md performance-cwv-agent.md

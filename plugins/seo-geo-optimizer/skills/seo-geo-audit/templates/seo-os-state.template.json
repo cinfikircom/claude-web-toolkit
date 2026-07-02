@@ -1,7 +1,7 @@
 {
   "$schema": "seo-os-state/v2",
   "project": "{SITE_ADI}",
-  "version": "2.0.0",
+  "stateSchemaVersion": "2.0.0",
   "updatedAt": "{ISO8601}",
   "mode": "ANALYZE",
   "currentPhase": "FAZ0A",

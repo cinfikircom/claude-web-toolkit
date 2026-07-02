@@ -116,7 +116,8 @@ function syncGithub() {
   // seo-os etiketi yoksa oluştur (varsa hata verir — yoksay)
   spawnSync("gh", ["label", "create", "seo-os", "--color", "1D76DB", "--description", "SEO-OS otomatik durum takibi"], { encoding: "utf8" });
 
-  const found = gh(["issue", "list", "--label", "seo-os", "--state", "all", "--search", `in:title "${title}"`, "--json", "number,title"]);
+  // arama sadece daraltma amaçlı — tırnak/özel karakterli proje adları search sözdizimini bozmasın
+  const found = gh(["issue", "list", "--label", "seo-os", "--state", "all", "--search", `in:title "${title.replace(/"/g, "")}"`, "--json", "number,title"]);
   const hit = (JSON.parse(found || "[]") || []).find((i) => i.title === title);
   if (hit) {
     gh(["issue", "edit", String(hit.number), "--body-file", "-"], md);
@@ -146,7 +147,15 @@ function notionReq(method, apiPath, body) {
         let data = "";
         res.on("data", (c) => (data += c));
         res.on("end", () => {
-          const json = JSON.parse(data || "{}");
+          let json;
+          try {
+            json = JSON.parse(data || "{}");
+          } catch {
+            // gateway/rate-limit sayfaları JSON olmayabilir — promise'i düşür, crash etme
+            return reject(
+              new Error(`Notion ${res.statusCode}: JSON olmayan yanıt (${data.slice(0, 200)})`)
+            );
+          }
           if (res.statusCode >= 400)
             return reject(new Error(`Notion ${res.statusCode}: ${json.message || data.slice(0, 300)}`));
           resolve(json);
@@ -154,6 +163,7 @@ function notionReq(method, apiPath, body) {
       }
     );
     req.on("error", reject);
+    req.setTimeout(30000, () => req.destroy(new Error("Notion isteği 30 sn'de yanıt vermedi (timeout)")));
     if (body) req.write(JSON.stringify(body));
     req.end();
   });

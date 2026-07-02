@@ -6,13 +6,16 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
 - **seo-geo-optimizer plugin** — 12 başlıklı Growth Optimization Framework
   (İş Hedefi · Rakip/İçerik Boşluğu · Topical Authority · GEO · Entity/Knowledge Graph ·
   Klasik SEO · Yerel SEO · Crawlability · Core Web Vitals · CRO · Off-site · Doğrulama)
-- **22 referans + 8 template + 4 uzman ajan** (derin mod, bellek handoff)
+- **26 referans + 8 template + 4 uzman ajan** (derin mod, bellek handoff)
 - **SEO-OS v2 runtime** — file-based state (`seo-os-state.json` SSOT), 3 mod (ANALYZE/PROPOSE/EXECUTE),
   deterministic dashboard, phase locking, safety layer, Faz 0-A/0-B bölme
 - **AI Visibility Score (0-100)**
 - **SEO-OS Validation Suite** — golden broken site + baseline + scorer + decision-matrix + geo-simulation
 - **Terminal CLI tracker** — `tools/seo-os-tracker.js`: `.seo-os/seo-os-state.json`'u okuyup deterministic
   dashboard'u render eder (`--detail` / `--watch` / `--json`, bağımlılıksız saf Node)
+- **HTML Fayda Paneli (v2.3.0)** — `tools/seo-os-dashboard.js`: önce→sonra AI Visibility, kazanım trendi
+  (SVG), AI motor alıntılanma kartları, CWV hedef karşılaştırması, faz haritası, delta raporu;
+  `--snapshot` ile faz başına ölçüm geçmişi, `--serve` ile canlı panel (sadece `localhost:3928`)
 - **Yayın hijyeni & taşınabilirlik (v2.0.1)** — `${CLAUDE_PLUGIN_ROOT}` yolları, `.seo-os/` artefakt
   klasörü, sürüm senkronu, CI workflow (`validate`), CONTRIBUTING + CHANGELOG, FAZ 0-B 4+4 soru bölmesi
 - **Denetim derinleştirme (v2.1.0)** — golden regression testi (CI), AI Visibility scoring model

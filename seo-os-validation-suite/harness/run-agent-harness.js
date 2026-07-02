@@ -76,6 +76,11 @@ if (auditJsonPath) {
   if (!fs.existsSync(sitePath)) throw new Error(`site fixture not found: ${sitePath}`);
   console.error(`[harness] AUDIT — blind LLM audit of ${sitePath} …`);
   auditJson = extractJson(claude(AUDIT_PROMPT, sitePath, { model }));
+  if (!auditJson || !Array.isArray(auditJson.findings)) {
+    console.error("[harness] AUDIT output has no findings[] — the LLM returned an unexpected shape. Raw keys: " +
+      Object.keys(auditJson || {}).join(", "));
+    process.exit(1);
+  }
   console.error(`[harness] AUDIT done — ${auditJson.findings.length} findings`);
 }
 

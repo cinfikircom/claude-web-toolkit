@@ -2,8 +2,8 @@
   "$comment": "Golden regression baseline. Scorer is deterministic for a fixed input, so tolerance 0 by default. If you intentionally change the scorer, the baseline (seo-baseline.json / decision-matrix.json) or the sample output, update these values in the same PR and explain why in the PR description.",
   "scorerInput": "sample-seo-os-output.json",
   "expected": {
-    "totalScore": 69,
-    "breakdown": { "seo": 18, "geo": 18, "schema": 15, "performance": 18 },
+    "totalScore": 68,
+    "breakdown": { "seo": 17.5, "geo": 17.5, "schema": 15, "performance": 17.5 },
     "falsePositiveCount": 2,
     "decisionAccuracy": "63%",
     "correctDecisionCount": 10,

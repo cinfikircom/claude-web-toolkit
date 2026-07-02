@@ -46,6 +46,72 @@ Durum sembolleri (`phases[x].status` → sembol):
 ilerleme çubuğu (% ve done/active/blocked sayıları) ekler. `--detail` ayrıca faz
 etiketlerini, notları ve son log girdilerini gösterir.
 
+## seo-os-dashboard.js
+
+`.seo-os/seo-os-state.json`'u (+ varsa ölçüm dosyalarını) **kendi kendine yeten bir
+`dashboard.html` fayda paneline** çevirir: önce→sonra AI Visibility, zaman içinde kazanım
+grafiği (SVG), AI motor alıntılanma skorları (ChatGPT/Perplexity/Gemini/AI Overviews),
+Core Web Vitals hedef karşılaştırması, faz haritası ve doğrulama delta raporu.
+Harici JS/CSS yok — dosya tek başına paylaşılabilir (müşteri raporu olarak bile).
+
+```bash
+DASH="${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js"
+
+# HTML üret (varsayılan çıktı: <state-dizini>/dashboard.html) ve tarayıcıda aç
+node "$DASH" --open
+
+# Her faz tamamlandığında ölçümü geçmişe işle (append-only JSONL), sonra HTML'i yenile
+node "$DASH" --snapshot --note="D fazı: llms.txt yayınlandı"
+
+# CANLI PANEL — proje standardı: SADECE localhost, port 3928
+# (127.0.0.1'e bağlanır, dışarıya açılmaz; her istekte state'i taze okur)
+node "$DASH" --serve --open        # http://localhost:3928 (ön planda, Ctrl+C ile kapanır)
+
+# KALICI PANEL — terminalden/oturumdan bağımsız arka plan süreci
+node "$DASH" --serve --daemon --open   # başlat (pid → .seo-os/dashboard.pid, log → .seo-os/dashboard.log)
+node "$DASH" --status                  # çalışıyor mu?
+node "$DASH" --stop                    # durdur
+
+# Makine-okunur veri modeli (CI / sync için)
+node "$DASH" --json
+```
+
+> **Port sözleşmesi:** panel yerelde her zaman `3928` portundan sunulur (`--port=` ile
+> geçici olarak değiştirilebilir, ancak varsayılanı değiştirme — dokümanlar ve
+> alışkanlıklar bu adrese bağlıdır: `http://localhost:3928`).
+
+Opsiyonel girdiler — state dosyasının yanında otomatik aranır, bayrakla da verilebilir:
+
+| Dosya | Bayrak | İçerik |
+|-------|--------|--------|
+| `metrics-history.jsonl` | `--history=` | `--snapshot`'ın yazdığı ölçüm geçmişi (trend grafiğinin kaynağı) |
+| `geo-report.json` | `--geo=` | `seo-os-validation/geo-simulation-v1` — motor skorları (Başlık D/L çıktısı) |
+| `cwv-report.json` | `--cwv=` | `{ "LCP_s": 2.1, "INP_ms": 160, "CLS": 0.04, "TTFB_ms": 920 }` |
+| `delta-report.json` | `--delta=` | `seo-os-validation/delta-report-v1` — doğrulama önce/sonra skoru |
+
+Eksik girdiler hata değildir; ilgili bölüm "veri yok" yönlendirmesiyle render edilir.
+Snapshot geçmişi biriktikçe motor ve CWV kartları ilk ölçüme göre `önce → sonra` deltası gösterir.
+
+**Tema:** panel varsayılan olarak **açık temada** açılır; sağ üstteki "🌙 Gece" düğmesi koyu moda
+geçirir. Tercih tarayıcının `localStorage`'ında saklanır (grafik dahil tüm bölümler iki temada da uyumludur).
+
+**Komuta Merkezi (oyun arayüzü):** panel bir oyun ekranı gibi davranır. Sci-fi hangar sahnesinde
+dört robot karakter holografik platformlar üzerinde durur — Strateji-Bot (FAZ 0A/0B + A/B),
+GEO-Bot (C–F), Teknik-Bot (G–I), Büyüme-Bot (J–L). Üstte **SEVİYE + XP barı** (tamamlanan görev
+sayısı), her robotun altında isim plakası ve **modül/HP barı** vardır. Her tamamlanan görev robotu
+alttan yukarı "inşa ederek" geliştirir; aktif görevi olan robot parlayarak titreşir. Faz haritası
+**Görev Günlüğü**dür (✔ tamamlandı / ⚔ aktif / ⛔ engelli / 🔒 kilitli; her görev "+1 SEVİYE").
+Altta **başarım rozetleri** açılır (Keşif Tamam, Stratejist, AI'da Görünür, Hız Şeytanı… 👑 PRIME).
+**14/14 olduğunda** robotlar birleşme animasyonuyla toplanır ve enerji çekirdeği halesi içinde
+**Prime** sahneye iner. Finali önceden görmek için: `--serve` çalışırken
+`http://localhost:3928/?prime=1` (tüm fazları tamamlanmış sayar, veriyi değiştirmez).
+
+Görsel varlıklar (hepsi base64 gömülür, çıktı tek dosya kalır; eksikse CSS/SVG yedeğe düşülür):
+- `tools/assets/robots/{strateji,geo,teknik,buyume,prime}.png` — karakterler (şeffaf PNG)
+- `tools/assets/game/{hangar,platform,orb}.jpg` — zemin/sahne, platform halkası, enerji çekirdeği
+  (siyah zeminli VFX görüntüleri `mix-blend-mode: screen` ile kaynaştırılır)
+Kendi görsellerinle değiştirebilirsin; adlar aynı kalsın yeter.
+
 ## seo-os-sync.js
 
 `.seo-os/seo-os-state.json`'u (SSOT) **GitHub Issues** ve/veya **Notion** veritabanına

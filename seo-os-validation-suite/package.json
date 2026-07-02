@@ -1,0 +1,17 @@
+{
+  "name": "seo-os-validation-suite",
+  "version": "2.3.0",
+  "private": true,
+  "description": "Deterministic benchmark + LLM harness for the SEO-OS agent (golden site, fixtures, scorer, delta, CWV)",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "score": "node seo-os-scorer.js",
+    "golden": "node golden-tests/check-regression.js",
+    "integrity": "node golden-tests/check-integrity.js",
+    "delta-check": "node golden-tests/check-delta.js",
+    "cwv": "node lighthouse-runner.js",
+    "harness": "node harness/run-agent-harness.js",
+    "judge": "node harness/judge-consistency.js",
+    "test": "npm run integrity && npm run delta-check && npm run golden"
+  }
+}

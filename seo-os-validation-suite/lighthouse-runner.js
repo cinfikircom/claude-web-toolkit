@@ -42,7 +42,7 @@ const outPath = path.resolve(
   SUITE_DIR,
   flag("out", path.join("cwv-reports", `cwv-${Date.now()}.json`))
 );
-const port = Number(flag("port", "4300"));
+const port = Number(flag("port", "4310")); // matches the README/header examples
 let url = flag("url", "");
 
 // ---------------------------------------------------------------- helpers
@@ -133,8 +133,9 @@ async function runLocal() {
   if (!url) throw new Error("provide --url=… or --start");
 
   console.error(`[cwv] lighthouse -> ${url} …`);
+  // pinned major so CWV numbers don't drift with whatever npx resolves that day
   const lhArgs = [
-    "--yes", "lighthouse", url,
+    "--yes", "lighthouse@12", url,
     "--output=json", "--quiet",
     "--only-categories=performance,seo",
     '--chrome-flags=--headless=new --no-sandbox',

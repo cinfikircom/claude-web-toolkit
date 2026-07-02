@@ -293,7 +293,10 @@ printOnce();
 if (opt.watch && !opt.json) {
   console.log(C.dim(`\nwatching ${path.basename(STATE_PATH)} … (Ctrl+C to exit)`));
   let timer = null;
-  fs.watch(STATE_PATH, () => {
+  // watch the DIRECTORY, not the file: atomic write-then-rename (editors,
+  // agents) invalidates a per-file watcher and --watch would silently freeze
+  fs.watch(path.dirname(STATE_PATH), (evt, name) => {
+    if (name && name !== path.basename(STATE_PATH)) return;
     clearTimeout(timer);
     timer = setTimeout(printOnce, 80); // debounce editor double-writes
   });

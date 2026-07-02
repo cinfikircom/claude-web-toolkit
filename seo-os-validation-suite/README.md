@@ -20,6 +20,8 @@ schema reasoning, and decision quality vs an expert baseline.
 | `INJECTED-ISSUES.md` | Answer key: every intentional failure, per page |
 | `golden-tests/expected-score.json` | Committed scoring baseline for CI regression |
 | `golden-tests/check-regression.js` | Runs the scorer, compares vs baseline with per-field tolerance; exit 1 on regression |
+| `golden-tests/check-integrity.js` | Cross-checks baseline/matrix/sample-output per config: checkId membership, `site` alignment, actionCorrect⊆detected |
+| `golden-tests/check-delta.js` | Deterministic behavior test for `delta-report.js` (synthetic before → committed after; asserts moves + verdict) |
 | `harness/run-agent-harness.js` | E2E real-LLM run: blind AUDIT (`claude -p`) → LLM-judge GRADE → deterministic SCORE |
 | `lighthouse-runner.js` | REAL CWV measurement: local `npx lighthouse` or PSI API; compares vs `performanceTargets` |
 | `delta-report.js` | Before/after scoring delta (total/category/decision moves) + optional markdown report |

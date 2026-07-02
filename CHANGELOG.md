@@ -4,6 +4,59 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.3.0] — 2026-07-03
+### Eklendi
+- **HTML Fayda Paneli:** `tools/seo-os-dashboard.js` — state + ölçüm dosyalarını kendi kendine yeten
+  `dashboard.html`'e çevirir: önce→sonra AI Visibility, zaman içinde kazanım grafiği (SVG), AI motor
+  alıntılanma kartları (ChatGPT/Perplexity/Gemini/AI Overviews), CWV hedef karşılaştırması, faz
+  haritası, doğrulama delta raporu. `--snapshot` faz başına ölçümü `metrics-history.jsonl`'e işler;
+  `--serve` canlı panel sunar — **yalnızca** `127.0.0.1`, proje standardı port `3928`.
+  Varsayılan tema **açık**; sağ üst düğmeyle gece modu (tercih `localStorage`'da).
+  **Robot Atölyesi:** dört robot karakter faz gruplarını temsil eder; her tamamlanan fazla robot
+  gelişir, 14/14'te robotlar birleşip **Prime**'ı oluşturur (`/?prime=1` ile final önizlenebilir).
+  Karakterler `tools/assets/robots/*.png`'den base64 gömülür (AI ile üretilmiş özgün 3D render'lar;
+  tamamlanma oranına göre alttan yukarı inşa animasyonu); görsel yoksa yerleşik SVG'ye düşülür.
+  **Daemon modu:** `--serve --daemon` paneli terminalden bağımsız arka plan sürecinde başlatır
+  (`--status` / `--stop` ile yönetilir; pid `.seo-os/dashboard.pid`, log `.seo-os/dashboard.log`;
+  çift başlatma korumalı).
+  **Oyun arayüzü (Komuta Merkezi):** sci-fi hangar sahnesi (AI üretimi zemin + holografik platform +
+  enerji çekirdeği, `tools/assets/game/`), SEVİYE/XP barı, robot başına modül (HP) barı ve isim
+  plakası, Görev Günlüğü (✔/⚔/⛔/🔒, "+1 SEVİYE" ödülleri), başarım rozetleri ve Prime finali
+  sahne ortasında enerji halesiyle. Görsel eksikse CSS/SVG yedeğe düşülür.
+  Tema **tüm sayfaya** yayıldı: taktik grid zemin, HUD köşe braketli paneller, mono başlıklar,
+  oyun dilinde bölüm adları (Telemetri, Görev Günlüğü, AI Motor Taraması, Performans Çekirdeği,
+  Seyir Defteri) — açıklamalar sade ve okunur kaldı. **Görev Rehberi** bölümü kişiyi yönlendirir:
+  boş kurulumda 1-2-3 başlangıç adımları, sonrasında aktif/sıradaki görev + engel uyarıları ve
+  kopyalanabilir komutlar.
+- **Skill entegrasyonu:** her faz `completed` olduğunda snapshot alma kuralı (SKILL.md + execution-model
+  boot sırası) — fayda geçmişi kesintisiz birikir.
+- **Deterministik suite testleri:** `golden-tests/check-integrity.js` (matrix⊆baseline, site eşleşmesi,
+  actionCorrect⊆detected) + `golden-tests/check-delta.js` (delta-report davranış testi) — CI'da `npm test`.
+- **Suite `package.json` + kök `.nvmrc`:** `npm run score/golden/integrity/delta-check/cwv/harness/judge`,
+  `engines.node >= 20`.
+- SKILL.md açıklamasına Türkçe tetikleyiciler ("SEO denetimi", "AI aramada görünürlük"…);
+  referans indeksine `sources.md`.
+
+### Düzeltildi
+- **seo-os-sync.js:** Notion yanıtındaki korumasız `JSON.parse` (JSON olmayan 502/rate-limit yanıtı
+  uncaught exception üretiyordu) → try/catch + reject; isteğe 30 sn timeout; `gh` arama dizesinde
+  tırnak temizliği.
+- **seo-os-scorer.js:** kategori başına yuvarlama "yalnızca tespit" yarım puanlarını (2.5) yukarı
+  şişiriyordu → tek yuvarlama toplamda; breakdown artık ham yarım-adım değerler ve baseline'dan
+  dinamik türetiliyor (5. kategori görünmez kalmaz). Golden beklenen skor 69→68 güncellendi.
+  Ek: output şema (detected[]/actionCorrect[]) ve output↔baseline↔matrix `site` uyum guard'ları.
+- **judge-consistency.js:** `meanAgreement` hiç işaretlenmeyen check'lerle ~1.0'a şişiyordu →
+  yalnızca çekişmeli (≥1 koşuda işaretli) set üzerinden hesap; `contestedChecks` raporda;
+  temp dosya `os.tmpdir()`'e taşındı.
+- **run-agent-harness.js:** AUDIT çıktısında `findings[]` yoksa çıplak TypeError yerine açıklayıcı hata.
+- **seo-os-tracker.js `--watch`:** atomic write-then-rename sonrası izleme sessizce donuyordu →
+  dosya yerine dizin izleniyor.
+- **lighthouse-runner.js:** `npx lighthouse` → `lighthouse@12` pin (tekrarlanabilir ölçüm);
+  `--port` varsayılanı 4300→4310 (dokümanla uyum).
+- CI: JSON parse elle liste yerine tüm izlenen `*.json`; sürüm senkronu marketplace.json + CHANGELOG'u
+  da kapsıyor; dashboard smoke testi. `marketplace.json`'a `version` alanı eklendi.
+- ROADMAP referans sayısı 22→26; state template'inde belirsiz `version` alanı `stateSchemaVersion` oldu.
+
 ## [2.2.0] — 2026-06-12
 ### Eklendi
 - **Decision matrix v2 (dinamik karar):** `decision-matrix.json` artık yalnızca uzman beklentisi

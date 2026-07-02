@@ -1,7 +1,7 @@
 ---
 name: seo-geo-audit
-description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
-version: 2.2.0
+description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Turkish triggers — "SEO denetimi", "SEO iyileştir", "Google'da üst sıralara çık", "AI aramada görünürlük/alıntılanma", "site hızını artır", "daha çok müşteri/lead". Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
+version: 2.3.0
 ---
 
 # AI Search & Growth Optimization Framework
@@ -114,6 +114,15 @@ Onaysız EXECUTE yok.
 ### Her raporda — deterministic dashboard (zorunlu, sabit format)
 `=== SEO-OS DASHBOARD ===` bloğu (faz ızgarası + MODE + CURRENT TASK + BLOCKED + AI VISIBILITY) →
 birebir `references/execution-model.md`'deki formatta render et.
+
+### Fayda ölçümü — metrik snapshot (her faz tamamlandığında)
+Bir faz `completed` olduğunda ölçümü geçmişe işle ve HTML fayda panelini yenile:
+`node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="<faz>: <özet>"`.
+Panel (`.seo-os/dashboard.html`) önce→sonra AI Visibility, AI motor alıntılanma skorlarını,
+CWV'yi ve faz haritasını tek sayfada gösterir — kazanımın kanıtı budur (detay → `tools/README.md`).
+Canlı izleme: `node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --serve --daemon` →
+panel **sadece** `http://localhost:3928`'de sunulur (loopback; dışarıya açılmaz) ve terminalden
+bağımsız yaşar (`--status` / `--stop` ile yönet).
 
 ### Cycle sonu raporu
 **Completed · Pending · Blocked · Next Step · Estimated Impact** (format → `templates/son-rapor.template.md`).
@@ -253,6 +262,7 @@ Riskli Değişiklikler · Sonraki Önerilen Adım.
 - `references/audit-tools.md` — PageSpeed / Pingdom / DebugBear / GTmetrix ve hedef skor döngüsü (Başlık L)
 - `references/ai-visibility-score.md` — AI Visibility Score (0-100): sabit scoring model `aivs/v1` (5 boyut × 5 kontrol × 4 puan)
 - `references/release-gate.md` — Release Readiness Gate: hard check'ler + skor eşikleri → PASS/FAIL (`/seo-audit gate`)
+- `references/sources.md` — yüksek öncelikli dış kaynak listesi ve öncelik sırası (ajan içi atıflar buradan)
 - `templates/seo-os-state.template.json` — makine-okunur state (tek doğruluk kaynağı)
 - `templates/kesif-raporu.template.md` — Faz 0 keşif raporu şablonu
 - `templates/gorev-listesi.template.md` — rehberli görev listesi (state'in insan görünümü)
