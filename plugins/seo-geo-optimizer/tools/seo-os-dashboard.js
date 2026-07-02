@@ -887,6 +887,9 @@ function renderHtml(model) {
   .bay { position: relative; width: 150px; text-align: center; }
   .bay .robot-fig { position: relative; z-index: 2; height: 150px; width: 100%; }
   .bay .pad { display: block; width: 132px; margin: -36px auto 0; mix-blend-mode: screen;
+              border-radius: 50%; aspect-ratio: 1 / 1; object-fit: cover;
+              -webkit-mask-image: radial-gradient(circle, #000 58%, transparent 72%);
+              mask-image: radial-gradient(circle, #000 58%, transparent 72%);
               animation: padPulse 3s ease-in-out infinite; }
   @keyframes padPulse { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
   .pad-css { width: 110px; height: 26px; margin: -12px auto 0; border-radius: 50%;
@@ -904,6 +907,9 @@ function renderHtml(model) {
   @keyframes mergeOut { to { transform: scale(.05) translateY(70px); opacity: 0; } }
   .prime-stage { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; }
   .prime-stage .orb { position: absolute; width: 240px; mix-blend-mode: screen; opacity: 0;
+                      border-radius: 50%; aspect-ratio: 1 / 1; object-fit: cover;
+                      -webkit-mask-image: radial-gradient(circle, #000 55%, transparent 70%);
+                      mask-image: radial-gradient(circle, #000 55%, transparent 70%);
                       animation: orbIn .8s ease 1.15s forwards, orbSpin 14s linear 2s infinite; }
   @keyframes orbIn { to { opacity: .95; } }
   @keyframes orbSpin { to { transform: rotate(360deg); } }
