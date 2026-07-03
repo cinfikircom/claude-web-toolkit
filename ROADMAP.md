@@ -45,10 +45,35 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
   (harness + judge-consistency paylaşır)
 - **Çift dil README** — `README.md` İngilizce ana dile çevrildi, Türkçe içerik `README.tr.md`'de
   korundu; karşılıklı dil linkleri
+- **Komuta Merkezi dönemi (v2.3.x–v2.7.0)** —
+  **oyun arayüzlü panel:** hangar sahnesi, AI-üretimi robot karakterler (görevle gelişir, 14/14'te
+  Prime birleşmesi), XP/rütbeler, görev günlüğü, başarımlar, zafer kartı PNG; `--serve --daemon`
+  yaşam döngüsü (sadece `localhost:3928`), açık/koyu tema ·
+  **gerçek veri köprüleri:** PSI/CrUX CWV (`--measure`), GSC Arama Telemetrisi (`seo-os-gsc.js`),
+  AI alıntılanma sondası (`seo-os-probe.js`) ·
+  **filo kokpiti** (`--fleet`, ajans modu) ·
+  **/seo-wizard** içerik derinliği sihirbazı + `seo-os-doctor` (state onarım) +
+  `seo-os-sitecheck` (yetim/anchor/alt taraması) + 4 gelişmiş şema şablonu ·
+  **dış katman:** `seo-os-indexnow.js` + `references/offsite-authority.md` (Wikidata/sameAs) ·
+  **altyapı:** ortak `seo-os-state-lib`, Windows CI matrisi, haftalık E2E bekçisi,
+  GitHub vitrini (rozetler, EN release notları, `llms.txt`)
 
 ## 🔜 Planlanan (ileride)
-### Plugin
-- [ ] İç dokümanların İngilizce'si (CHANGELOG/ROADMAP, SKILL.md gövdesi, 22+ referans hâlâ TR;
+### Plugin / Panel
+- [ ] Robot replikleri (hover'da konuşma balonları — rehber mesajlarını karakterler versin)
+- [ ] `--export=pdf` müşteri raporu (headless Chrome `--print-to-pdf` ile tek bayrak)
+- [ ] Sync'e Slack/Discord webhook bildirimi (görev tamamlandı / skor değişti)
+- [ ] Opsiyonel ses efektleri (WebAudio synth, kapatılabilir)
+- [ ] İç dokümanların İngilizce'si (CHANGELOG/ROADMAP, SKILL.md gövdesi, referanslar hâlâ TR;
       üst-düzey README artık çift dil)
+### İzleme / bakım
+- [ ] Probe sağlayıcı şemaları: OpenAI Responses / Gemini grounding yanıt biçimleri değişirse
+      alan-adı taraması dayanıklı ama model adları güncellenmeli (env ile geçersiz kılınabilir)
+- [ ] Fixture çeşitlendirme: JS-ağırlıklı SPA ve WordPress-çıktısı golden fixture'ları
+
+### Repo sahibi aksiyonları (kod değil)
+- [ ] `ANTHROPIC_API_KEY` secret'ını repoya ekle → haftalık E2E bekçisi gerçekten koşsun
+- [ ] GitHub Settings → Social preview → `docs/images/panel-komuta-merkezi.png` yükle
+- [ ] Gerçek bir projede uçtan uca dene (kurulum → /seo-audit → /seo-wizard → panel) ve geri bildir
 
 > Yeni fikirler buraya eklenir; tamamlananlar ✅'ya taşınır.
