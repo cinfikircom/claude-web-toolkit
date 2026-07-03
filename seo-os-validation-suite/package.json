@@ -1,6 +1,6 @@
 {
   "name": "seo-os-validation-suite",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "private": true,
   "description": "Deterministic benchmark + LLM harness for the SEO-OS agent (golden site, fixtures, scorer, delta, CWV)",
   "engines": { "node": ">=20" },

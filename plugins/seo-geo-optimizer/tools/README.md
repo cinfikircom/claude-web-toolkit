@@ -72,9 +72,22 @@ node "$DASH" --serve --daemon --open   # başlat (pid → .seo-os/dashboard.pid,
 node "$DASH" --status                  # çalışıyor mu?
 node "$DASH" --stop                    # durdur
 
+# GERÇEK CWV ölçümü — PageSpeed Insights API'sinden çek, rapora yaz, geçmişe işle
+# (PSI_API_KEY env opsiyonel; anonim kota küçüktür, düzenli kullanım için ücretsiz key al:
+#  https://developers.google.com/speed/docs/insights/v5/get-started)
+node "$DASH" --measure --url=https://siten.com --snapshot --note="haftalık ölçüm"
+
 # Makine-okunur veri modeli (CI / sync için)
 node "$DASH" --json
 ```
+
+**Zamanlanmış ölçüm (önerilir):** haftada bir `--measure --url=… --snapshot` koşarsa
+telemetri grafiği kendiliğinden birikir ve panel gerçek veriyle "önce→sonra" kanıtı üretir.
+- cron: `0 9 * * 1 node <yol>/seo-os-dashboard.js --measure --url=https://siten.com --snapshot --note="haftalık otomatik ölçüm"`
+- Claude Code: `/schedule` ile haftalık bir rutin oluşturup aynı komutu verdirebilirsin.
+- Son ölçüm 14 günü geçerse panel Görev Rehberi'nde **"📡 Telemetri bayat"** uyarısı gösterir.
+- INP: CrUX alan verisi varsa **gerçek kullanıcı INP'si** kullanılır (`source: psi-lab+crux`);
+  yoksa lab TBT vekil olarak yazılır ve raporda not düşülür.
 
 > **Port sözleşmesi:** panel yerelde her zaman `3928` portundan sunulur (`--port=` ile
 > geçici olarak değiştirilebilir, ancak varsayılanı değiştirme — dokümanlar ve
@@ -111,6 +124,36 @@ Görsel varlıklar (hepsi base64 gömülür, çıktı tek dosya kalır; eksikse 
 - `tools/assets/game/{hangar,platform,orb}.jpg` — zemin/sahne, platform halkası, enerji çekirdeği
   (siyah zeminli VFX görüntüleri `mix-blend-mode: screen` ile kaynaştırılır)
 Kendi görsellerinle değiştirebilirsin; adlar aynı kalsın yeter.
+
+## seo-os-probe.js
+
+**Gerçek AI alıntılanma ölçümü.** Hedef anahtar kelimelerle Perplexity / ChatGPT Search / Gemini'ye
+gerçek sorgular atar ve sitenin yanıt kaynakları arasında geçip geçmediğini sayar. Sonucu panelin
+okuduğu `.seo-os/geo-report.json`a yazar — "AI Motor Taraması" kartları böylece simülasyon değil
+**gözlem** olur.
+
+```bash
+PROBE="${CLAUDE_PLUGIN_ROOT}/tools/seo-os-probe.js"
+
+# Anahtar kelimeler bayrakla…
+PERPLEXITY_API_KEY=... node "$PROBE" --site=siten.com --keywords="istanbul web tasarım, seo ajansı"
+
+# …ya da .seo-os/keywords.txt'den (satır başına bir sorgu, # yorum)
+node "$PROBE" --site=siten.com
+
+# Ne sorulacağını görmek için (API çağrısı yapmaz)
+node "$PROBE" --site=siten.com --dry-run
+
+# Ölçümden sonra geçmişe işle → panel trendi güncellenir
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="alıntılanma ölçümü"
+```
+
+- Sağlayıcılar env anahtarıyla etkinleşir; olmayan atlanır: `PERPLEXITY_API_KEY` (önerilir,
+  alıntı listesi döndürür) · `OPENAI_API_KEY` (web_search) · `GEMINI_API_KEY` (google_search grounding).
+  Modeller `PERPLEXITY_MODEL` / `OPENAI_MODEL` / `GEMINI_MODEL` ile değiştirilebilir.
+- Skor: motor başına **alıntılanan sorgu yüzdesi**; `wouldCite` = en az bir sorguda kaynak gösterildi.
+- Tespit alan-adı bazlıdır (alt alanlar dahil; `notsiten.com` gibi benzer adlar eşleşmez).
+- Her sorgu sağlayıcıda ücretlendirilir — kelime listesini odaklı tut (5-10 sorgu iyi bir başlangıç).
 
 ## seo-os-sync.js
 

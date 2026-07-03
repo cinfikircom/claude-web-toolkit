@@ -1,7 +1,7 @@
 ---
 name: seo-geo-audit
 description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Turkish triggers — "SEO denetimi", "SEO iyileştir", "Google'da üst sıralara çık", "AI aramada görünürlük/alıntılanma", "site hızını artır", "daha çok müşteri/lead". Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
-version: 2.3.1
+version: 2.4.0
 ---
 
 # AI Search & Growth Optimization Framework
@@ -118,6 +118,9 @@ birebir `references/execution-model.md`'deki formatta render et.
 ### Fayda ölçümü — metrik snapshot (her faz tamamlandığında)
 Bir faz `completed` olduğunda ölçümü geçmişe işle ve HTML fayda panelini yenile:
 `node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="<faz>: <özet>"`.
+Gerçek veriyle besle (varsa): CWV için `--measure --url=<canlı-url>` (PSI API; PSI_API_KEY önerilir);
+AI alıntılanma için `tools/seo-os-probe.js --site=<domain>` (PERPLEXITY/OPENAI/GEMINI API anahtarıyla;
+D ve L görevlerinde çalıştır, anahtar kelimeleri FAZ 0-B cevaplarından `.seo-os/keywords.txt`e yaz).
 Panel (`.seo-os/dashboard.html`) önce→sonra AI Visibility, AI motor alıntılanma skorlarını,
 CWV'yi ve faz haritasını tek sayfada gösterir — kazanımın kanıtı budur (detay → `tools/README.md`).
 Canlı izleme: `node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --serve --daemon` →

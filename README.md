@@ -55,6 +55,9 @@ extras: `score` (AI Visibility Score) · `gate` (Release Readiness: PASS/FAIL) �
 a live game-style dashboard opens at **http://localhost:3928** (localhost-only): four robot
 characters that level up as tasks complete, XP bar, quest log, achievements — and when all
 14 tasks are done they merge into **Prime**. Manage with `--status` / `--stop`.
+Feed it **real data**: `--measure --url=…` pulls Core Web Vitals from the PageSpeed Insights API
+(incl. real-user INP from CrUX), and `tools/seo-os-probe.js` runs live queries against
+Perplexity / ChatGPT Search / Gemini to measure whether your site is actually **cited** as a source.
 
 Flow:
 1. **Phase 0 — Interactive Discovery:** Claude detects the framework (+Cloudflare) and the current SEO/off-site

@@ -20,6 +20,7 @@ jobs:
           node --check plugins/seo-geo-optimizer/tools/seo-os-tracker.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-sync.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-dashboard.js
+          node --check plugins/seo-geo-optimizer/tools/seo-os-probe.js
           node --check seo-os-validation-suite/seo-os-scorer.js
           node --check seo-os-validation-suite/golden-tests/check-regression.js
           node --check seo-os-validation-suite/golden-tests/check-integrity.js
@@ -66,3 +67,28 @@ jobs:
             })"
           node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-dashboard.js"
           grep -q "Görev Günlüğü" .seo-os/dashboard.html && echo "dashboard HTML OK"
+
+      - name: PSI-parse + probe smoke (deterministic, no network)
+        run: |
+          cat > /tmp/psi-mock.json <<'EOF'
+          {
+            "lighthouseResult": {
+              "finalUrl": "https://ci.example",
+              "audits": {
+                "largest-contentful-paint": { "numericValue": 2340 },
+                "cumulative-layout-shift": { "numericValue": 0.055 },
+                "server-response-time": { "numericValue": 480 },
+                "total-blocking-time": { "numericValue": 190 }
+              },
+              "categories": { "performance": { "score": 0.87 } }
+            },
+            "loadingExperience": { "metrics": { "INTERACTION_TO_NEXT_PAINT": { "percentile": 210 } } }
+          }
+          EOF
+          cd /tmp/dash-smoke
+          node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-dashboard.js" --measure --psi-mock=/tmp/psi-mock.json
+          node -e "
+            const r=require('/tmp/dash-smoke/.seo-os/cwv-report.json');
+            if (r.LCP_s!==2.3 || r.INP_ms!==210 || r.source!=='psi-lab+crux') { console.error('PSI parse FAIL', r); process.exit(1); }
+            console.log('PSI parse OK');"
+          node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-probe.js" --site=ci.example --keywords="test sorgusu" --dry-run

@@ -55,6 +55,9 @@ ek: `score` (AI Visibility Score) · `gate` (Release Readiness: PASS/FAIL) · `d
 **http://localhost:3928**'de (yalnızca localhost) oyun tarzı canlı panel açılır: görevler
 tamamlandıkça gelişen dört robot karakter, XP barı, görev günlüğü, başarım rozetleri — 14 görevin
 tümü bitince robotlar birleşip **Prime**'ı oluşturur. Yönetim: `--status` / `--stop`.
+**Gerçek veriyle besle:** `--measure --url=…` PageSpeed Insights API'sinden Core Web Vitals çeker
+(CrUX'tan gerçek kullanıcı INP'si dahil); `tools/seo-os-probe.js` ise Perplexity / ChatGPT Search /
+Gemini'ye canlı sorgular atıp sitenin gerçekten **kaynak gösterilip gösterilmediğini** ölçer.
 
 Akış:
 1. **Faz 0 — İnteraktif Keşif:** Claude framework'ü (+Cloudflare) + mevcut SEO/off-site durumunu tespit eder,

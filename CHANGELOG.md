@@ -4,6 +4,21 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.4.0] — 2026-07-03
+### Eklendi
+- **Gerçek CWV ölçümü:** `seo-os-dashboard.js --measure --url=…` — PageSpeed Insights API'sinden
+  LCP/CLS/TTFB (+ CrUX alan verisi varsa **gerçek kullanıcı INP'si**, yoksa TBT vekili notuyla)
+  çekip `cwv-report.json`a yazar; `--snapshot` ile birleşip zamanlanmış haftalık ölçüm olur
+  (`PSI_API_KEY` opsiyonel, kota için önerilir). Test/CI için `--psi-mock=` kancası.
+- **AI alıntılanma sondası:** yeni `tools/seo-os-probe.js` — hedef anahtar kelimelerle
+  Perplexity / ChatGPT Search / Gemini'ye **gerçek sorgular** atar, sitenin kaynaklarda geçme
+  yüzdesini motor başına skorlar ve panelin okuduğu `geo-report.json`a yazar (alan-adı bazlı
+  tespit, alt alanlar dahil; env anahtarı olan sağlayıcılar çalışır; `--dry-run` destekli).
+- **Bayat telemetri uyarısı:** son snapshot 14 günü geçerse Görev Rehberi'nde "📡 Telemetri bayat"
+  satırı + yenileme komutu.
+- CI: PSI ayrıştırma smoke testi (mock ile, ağsız) + probe dry-run + yeni araç syntax check.
+- README'lere Komuta Merkezi ekran görüntüleri (`docs/images/`); GitHub Release v2.3.1 + repo topics.
+
 ## [2.3.1] — 2026-07-03
 ### Düzeltildi
 - **Panel görselleri yuvarlatıldı:** dönen enerji çekirdeği ve holografik platform halkalarındaki

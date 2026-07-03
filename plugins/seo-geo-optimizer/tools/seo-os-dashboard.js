@@ -21,6 +21,11 @@
  *   node seo-os-dashboard.js --serve         # canlı panel: http://localhost:3928
  *   node seo-os-dashboard.js --serve --daemon # kalıcı: terminalden bağımsız süreç
  *   node seo-os-dashboard.js --status | --stop
+ *   node seo-os-dashboard.js --measure --url=https://site.com [--snapshot]
+ *       # GERÇEK CWV ölçümü: PageSpeed Insights API'sinden LCP/CLS/TTFB (+ CrUX
+ *       # alan verisi varsa gerçek INP) çekip cwv-report.json'a yazar; PSI_API_KEY
+ *       # opsiyoneldir (kotayı artırır). --snapshot ile birleştirip haftalık
+ *       # zamanlanmış ölçüm olarak çalıştırılabilir (cron / Claude Code schedule).
  *
  * `--serve` binds to 127.0.0.1 ONLY (project convention: local-only, port 3928;
  * override with --port=). Every request re-reads the state + measurement files,
@@ -63,6 +68,9 @@ const opt = {
   daemon: has("daemon"),
   stop: has("stop"),
   status: has("status"),
+  measure: has("measure"),
+  url: flagVal("url", ""),
+  psiMock: flagVal("psi-mock", ""), // test/CI: ağ yerine dosyadan PSI yanıtı oku
   port: Number(flagVal("port", String(SERVE_PORT))),
   note: flagVal("note", ""),
   out: flagVal("out", ""),
@@ -80,6 +88,8 @@ if (opt.help) {
       "  --out=..    HTML output path (default: <state-dir>/dashboard.html)",
       "  --open      open the rendered HTML (or served URL) in the default browser",
       "  --json      print the render data model instead of writing HTML",
+      "  --measure   fetch REAL CWV from PageSpeed Insights into cwv-report.json (--url= required;",
+      "              PSI_API_KEY env optional). Combine with --snapshot for scheduled runs.",
       "  --serve     live panel on http://localhost:3928 (127.0.0.1 only; --port= to override)",
       "  --daemon    with --serve: start detached in the background (survives the terminal);",
       "              pid -> <state-dir>/dashboard.pid, log -> <state-dir>/dashboard.log",
@@ -517,15 +527,29 @@ function robotSection(state) {
   );
 }
 
+// 14 günden eski (ya da hiç olmayan) ölçüm için uyarı satırı
+function stalenessLine(history) {
+  if (!history.length) return "";
+  const lastAt = Date.parse(history[history.length - 1].at);
+  if (isNaN(lastAt)) return "";
+  const days = Math.floor((Date.now() - lastAt) / 86400000);
+  if (days < 14) return "";
+  return (
+    `<div class="guide-line">📡 Telemetri bayat: son ölçüm <strong>${days} gün önce</strong>. ` +
+    `Yenile: <code>node "\${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --measure --url=https://siten.com --snapshot</code></div>`
+  );
+}
+
 // Görev rehberi: paneli açan kişiyi bir sonraki adıma yönlendirir
-function guideSection(state) {
+function guideSection(state, history) {
   const p = progress(state);
   const label = (k) => `${k.replace("FAZ", "FAZ ")} — ${LABELS[k] || k}`;
   if (p.done === p.total) {
     return (
       `<section class="card guide"><h2>Görev Rehberi</h2>` +
       `<div class="guide-line">👑 Tüm görevler tamamlandı — <strong>PRIME MODU aktif</strong>. Skoru korumak için Doğrulama (L) ölçümlerini periyodik tekrarla.</div>` +
-      `<p>Yeni ölçümü geçmişe işlemek için: <code>node "\${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="periyodik kontrol"</code></p></section>`
+      stalenessLine(history) +
+      `<p>Yeni ölçümü geçmişe işlemek için: <code>node "\${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --measure --url=https://siten.com --snapshot --note="periyodik kontrol"</code></p></section>`
     );
   }
   const untouched = ALL_KEYS.every((k) => statusOf(state, k) === "not_started");
@@ -556,6 +580,7 @@ function guideSection(state) {
   ].join("");
   return (
     `<section class="card guide"><h2>Görev Rehberi — Sıradaki Adım</h2>${lines}` +
+    stalenessLine(history) +
     `<p>Devam etmek için projende Claude Code'a <code>/seo-audit</code> yaz — kaldığın görevden sürdürür ve bitince bu paneli günceller. ` +
     `Ölçümü geçmişe işlemek için: <code>node "\${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="görev tamamlandı"</code></p></section>`
   );
@@ -960,7 +985,7 @@ function renderHtml(model) {
   ${state.currentTask ? `<div class="card"><span class="kpi-label">Aktif operasyon</span><div>${esc(state.currentTask)}</div></div>` : ""}
   ${kpiSection(state, history, engines)}
   ${robotSection(state)}
-  ${guideSection(state)}
+  ${guideSection(state, history)}
   ${trendSection(history)}
   ${phaseSection(state)}
   ${engineSection(engines, history)}
@@ -1011,6 +1036,81 @@ function openInBrowser(target) {
   const opener =
     process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
   spawn(opener, [target], { stdio: "ignore", detached: true }).unref();
+}
+
+// ---- gerçek CWV ölçümü (PageSpeed Insights API) --------------------------------
+// Lab metrikleri + varsa CrUX alan verisi (gerçek kullanıcı INP'si) -> cwv-report.json
+function measurePsi(url) {
+  if (opt.psiMock) {
+    return Promise.resolve(JSON.parse(fs.readFileSync(path.resolve(opt.psiMock), "utf8"))).then(writeCwvFromPsi);
+  }
+  if (!url) return Promise.reject(new Error("--measure için --url=https://… gerekli"));
+  const https = require("https");
+  const key = process.env.PSI_API_KEY ? `&key=${process.env.PSI_API_KEY}` : "";
+  const api =
+    "https://www.googleapis.com/pagespeedonline/v5/runPagespeed" +
+    `?url=${encodeURIComponent(url)}&strategy=mobile&category=performance${key}`;
+  console.error(`[dashboard] PSI ölçümü -> ${url} … (30-60 sn sürebilir)`);
+  return new Promise((resolve, reject) => {
+    const req = https.get(api, (res) => {
+      let data = "";
+      res.on("data", (c) => (data += c));
+      res.on("end", () => {
+        let json;
+        try {
+          json = JSON.parse(data);
+        } catch {
+          return reject(new Error(`PSI ${res.statusCode}: JSON olmayan yanıt`));
+        }
+        if (res.statusCode >= 400)
+          return reject(new Error(`PSI ${res.statusCode}: ${(json.error && json.error.message) || data.slice(0, 200)}`));
+        resolve(json);
+      });
+    });
+    req.on("error", reject);
+    req.setTimeout(120000, () => req.destroy(new Error("PSI 120 sn'de yanıt vermedi (timeout)")));
+  }).then(writeCwvFromPsi);
+}
+
+function writeCwvFromPsi(data) {
+  {
+    const url = opt.url || (data.lighthouseResult && data.lighthouseResult.finalUrl) || "";
+    const audits = (data.lighthouseResult && data.lighthouseResult.audits) || {};
+    const num = (id) =>
+      audits[id] && typeof audits[id].numericValue === "number" ? audits[id].numericValue : null;
+    const report = { $schema: "seo-os/cwv-report-v1", url, at: new Date().toISOString(), source: "psi-lab" };
+    const lcp = num("largest-contentful-paint");
+    if (lcp != null) report.LCP_s = Math.round(lcp / 100) / 10;
+    const cls = num("cumulative-layout-shift");
+    if (cls != null) report.CLS = Math.round(cls * 1000) / 1000;
+    const ttfb = num("server-response-time");
+    if (ttfb != null) report.TTFB_ms = Math.round(ttfb);
+    // INP lab'da ölçülmez: önce CrUX alan verisi (gerçek kullanıcı), yoksa TBT vekili
+    const field = data.loadingExperience && data.loadingExperience.metrics;
+    const inp =
+      field &&
+      field.INTERACTION_TO_NEXT_PAINT &&
+      field.INTERACTION_TO_NEXT_PAINT.percentile;
+    if (inp != null) {
+      report.INP_ms = inp;
+      report.source = "psi-lab+crux";
+    } else {
+      const tbt = num("total-blocking-time");
+      if (tbt != null) {
+        report.INP_ms = Math.round(tbt);
+        report.inpNote = "lab TBT vekili (bu URL için CrUX alan verisi yok)";
+      }
+    }
+    const perf =
+      data.lighthouseResult && data.lighthouseResult.categories && data.lighthouseResult.categories.performance;
+    if (perf && typeof perf.score === "number") report.lighthousePerf = Math.round(perf.score * 100);
+    fs.mkdirSync(path.dirname(CWV_PATH), { recursive: true });
+    fs.writeFileSync(CWV_PATH, JSON.stringify(report, null, 2) + "\n");
+    console.error(
+      `[dashboard] CWV yazıldı -> ${CWV_PATH} (kaynak: ${report.source}` +
+        `${report.lighthousePerf != null ? `, Lighthouse perf ${report.lighthousePerf}` : ""})`
+    );
+  }
 }
 
 // ---- daemon yönetimi (panel oturumdan bağımsız yaşar) --------------------------
@@ -1076,6 +1176,13 @@ if (opt.serve && opt.daemon) {
     if (opt.open) openInBrowser(url);
     process.exit(0);
   }, 500);
+} else if (opt.measure) {
+  measurePsi(opt.url)
+    .then(() => mainCli())
+    .catch((e) => {
+      console.error(`[dashboard] ölçüm hatası: ${e.message}`);
+      process.exit(1);
+    });
 } else {
   mainCli();
 }
