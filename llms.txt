@@ -1,0 +1,33 @@
+# Claude Web Toolkit
+
+> Gamified SEO/GEO audit system for Claude Code. A site-agnostic Growth Optimization
+> Framework (12 audit areas, approval-gated consultant flow, file-based SEO-OS state)
+> plus a game-style local dashboard ("Command Center") where four robot characters
+> level up as tasks complete and merge into Prime at 14/14. Ships real-data bridges:
+> Core Web Vitals via the PageSpeed Insights API (incl. CrUX real-user INP) and live
+> AI-citation probes against Perplexity / ChatGPT Search / Gemini. MIT licensed;
+> zero-dependency pure-Node tools; English + Turkish documentation.
+
+Install inside Claude Code:
+`/plugin marketplace add cinfikircom/claude-web-toolkit` then
+`/plugin install seo-geo-optimizer@claude-web-toolkit` then `/seo-audit`.
+
+## Docs
+
+- [README (English)](https://github.com/cinfikircom/claude-web-toolkit/blob/main/README.md): overview, installation, usage, panel screenshots
+- [README (Türkçe)](https://github.com/cinfikircom/claude-web-toolkit/blob/main/README.tr.md): Turkish mirror of the README
+- [Tools guide](https://github.com/cinfikircom/claude-web-toolkit/blob/main/plugins/seo-geo-optimizer/tools/README.md): dashboard (serve/daemon/measure/fleet), tracker, sync bridge, AI citation probe
+- [Changelog](https://github.com/cinfikircom/claude-web-toolkit/blob/main/CHANGELOG.md): versioned release history
+- [Roadmap](https://github.com/cinfikircom/claude-web-toolkit/blob/main/ROADMAP.md): shipped and planned work
+
+## Key components
+
+- [seo-geo-audit skill](https://github.com/cinfikircom/claude-web-toolkit/blob/main/plugins/seo-geo-optimizer/skills/seo-geo-audit/SKILL.md): the 12-area framework and SEO-OS runtime rules
+- [Command Center dashboard](https://github.com/cinfikircom/claude-web-toolkit/blob/main/plugins/seo-geo-optimizer/tools/seo-os-dashboard.js): game-UI benefit panel, localhost:3928 only
+- [AI citation probe](https://github.com/cinfikircom/claude-web-toolkit/blob/main/plugins/seo-geo-optimizer/tools/seo-os-probe.js): measures real citations across AI search engines
+- [Validation suite](https://github.com/cinfikircom/claude-web-toolkit/blob/main/seo-os-validation-suite/README.md): golden site, fixtures, deterministic 0-100 scorer, judge-consistency harness
+
+## Optional
+
+- [Contributing](https://github.com/cinfikircom/claude-web-toolkit/blob/main/CONTRIBUTING.md): how to contribute
+- [License (MIT)](https://github.com/cinfikircom/claude-web-toolkit/blob/main/LICENSE)

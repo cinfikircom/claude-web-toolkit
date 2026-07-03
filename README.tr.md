@@ -2,11 +2,31 @@
 
 [English](./README.md) · **Türkçe**
 
-Site-bağımsız **Growth Optimization Framework** — Claude Code eklenti koleksiyonu.
-Amaç sadece "Google'da yükselmek" veya trafik değil; siteyi **Google + AI arama motorları (ChatGPT
+[![validate](https://github.com/cinfikircom/claude-web-toolkit/actions/workflows/validate.yml/badge.svg)](https://github.com/cinfikircom/claude-web-toolkit/actions/workflows/validate.yml)
+[![release](https://img.shields.io/github/v/release/cinfikircom/claude-web-toolkit?color=5eead4)](https://github.com/cinfikircom/claude-web-toolkit/releases)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![node](https://img.shields.io/badge/node-%E2%89%A5%2020-brightgreen)](./.nvmrc)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-cc785c)](https://claude.com/claude-code)
+
+**Claude Code için oyunlaştırılmış SEO/GEO denetim sistemi.** Site-bağımsız **Growth Optimization
+Framework**: amaç sadece "Google'da yükselmek" değil; siteyi **Google + AI arama motorları (ChatGPT
 Search, Gemini, Perplexity, Claude, AI Overviews) + Core Web Vitals + Knowledge Graph** açısından üst
-seviyeye çıkarıp **daha fazla lead/satış** üretmek. Strateji → Arama Görünürlüğü → Performans → Büyüme
-akışıyla çalışır. Tek repo, her proje/sitede yeniden kullanılır.
+seviyeye çıkarıp **daha fazla lead/satış** üretmek. Tek repo, her projede yeniden kullanılır.
+
+## ✨ Öne Çıkanlar
+
+- 🎮 **Komuta Merkezi** — oyun tarzı canlı panel: görevler tamamlandıkça gelişen dört robot,
+  XP + rütbeler (ÇAYLAK → … → **PRIME**), görev günlüğü, başarımlar ve paylaşılabilir
+  **zafer kartıyla** birleşme finali. Sadece yerel (`localhost:3928`), sıfır bağımlılık.
+- 🧭 **Betik değil danışman** — onay kapıları, risk etiketleri ve dosya-tabanlı state (SEO-OS)
+  ile 12 başlıklı rehberli çerçeve (İş Hedefi → Rakip → Topical → GEO → Entity/KG → SEO →
+  Yerel → Crawlability → CWV → CRO → Off-site → Doğrulama).
+- 📡 **His değil gerçek telemetri** — PageSpeed Insights API'sinden gerçek Core Web Vitals
+  (CrUX gerçek kullanıcı INP'si dahil) ve Perplexity / ChatGPT Search / Gemini'ye **canlı
+  alıntılanma sondaları**: siteniz gerçekten kaynak gösteriliyor mu?
+- 🚁 **Filo kokpiti** — ajanslar tüm kayıtlı projeleri tek ekranda izler (`--fleet`).
+- 🧪 **Deterministik doğrulama takımı** — golden bozuk-site + 3 fixture, 0-100 scorer,
+  judge-consistency ve çapraz-OS CI (Ubuntu + Windows) + haftalık gerçek-LLM bekçisi.
 
 ![SEO-OS Komuta Merkezi — oyun tarzı canlı panel](./docs/images/panel-komuta-merkezi.png)
 *Komuta Merkezi paneli (localhost:3928): dört robot karakter, denetim görevleri tamamlandıkça

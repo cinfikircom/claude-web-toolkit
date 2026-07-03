@@ -2,11 +2,31 @@
 
 **English** · [Türkçe](./README.tr.md)
 
-A site-agnostic **Growth Optimization Framework** — a collection of Claude Code plugins.
-The goal isn't just "ranking higher on Google" or traffic; it's lifting a site to the top tier across
+[![validate](https://github.com/cinfikircom/claude-web-toolkit/actions/workflows/validate.yml/badge.svg)](https://github.com/cinfikircom/claude-web-toolkit/actions/workflows/validate.yml)
+[![release](https://img.shields.io/github/v/release/cinfikircom/claude-web-toolkit?color=5eead4)](https://github.com/cinfikircom/claude-web-toolkit/releases)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![node](https://img.shields.io/badge/node-%E2%89%A5%2020-brightgreen)](./.nvmrc)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-cc785c)](https://claude.com/claude-code)
+
+**The gamified SEO/GEO audit system for Claude Code.** A site-agnostic **Growth Optimization
+Framework**: not just "ranking higher on Google" — it lifts a site to the top tier across
 **Google + AI search engines (ChatGPT Search, Gemini, Perplexity, Claude, AI Overviews) + Core Web
-Vitals + Knowledge Graph** to generate **more leads/sales**. It runs as Strategy → Search Visibility →
-Performance → Growth. One repo, reused on every project/site.
+Vitals + Knowledge Graph** to generate **more leads/sales**. One repo, reused on every project.
+
+## ✨ Highlights
+
+- 🎮 **Command Center** — a game-style live dashboard: four robot characters level up as audit
+  tasks complete, XP + ranks (ROOKIE → … → **PRIME**), quest log, achievements, and a merge
+  finale with a shareable **victory card**. Local-only (`localhost:3928`), zero dependencies.
+- 🧭 **Consultant, not a script** — 12-area guided framework (Business Goal → Competitors →
+  Topical Authority → GEO → Entity/Knowledge Graph → SEO → Local → Crawlability → CWV → CRO →
+  Off-site → Validation) with approval gates, risk labels and a file-based state (SEO-OS).
+- 📡 **Real telemetry, not vibes** — pull real Core Web Vitals from the PageSpeed Insights API
+  (incl. CrUX real-user INP) and run **live citation probes** against Perplexity / ChatGPT
+  Search / Gemini to measure whether your site is actually cited.
+- 🚁 **Fleet cockpit** — agencies watch every registered project on one screen (`--fleet`).
+- 🧪 **Deterministic validation suite** — golden broken-site + 3 fixtures, a 0-100 scorer,
+  judge-consistency harness and cross-OS CI (Ubuntu + Windows) with a weekly real-LLM sentinel.
 
 ![SEO-OS Command Center — game-style live dashboard](./docs/images/panel-komuta-merkezi.png)
 *The Command Center panel (localhost:3928): four robot characters level up as audit tasks complete;
