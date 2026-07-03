@@ -4,6 +4,17 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.8.0] — 2026-07-03
+### Eklendi
+- **Erişim & Varlık Envanteri (FAZ 0-B · Tur 3):** kullanıcı-tarafı TÜM gereksinimler artık
+  denetim ilerledikçe tek tek değil, **işlem başında tek seferde** toplanıyor
+  (`references/onboarding-intake.md`): görsel varlıklar (logo + **OG/sosyal görseli 1200×630**,
+  proje GitHub'daysa repo Social preview dahil), marka/NAP bilgileri, hesap erişimleri
+  (GSC/GA4/DNS/GBP/hosting), opsiyonel ölçüm API anahtarları (PSI/Perplexity/GSC-SA — adım adım
+  edinme talimatlı) ve içerik girdileri. Eksikler `state.intake` + `state.blocked[]`'a yazılır
+  (panelde görünür) ve `.seo-os/erisim-envanteri.md` tablosu üretilir; hiçbiri başlamak için
+  zorunlu değildir. `/seo-wizard` ADIM 0'da envanteri kontrol eder. Referans sayısı 28.
+
 ## [2.7.0] — 2026-07-03
 ### Eklendi — Dış katman (off-site)
 - **`tools/seo-os-indexnow.js`:** IndexNow ile anında indeksleme bildirimi — `--setup` anahtar

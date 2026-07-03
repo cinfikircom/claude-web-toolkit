@@ -19,6 +19,10 @@ adımda "atla" diyebilir; adım atlanırsa nedenini `.seo-os/seo-os-state.json` 
    - Sorun varsa kullanıcıya özetle ve onayla `--repair` koş (araç önce yedek alır).
    - `.seo-os/` hiç yoksa: sihirbazdan önce `/seo-audit` ile Faz 0 keşfinin gerektiğini söyle ve DUR.
 2. Panel çalışmıyorsa öner: `node "$TOOLS/seo-os-dashboard.js" --serve --daemon --open`.
+3. **Envanter kontrolü:** `state.intake` yoksa ya da eksikler varsa
+   (`references/onboarding-intake.md`) kullanıcıya hatırlat — özellikle ADIM 4-5'in
+   ihtiyaç duyduğu öncelikli sayfalar/kelimeler ve görsel varlıklar. Eksik diye DURMA;
+   ilgili adımda tekrar sor.
 
 ## ADIM 1 — Site taraması
 
