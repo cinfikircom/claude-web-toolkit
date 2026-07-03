@@ -163,6 +163,39 @@ node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="alınt
 - Tespit alan-adı bazlıdır (alt alanlar dahil; `notsiten.com` gibi benzer adlar eşleşmez).
 - Her sorgu sağlayıcıda ücretlendirilir — kelime listesini odaklı tut (5-10 sorgu iyi bir başlangıç).
 
+## seo-os-doctor.js
+
+`.seo-os/seo-os-state.json`'un **sağlık kontrolü ve onarımı**. Eksik fazlar, geçersiz
+status/mode, tip bozuklukları ve `metrics-history.jsonl`'deki bozuk satırları teşhis eder;
+`--repair` ile güvenle onarır (önce `.seo-os/` içine zaman damgalı yedek alır).
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-doctor.js"            # teşhis (exit 1 = sorun var)
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-doctor.js" --repair   # yedekle + onar
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-doctor.js" --json     # makine-okunur rapor
+```
+
+`/seo-wizard` her koşuda önce doctor'ı çalıştırır — elle bozulmuş state panel/araçları düşürmez.
+
+## seo-os-sitecheck.js
+
+**İç bağlantı & içerik hijyeni taraması.** Canlı siteyi (BFS, aynı origin, sitemap
+karşılaştırmalı) veya build çıktısındaki HTML'leri tarar; `/seo-wizard`'ın işlediği
+somut bulgu listesini üretir → `.seo-os/sitecheck-report.json`:
+
+- **Yetim sayfalar** (sitemap'te var ama hiçbir sayfadan link almıyor / dizinde linksiz dosya)
+- **Zayıf anchor'lar** ("buraya tıkla", boş linkler — `aria-label`'sız ikon linkler dahil)
+- **Alt'sız görseller** (dekoratif işaretliler hariç)
+- **Kopya/eksik `<title>`**, **eksik meta description**, **h1 ≠ 1** sayfalar
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-sitecheck.js" --url=https://siten.com --max=200
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-sitecheck.js" --dir=dist
+```
+
+Bulguları adım adım (onaylı) düzeltmek için: **`/seo-wizard`** — sağlık kontrolü → tarama →
+iç bağlantı onarımı → alt metinler → alıntılanabilir bloklar → gelişmiş şema.
+
 ## seo-os-sync.js
 
 `.seo-os/seo-os-state.json`'u (SSOT) **GitHub Issues** ve/veya **Notion** veritabanına

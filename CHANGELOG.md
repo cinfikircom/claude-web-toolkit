@@ -4,6 +4,22 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.6.0] — 2026-07-03
+### Eklendi
+- **`/seo-wizard` — İçerik Derinliği Sihirbazı:** kullanıcıyı adım adım yürüten yeni komut:
+  sağlık kontrolü → site taraması → yetim sayfa & zayıf anchor & alt metin onarımı (her madde
+  onaylı) → alıntılanabilir bloklar (primary-answer + FAQ + fact-block) → gelişmiş şema
+  genişletme → snapshot'lı kapanış. `$ARGUMENTS` ile adıma atlanabilir (tarama|link|alt|blok|sema).
+- **`tools/seo-os-doctor.js`:** state şema doğrulaması + `--repair` (zaman damgalı yedekle
+  onarım): eksik fazlar, geçersiz status/mode, tip bozuklukları, bozuk history satırları.
+- **`tools/seo-os-sitecheck.js`:** iç bağlantı & içerik hijyeni taraması — canlı URL (BFS +
+  sitemap karşılaştırmalı yetim tespiti) veya build dizini; zayıf anchor, alt'sız görsel,
+  kopya/eksik title, eksik description, h1≠1 → `.seo-os/sitecheck-report.json`.
+- **4 yeni JSON-LD şablonu:** `schema-{product,event,howto,video}.jsonld.template` —
+  Organization @id grafına bağlı, `_talimat` yönergeli (sahte rating uyarısı dahil).
+- Panel Görev Rehberi artık `/seo-wizard`'ı öneriyor; CI'da doctor onarım + sitecheck smoke
+  testleri (deterministik, ağsız; ubuntu + windows).
+
 ## [2.5.0] — 2026-07-03
 ### Eklendi
 - **Filo Kokpiti (ajans modu):** panel her çalıştığında proje `~/.seo-os/registry.json`a otomatik

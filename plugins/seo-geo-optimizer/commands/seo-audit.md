@@ -43,3 +43,5 @@ yoksa Faz 0 keşiften başla. Geçerli argümanlar (başlık eşlemesi):
 > Bilinmeyen/eşleşmeyen argümanda Faz 0 keşiften başla ve hangi başlığı kastettiğini sor.
 > `accessibility` ayrı başlık değildir — F + I + Lighthouse A11y içinde ele alınır.
 > Önerilen sıra: A→B→C→D→E→F→G→H→I→J→K→L.
+> İlgili: **`/seo-wizard`** — içerik derinliği sihirbazı (site taraması, yetim sayfa/anchor/alt
+> onarımı, alıntılanabilir bloklar, gelişmiş şema). D/E/F/H başlıklarının uygulama koludur.

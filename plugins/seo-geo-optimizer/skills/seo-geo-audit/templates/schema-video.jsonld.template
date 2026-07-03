@@ -1,0 +1,14 @@
+{
+  "_talimat": "VideoObject şeması — YouTube gömülü videolar için de kullan (Gemini video kaynaklarını sever). Placeholder'ları doldur, bu alanı sil.",
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "@id": "{SITE_URL}/{SAYFA_YOLU}/#video",
+  "name": "{VIDEO_BASLIGI}",
+  "description": "{40-60 kelimelik alıntılanabilir özet}",
+  "thumbnailUrl": ["{KAPAK_GORSEL_URL}"],
+  "uploadDate": "{YYYY-MM-DD}",
+  "duration": "PT{DAKIKA}M{SANIYE}S",
+  "contentUrl": "{VIDEO_DOSYA_URL — kendi barındırıyorsan}",
+  "embedUrl": "{https://www.youtube.com/embed/VIDEO_ID — YouTube ise}",
+  "publisher": { "@id": "{SITE_URL}/#org" }
+}

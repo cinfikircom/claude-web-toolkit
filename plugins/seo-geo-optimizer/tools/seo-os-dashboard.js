@@ -563,6 +563,7 @@ function guideSection(state, history) {
     `<section class="card guide"><h2>Görev Rehberi — Sıradaki Adım</h2>${lines}` +
     stalenessLine(history) +
     `<p>Devam etmek için projende Claude Code'a <code>/seo-audit</code> yaz — kaldığın görevden sürdürür ve bitince bu paneli günceller. ` +
+    `İçerik derinliği ve iç bağlantı onarımı için sihirbaz: <code>/seo-wizard</code> (site taraması → yetim sayfa/anchor/alt düzeltmeleri → alıntılanabilir bloklar → gelişmiş şema). ` +
     `Ölçümü geçmişe işlemek için: <code>node "\${CLAUDE_PLUGIN_ROOT}/tools/seo-os-dashboard.js" --snapshot --note="görev tamamlandı"</code></p></section>`
   );
 }

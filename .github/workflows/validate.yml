@@ -29,6 +29,8 @@ jobs:
           node --check plugins/seo-geo-optimizer/tools/seo-os-sync.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-dashboard.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-probe.js
+          node --check plugins/seo-geo-optimizer/tools/seo-os-doctor.js
+          node --check plugins/seo-geo-optimizer/tools/seo-os-sitecheck.js
           node --check seo-os-validation-suite/seo-os-scorer.js
           node --check seo-os-validation-suite/golden-tests/check-regression.js
           node --check seo-os-validation-suite/golden-tests/check-integrity.js
@@ -108,3 +110,18 @@ jobs:
             const f=p.join(os.homedir(),'.seo-os','fleet.html');
             if (!fs.readFileSync(f,'utf8').includes('ci-smoke')) { console.error('fleet FAIL'); process.exit(1); }
             console.log('fleet smoke OK');"
+
+      - name: Doctor + sitecheck smoke (deterministic, no network)
+        run: |
+          mkdir -p .ci-tmp/broken/.seo-os
+          echo '{ "mode": "TURBO", "phases": { "A": { "status": "done" } } }' > .ci-tmp/broken/.seo-os/seo-os-state.json
+          cd .ci-tmp/broken
+          if node ../../plugins/seo-geo-optimizer/tools/seo-os-doctor.js; then echo "doctor should have failed"; exit 1; fi
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-doctor.js --repair
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-doctor.js && echo "doctor repair OK"
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-sitecheck.js \
+            --dir=../../seo-os-validation-suite/fixtures/cloudflare-pages-broken-site
+          node -e "
+            const r=JSON.parse(require('fs').readFileSync('.seo-os/sitecheck-report.json','utf8'));
+            if (r.pagesScanned < 2 || !Array.isArray(r.orphans) || !Array.isArray(r.imagesNoAlt)) { console.error('sitecheck FAIL', r); process.exit(1); }
+            console.log('sitecheck smoke OK —', r.pagesScanned, 'pages');"

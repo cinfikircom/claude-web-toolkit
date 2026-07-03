@@ -6,7 +6,7 @@ Yaşayan plan. Tamamlananlar işaretli; "Planlanan" maddeleri ileride ekleyeceğ
 - **seo-geo-optimizer plugin** — 12 başlıklı Growth Optimization Framework
   (İş Hedefi · Rakip/İçerik Boşluğu · Topical Authority · GEO · Entity/Knowledge Graph ·
   Klasik SEO · Yerel SEO · Crawlability · Core Web Vitals · CRO · Off-site · Doğrulama)
-- **26 referans + 8 template + 4 uzman ajan** (derin mod, bellek handoff)
+- **26 referans + 12 template + 4 uzman ajan** (derin mod, bellek handoff)
 - **SEO-OS v2 runtime** — file-based state (`seo-os-state.json` SSOT), 3 mod (ANALYZE/PROPOSE/EXECUTE),
   deterministic dashboard, phase locking, safety layer, Faz 0-A/0-B bölme
 - **AI Visibility Score (0-100)**

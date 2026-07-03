@@ -1,0 +1,25 @@
+{
+  "_talimat": "Product şeması — placeholder'ları gerçek veriyle doldur, bu alanı sil. @id'leri Organization grafına bağla ({SITE_URL}/#org mevcut olmalı). Sayfaya <script type='application/ld+json'> ile göm.",
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "@id": "{SITE_URL}/{URUN_YOLU}/#product",
+  "name": "{URUN_ADI}",
+  "description": "{40-60 kelimelik, alıntılanabilir ürün özeti}",
+  "image": ["{URUN_GORSEL_URL}"],
+  "sku": "{SKU}",
+  "brand": { "@id": "{SITE_URL}/#org" },
+  "offers": {
+    "@type": "Offer",
+    "url": "{SITE_URL}/{URUN_YOLU}",
+    "price": "{FIYAT}",
+    "priceCurrency": "{PARA_BIRIMI:TRY}",
+    "availability": "https://schema.org/{InStock|OutOfStock|PreOrder}",
+    "priceValidUntil": "{YYYY-MM-DD}"
+  },
+  "aggregateRating": {
+    "_talimat": "Gerçek yorum yoksa bu bloğu tamamen SİL — sahte rating cezaya yol açar.",
+    "@type": "AggregateRating",
+    "ratingValue": "{4.7}",
+    "reviewCount": "{27}"
+  }
+}

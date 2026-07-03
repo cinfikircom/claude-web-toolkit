@@ -1,7 +1,7 @@
 ---
 name: seo-geo-audit
 description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Turkish triggers — "SEO denetimi", "SEO iyileştir", "Google'da üst sıralara çık", "AI aramada görünürlük/alıntılanma", "site hızını artır", "daha çok müşteri/lead". Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
-version: 2.5.0
+version: 2.6.0
 ---
 
 # AI Search & Growth Optimization Framework
@@ -271,6 +271,8 @@ Riskli Değişiklikler · Sonraki Önerilen Adım.
 - `templates/gorev-listesi.template.md` — rehberli görev listesi (state'in insan görünümü)
 - `templates/son-rapor.template.md` — 14 maddelik son rapor şablonu
 - `templates/llms.txt.template` · `llms-full.txt.template` · `ai-agents.json.template` · `robots-ai.txt.template` — hazır artefakt şablonları (placeholder'ları gerçek veriyle doldur)
+- `templates/schema-{product,event,howto,video}.jsonld.template` — gelişmiş JSON-LD şablonları
+  (Başlık E ve `/seo-wizard` ADIM 5; doldururken `_talimat` alanlarını sil, sahte rating ekleme)
 
 ## UZMAN AJANLAR (derin mod — plugin `agents/` altında)
 - `growth-strategy-agent` — Başlık A, B, C, J

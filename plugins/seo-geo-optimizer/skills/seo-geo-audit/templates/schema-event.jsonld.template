@@ -1,0 +1,24 @@
+{
+  "_talimat": "Event şeması — placeholder'ları doldur, bu alanı sil. organizer'ı Organization @id'sine bağla.",
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "{SITE_URL}/{ETKINLIK_YOLU}/#event",
+  "name": "{ETKINLIK_ADI}",
+  "description": "{40-60 kelimelik alıntılanabilir özet}",
+  "startDate": "{YYYY-MM-DDTHH:MM+03:00}",
+  "endDate": "{YYYY-MM-DDTHH:MM+03:00}",
+  "eventAttendanceMode": "https://schema.org/{OfflineEventAttendanceMode|OnlineEventAttendanceMode|MixedEventAttendanceMode}",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "{MEKAN_ADI}",
+    "address": { "@type": "PostalAddress", "streetAddress": "{ADRES}", "addressLocality": "{ILCE/SEHIR}", "addressCountry": "TR" }
+  },
+  "image": ["{GORSEL_URL}"],
+  "organizer": { "@id": "{SITE_URL}/#org" },
+  "offers": {
+    "_talimat": "Biletsiz/ücretsizse price: 0 bırak; bilet yoksa bloğu sil.",
+    "@type": "Offer", "url": "{BILET_URL}", "price": "{0}", "priceCurrency": "TRY",
+    "availability": "https://schema.org/InStock", "validFrom": "{YYYY-MM-DD}"
+  }
+}
