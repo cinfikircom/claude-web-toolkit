@@ -48,6 +48,18 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const {
+  STATE_NAME,
+  findStateFile,
+  TOP,
+  GRID,
+  ALL_KEYS,
+  LABELS,
+  STATUS_TR,
+  statusOf,
+  noteOf,
+  progress,
+} = require("./seo-os-state-lib");
 
 // ---- args -----------------------------------------------------------------
 const argv = process.argv.slice(2);
@@ -65,6 +77,7 @@ const opt = {
   open: has("open"),
   json: has("json"),
   serve: has("serve"),
+  fleet: has("fleet"),
   daemon: has("daemon"),
   stop: has("stop"),
   status: has("status"),
@@ -91,6 +104,9 @@ if (opt.help) {
       "  --measure   fetch REAL CWV from PageSpeed Insights into cwv-report.json (--url= required;",
       "              PSI_API_KEY env optional). Combine with --snapshot for scheduled runs.",
       "  --serve     live panel on http://localhost:3928 (127.0.0.1 only; --port= to override)",
+      "  --fleet     ALL registered projects in one cockpit (~/.seo-os/registry.json;",
+      "              projects auto-register on every render). With --serve: / = fleet,",
+      "              /p/N = that project's full panel. Without --serve: writes ~/.seo-os/fleet.html",
       "  --daemon    with --serve: start detached in the background (survives the terminal);",
       "              pid -> <state-dir>/dashboard.pid, log -> <state-dir>/dashboard.log",
       "  --stop      stop the background panel",
@@ -102,24 +118,6 @@ if (opt.help) {
 }
 
 // ---- locate files ----------------------------------------------------------
-const STATE_NAME = "seo-os-state.json";
-const STATE_DIR = ".seo-os";
-function findStateFile(explicit) {
-  if (explicit) return path.resolve(explicit);
-  let dir = process.cwd();
-  for (let i = 0; i < 12; i++) {
-    for (const candidate of [
-      path.join(dir, STATE_DIR, STATE_NAME),
-      path.join(dir, STATE_NAME),
-    ]) {
-      if (fs.existsSync(candidate)) return candidate;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return path.resolve(STATE_DIR, STATE_NAME);
-}
 const STATE_PATH = findStateFile(positional[0]);
 const BASE_DIR = path.dirname(STATE_PATH);
 const HISTORY_PATH = path.resolve(flagVal("history", path.join(BASE_DIR, "metrics-history.jsonl")));
@@ -156,58 +154,8 @@ function loadHistory(file) {
     .sort((a, b) => String(a.at).localeCompare(String(b.at)));
 }
 
-// ---- domain (matches seo-os-state/v2 + execution-model.md) ------------------
-const TOP = ["FAZ0A", "FAZ0B"];
-const GRID = [
-  ["A", "B", "C"],
-  ["D", "E", "F"],
-  ["G", "H", "I"],
-  ["J", "K", "L"],
-];
-const LABELS = {
-  FAZ0A: "Tech Scan",
-  FAZ0B: "Business Input",
-  A: "İş Hedefi",
-  B: "Rakip / İçerik Boşluğu",
-  C: "Topical Authority",
-  D: "GEO / LLM Görünürlüğü",
-  E: "Entity SEO & Knowledge Graph",
-  F: "Klasik SEO + E-E-A-T",
-  G: "Yerel SEO",
-  H: "Metadata / Crawlability",
-  I: "Core Web Vitals + Cloudflare",
-  J: "CRO",
-  K: "Off-site Kurulum",
-  L: "Doğrulama",
-};
-const ALL_KEYS = [...TOP, ...GRID.flat()];
-const STATUS_TR = {
-  not_started: "başlamadı",
-  in_progress: "devam ediyor",
-  completed: "tamamlandı",
-  blocked: "engelli",
-};
-
-const statusOf = (state, key) =>
-  (state.phases && state.phases[key] && state.phases[key].status) || "not_started";
-const noteOf = (state, key) =>
-  (state.phases && state.phases[key] && state.phases[key].notes) || "";
-
-function progress(state) {
-  const counts = ALL_KEYS.reduce((acc, k) => {
-    const s = statusOf(state, k);
-    acc[s] = (acc[s] || 0) + 1;
-    return acc;
-  }, {});
-  const done = counts.completed || 0;
-  return {
-    done,
-    total: ALL_KEYS.length,
-    inProgress: counts.in_progress || 0,
-    blocked: counts.blocked || 0,
-    pct: Math.round((done / ALL_KEYS.length) * 100),
-  };
-}
+// ---- domain: TOP/GRID/ALL_KEYS/LABELS/STATUS_TR/statusOf/noteOf/progress -----
+// ortak kütüphaneden gelir -> ./seo-os-state-lib.js
 
 // CWV: accept both baseline-style (LCP_s) and lowercase keys.
 const CWV_DEFS = [
@@ -352,6 +300,30 @@ function assetUri(dir, name) {
 const robotAsset = (name) => assetUri(ROBOT_ASSET_DIR, name);
 const gameAsset = (name) => assetUri(GAME_ASSET_DIR, name);
 
+// XP eğrisi: zor görevler daha çok kazandırır (I en riskli, D/E/K/L stratejik)
+const XP_MAP = {
+  FAZ0A: 50, FAZ0B: 50,
+  A: 100, B: 100, C: 100,
+  D: 150, E: 150, F: 100,
+  G: 100, H: 100, I: 200,
+  J: 100, K: 150, L: 150,
+};
+const XP_TOTAL = ALL_KEYS.reduce((a, k) => a + (XP_MAP[k] || 100), 0); // 1600
+const RANKS = [
+  { min: 0, name: "ÇAYLAK" },
+  { min: 300, name: "OPERATÖR" },
+  { min: 700, name: "UZMAN" },
+  { min: 1200, name: "KOMUTAN" },
+  { min: XP_TOTAL, name: "PRIME" },
+];
+const xpOf = (state) =>
+  ALL_KEYS.reduce((a, k) => a + (statusOf(state, k) === "completed" ? XP_MAP[k] || 100 : 0), 0);
+function rankOf(xp) {
+  let r = RANKS[0];
+  for (const x of RANKS) if (xp >= x.min) r = x;
+  return r;
+}
+
 // başarımlar: hepsi tamamlanınca rozet açılır
 const ACHIEVEMENTS = [
   { icon: "🛰️", name: "Keşif Tamam", need: ["FAZ0A", "FAZ0B"] },
@@ -448,7 +420,9 @@ function primeSvg() {
 function robotSection(state) {
   const p = progress(state);
   const allDone = p.done === p.total;
-  const xpPct = Math.round((p.done / p.total) * 100);
+  const xp = xpOf(state);
+  const rank = rankOf(xp);
+  const xpPct = Math.round((xp / XP_TOTAL) * 100);
   const hangar = gameAsset("hangar.jpg");
   const pad = gameAsset("platform.jpg");
   const orb = gameAsset("orb.jpg");
@@ -514,11 +488,18 @@ function robotSection(state) {
     `<div class="hangar"${hangar ? ` style="background-image:url(${hangar})"` : ""}>` +
     `<div class="scanlines" aria-hidden="true"></div>` +
     `<div class="hud"><span class="hud-title">SEO-OS</span>` +
-    `<span class="lvl">SEVİYE ${p.done}</span>` +
-    `<div class="xp"><i style="width:${xpPct}%"></i></div>` +
-    `<span class="hud-count">${p.done}/${p.total} GÖREV</span></div>` +
+    `<span class="lvl" title="Rütbeler: ${RANKS.map((r) => `${r.name} ${r.min}+`).join(" · ")}">⭐ ${rank.name}</span>` +
+    `<div class="xp" title="${xp}/${XP_TOTAL} XP"><i style="width:${xpPct}%"></i></div>` +
+    `<span class="hud-count">${xp}/${XP_TOTAL} XP · ${p.done}/${p.total} GÖREV</span></div>` +
     `<div class="bays">${bays}</div>${primeStage}</div>` +
-    `<div class="ach-row">${achRow}</div>` +
+    `<div class="ach-row">${achRow}${
+      allDone
+        ? `<button id="victory-btn" type="button" data-project="${esc(state.project || "?")}"` +
+          ` data-before="${(state.aiVisibilityScore || {}).before ?? "—"}"` +
+          ` data-current="${(state.aiVisibilityScore || {}).current ?? "—"}"` +
+          ` data-xp="${xp}/${XP_TOTAL}">🏆 Zafer Kartını İndir (PNG)</button>`
+        : ""
+    }</div>` +
     (allDone
       ? ""
       : `<p class="muted merge-hint">Her tamamlanan görev robotuna yeni modül ekler; aktif görevler parlar.
@@ -656,14 +637,15 @@ function phaseSection(state) {
     const note = noteOf(state, k);
     const icon =
       st === "completed" ? "✔" : st === "in_progress" ? "⚔" : st === "blocked" ? "⛔" : "🔒";
+    const xpVal = XP_MAP[k] || 100;
     const reward =
       st === "completed"
-        ? "+1 SEVİYE"
+        ? `+${xpVal} XP`
         : st === "in_progress"
-          ? "AKTİF GÖREV"
+          ? `AKTİF · ${xpVal} XP`
           : st === "blocked"
             ? "ENGELLENDİ"
-            : "KİLİTLİ";
+            : `🔒 ${xpVal} XP`;
     return (
       `<div class="quest ${st}" title="${esc(note)}">` +
       `<span class="q-icon">${icon}</span>` +
@@ -754,8 +736,101 @@ function logSection(state) {
   return `<section class="card"><h2>Seyir Defteri — Son Aktivite</h2><ul class="log">${items}</ul></section>`;
 }
 
+// Filo kokpiti: kayıtlı tüm projelerin özet kartları (serve modunda /p/N linkli)
+function renderFleetHtml(serveMode) {
+  const entries = loadRegistry().map((r) => {
+    try {
+      return { ...r, ok: true, m: loadModelFrom(r.statePath) };
+    } catch (e) {
+      return { ...r, ok: false, error: e.message };
+    }
+  });
+  const cards = entries
+    .map((e, i) => {
+      if (!e.ok)
+        return (
+          `<div class="card fcard dead"><div class="fname">${esc(e.project)}</div>` +
+          `<div class="muted">ulaşılamıyor — ${esc(e.error)}</div>` +
+          `<div class="fpath">${esc(e.statePath)}</div></div>`
+        );
+      const s = e.m.state;
+      const p = progress(s);
+      const vis = s.aiVisibilityScore || {};
+      const href = serveMode
+        ? `/p/${i}`
+        : "file://" + path.join(path.dirname(e.statePath), "dashboard.html");
+      return (
+        `<a class="card fcard" href="${href}">` +
+        `<div class="fhead"><span class="fname">${esc(s.project || e.project)}</span>` +
+        `<span class="mode ${esc(s.mode || "ANALYZE")}">${esc(s.mode || "ANALYZE")}</span></div>` +
+        `<div class="fbar"><i style="width:${p.pct}%"></i></div>` +
+        `<div class="fstats"><span>${p.done}/${p.total} görev</span>` +
+        `<span>AI Vis: ${vis.before ?? "—"} → <strong>${vis.current ?? "—"}</strong></span>` +
+        (p.blocked ? `<span class="fbad">⛔ ${p.blocked}</span>` : "") +
+        (p.done === p.total ? `<span>👑 PRIME</span>` : "") +
+        `</div><div class="fpath">güncelleme: ${fmtDate(s.updatedAt)}</div></a>`
+      );
+    })
+    .join("");
+  return `<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO-OS Filo Kokpiti</title>
+<style>
+  :root { color-scheme: light; --bg:#f4f6fb; --card:#fff; --border:#e2e8f0; --text:#1e293b;
+          --strong:#0f172a; --muted:#64748b; --accent:#0369a1; --gridline:rgba(15,23,42,.05);
+          --ok-bg:#dcfce7; --ok-fg:#15803d; --bad-fg:#b91c1c;
+          --warn-bg:#fef9c3; --warn-fg:#a16207; --bad-bg:#fee2e2; --info-bg:#e0f2fe; --info-fg:#0369a1; }
+  .dark { color-scheme: dark; --bg:#0b1220; --card:#101a2e; --border:#1e293b; --text:#e2e8f0;
+          --strong:#f8fafc; --muted:#64748b; --accent:#22d3ee; --gridline:rgba(125,211,252,.07);
+          --ok-bg:#052e1b; --ok-fg:#4ade80; --bad-fg:#fb7185;
+          --warn-bg:#2a2206; --warn-fg:#facc15; --bad-bg:#3f1120; --info-bg:#082f3a; --info-fg:#22d3ee; }
+  * { box-sizing:border-box; } body { margin:0; padding:24px; background:var(--bg); color:var(--text);
+      font:15px/1.55 -apple-system,"Segoe UI",Roboto,sans-serif; }
+  body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);
+      background-size:30px 30px; }
+  .wrap { max-width:960px; margin:0 auto; position:relative; z-index:1; }
+  header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  h1 { font:700 19px ui-monospace,Menlo,monospace; letter-spacing:.14em; text-transform:uppercase;
+       color:var(--strong); margin:0; } h1 span { color:var(--accent); }
+  #theme-toggle { margin-left:auto; cursor:pointer; border:1px solid var(--border); background:var(--card);
+       color:var(--text); border-radius:999px; padding:3px 12px; font:inherit; font-size:12.5px; }
+  .fleet { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px;
+          position:relative; text-decoration:none; color:inherit; display:block; }
+  .card::before,.card::after { content:""; position:absolute; width:12px; height:12px;
+          border:2px solid var(--accent); opacity:.5; pointer-events:none; }
+  .card::before { top:-1px; left:-1px; border-right:none; border-bottom:none; border-top-left-radius:10px; }
+  .card::after { bottom:-1px; right:-1px; border-left:none; border-top:none; border-bottom-right-radius:10px; }
+  a.fcard:hover { border-color: var(--accent); }
+  .fhead { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .fname { font-weight:700; color:var(--strong); }
+  .mode { padding:1px 9px; border-radius:999px; font-size:11px; font-weight:700; }
+  .mode.EXECUTE { background:var(--bad-bg); color:var(--bad-fg); }
+  .mode.PROPOSE { background:var(--warn-bg); color:var(--warn-fg); }
+  .mode.ANALYZE { background:var(--info-bg); color:var(--info-fg); }
+  .fbar { height:8px; border-radius:999px; background:var(--bg); border:1px solid var(--border);
+          overflow:hidden; margin:10px 0 8px; }
+  .fbar i { display:block; height:100%; background:linear-gradient(90deg,#0ea5e9,#5eead4); }
+  .fstats { display:flex; flex-wrap:wrap; gap:10px; font-size:13px; }
+  .fbad { color: var(--bad-fg); font-weight:600; }
+  .fpath { font:11px ui-monospace,Menlo,monospace; color:var(--muted); margin-top:8px;
+           overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .dead { opacity:.7; } .muted { color:var(--muted); }
+  .empty { text-align:center; color:var(--muted); padding:40px 0; }
+</style></head><body><div class="wrap">
+<header><h1>SEO-OS <span>Filo Kokpiti</span></h1>
+<button id="theme-toggle" type="button">🌙 Gece</button></header>
+${entries.length ? `<div class="fleet">${cards}</div>` : `<p class="empty">Kayıtlı proje yok. Bir projede paneli bir kez çalıştır — otomatik kaydolur.</p>`}
+<script>(function(){var KEY="seo-os-theme",b=document.getElementById("theme-toggle");
+function a(t){document.documentElement.classList.toggle("dark",t==="dark");b.textContent=t==="dark"?"☀️ Açık":"🌙 Gece"}
+var t="light";try{t=localStorage.getItem(KEY)||"light"}catch(e){}a(t);
+b.addEventListener("click",function(){t=t==="dark"?"light":"dark";try{localStorage.setItem(KEY,t)}catch(e){}a(t)})})();
+</script></div></body></html>`;
+}
+
 function renderHtml(model) {
-  const { state, history, engines, cwv, delta } = model;
+  const { state, history, engines, cwv, delta, statePath = STATE_PATH } = model;
   const p = progress(state);
   const mode = state.mode || "ANALYZE";
   return `<!doctype html>
@@ -944,6 +1019,10 @@ function renderHtml(model) {
          border: 1px solid var(--border); padding: 3px 10px; border-radius: 999px; }
   .ach.locked { opacity: .45; filter: grayscale(1); }
   .ach.unlocked { background: var(--ok-bg); color: var(--ok-fg); border-color: var(--ok-bd); }
+  #victory-btn { margin-left: auto; cursor: pointer; font: 600 12.5px -apple-system, sans-serif;
+                 border: 1px solid #facc15; color: #a16207; background: #fef9c3;
+                 border-radius: 999px; padding: 4px 14px; }
+  .dark #victory-btn { background: #3a2b05; color: #facc15; }
   /* SVG yedek robotlar (görsel dosyaları yoksa) */
   .part { transform-box: fill-box; transform-origin: center; }
   .part.unlocked { animation: partIn .55s cubic-bezier(.2, 1.4, .4, 1) both; }
@@ -992,7 +1071,7 @@ function renderHtml(model) {
   ${cwvSection(cwv, history)}
   ${deltaSection(delta)}
   ${logSection(state)}
-  <footer>seo-os-dashboard.js · ${p.done}/${p.total} faz tamam · üretim: ${fmtDate(new Date().toISOString())} · kaynak: ${esc(path.relative(process.cwd(), STATE_PATH) || STATE_PATH)}</footer>
+  <footer>seo-os-dashboard.js · ${p.done}/${p.total} faz tamam · üretim: ${fmtDate(new Date().toISOString())} · kaynak: ${esc(path.relative(process.cwd(), statePath) || statePath)}</footer>
 </div>
 <script>
 (function () {
@@ -1011,6 +1090,47 @@ function renderHtml(model) {
     try { localStorage.setItem(KEY, theme); } catch (e) {}
     apply(theme);
   });
+
+  // 🏆 Zafer kartı: 1200x630 paylaşılabilir PNG (tamamı istemci tarafında çizilir)
+  var vb = document.getElementById("victory-btn");
+  if (vb) vb.addEventListener("click", function () {
+    var c = document.createElement("canvas");
+    c.width = 1200; c.height = 630;
+    var x = c.getContext("2d");
+    var g = x.createLinearGradient(0, 0, 0, 630);
+    g.addColorStop(0, "#0b1220"); g.addColorStop(1, "#041a2e");
+    x.fillStyle = g; x.fillRect(0, 0, 1200, 630);
+    x.strokeStyle = "rgba(125,211,252,.07)"; x.lineWidth = 1;
+    for (var i = 0; i <= 1200; i += 30) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 630); x.stroke(); }
+    for (var j = 0; j <= 630; j += 30) { x.beginPath(); x.moveTo(0, j); x.lineTo(1200, j); x.stroke(); }
+    var img = document.querySelector(".prime-img");
+    if (img && img.naturalWidth) {
+      var boxW = 330, boxH = 470;
+      var r = Math.min(boxW / img.naturalWidth, boxH / img.naturalHeight);
+      var w = img.naturalWidth * r, h = img.naturalHeight * r;
+      var grd = x.createRadialGradient(970, 320, 40, 970, 320, 240);
+      grd.addColorStop(0, "rgba(56,189,248,.35)"); grd.addColorStop(1, "rgba(56,189,248,0)");
+      x.fillStyle = grd; x.fillRect(730, 80, 480, 480);
+      x.drawImage(img, 970 - w / 2, 320 - h / 2, w, h);
+    }
+    x.fillStyle = "#facc15"; x.font = "700 30px Menlo, monospace";
+    x.fillText("⚡ PRIME MODU", 70, 120);
+    x.fillStyle = "#f8fafc"; x.font = "700 52px Menlo, monospace";
+    x.fillText(vb.dataset.project, 70, 190);
+    x.fillStyle = "#94a3b8"; x.font = "24px Menlo, monospace";
+    x.fillText("SEO-OS Growth Optimization — 14/14 görev tamamlandı", 70, 240);
+    x.fillStyle = "#5eead4"; x.font = "700 44px Menlo, monospace";
+    x.fillText("AI Visibility: " + vb.dataset.before + " → " + vb.dataset.current + " / 100", 70, 330);
+    x.fillStyle = "#7dd3fc"; x.font = "26px Menlo, monospace";
+    x.fillText("XP: " + vb.dataset.xp + "  ·  RÜTBE: PRIME", 70, 390);
+    x.fillStyle = "#475569"; x.font = "20px Menlo, monospace";
+    x.fillText(new Date().toLocaleDateString("tr-TR"), 70, 560);
+    x.fillText("seo-geo-optimizer · claude-web-toolkit", 70, 590);
+    var a = document.createElement("a");
+    a.download = "seo-os-zafer-karti.png";
+    a.href = c.toDataURL("image/png");
+    a.click();
+  });
 })();
 </script>
 </body></html>`;
@@ -1018,17 +1138,65 @@ function renderHtml(model) {
 
 // ---- main --------------------------------------------------------------------
 // re-callable so --serve can re-read everything per request (live panel)
-function loadModel() {
-  const state = loadJson(STATE_PATH, true);
-  const geo = loadJson(GEO_PATH, false);
+function pathsFor(statePath) {
+  const base = path.dirname(statePath);
   return {
+    history: path.join(base, "metrics-history.jsonl"),
+    geo: path.join(base, "geo-report.json"),
+    cwv: path.join(base, "cwv-report.json"),
+    delta: path.join(base, "delta-report.json"),
+  };
+}
+function loadModelFrom(statePath, overrides) {
+  const p = overrides || pathsFor(statePath);
+  const state = loadJson(statePath, true);
+  const geo = loadJson(p.geo, false);
+  return {
+    statePath,
     state,
     geo,
-    cwv: loadJson(CWV_PATH, false),
-    delta: loadJson(DELTA_PATH, false),
-    history: loadHistory(HISTORY_PATH),
+    cwv: loadJson(p.cwv, false),
+    delta: loadJson(p.delta, false),
+    history: loadHistory(p.history),
     engines: enginesOf(geo),
   };
+}
+function loadModel() {
+  return loadModelFrom(STATE_PATH, {
+    history: HISTORY_PATH,
+    geo: GEO_PATH,
+    cwv: CWV_PATH,
+    delta: DELTA_PATH,
+  });
+}
+
+// ---- filo kaydı (~/.seo-os/registry.json) --------------------------------------
+// Her başarılı render projeyi kaydeder; --fleet tüm kayıtlı projeleri tek kokpitte gösterir.
+const REGISTRY_PATH = path.join(require("os").homedir(), ".seo-os", "registry.json");
+function loadRegistry() {
+  try {
+    const r = JSON.parse(fs.readFileSync(REGISTRY_PATH, "utf8"));
+    return Array.isArray(r) ? r : [];
+  } catch {
+    return [];
+  }
+}
+function registerProject(state, statePath) {
+  try {
+    const reg = loadRegistry();
+    const entry = {
+      project: state.project || path.basename(path.dirname(path.dirname(statePath))),
+      statePath,
+      lastSeen: new Date().toISOString(),
+    };
+    const idx = reg.findIndex((r) => r.statePath === statePath);
+    if (idx >= 0) reg[idx] = entry;
+    else reg.push(entry);
+    fs.mkdirSync(path.dirname(REGISTRY_PATH), { recursive: true });
+    fs.writeFileSync(REGISTRY_PATH, JSON.stringify(reg, null, 2) + "\n");
+  } catch {
+    /* kayıt hatası aracı asla durdurmaz */
+  }
 }
 
 function openInBrowser(target) {
@@ -1176,6 +1344,13 @@ if (opt.serve && opt.daemon) {
     if (opt.open) openInBrowser(url);
     process.exit(0);
   }, 500);
+} else if (opt.fleet && !opt.serve) {
+  // statik filo kokpiti (yerel state gerekmez — kayıt defterinden okur)
+  const out = path.join(path.dirname(REGISTRY_PATH), "fleet.html");
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.writeFileSync(out, renderFleetHtml(false));
+  console.log(`[dashboard] filo kokpiti -> ${out} (${loadRegistry().length} proje)`);
+  if (opt.open) openInBrowser(out);
 } else if (opt.measure) {
   measurePsi(opt.url)
     .then(() => mainCli())
@@ -1204,7 +1379,8 @@ if (opt.snapshot) {
   history = loadHistory(HISTORY_PATH);
 }
 
-const model = { state, history, engines, cwv, delta };
+const model = { state, history, engines, cwv, delta, statePath: STATE_PATH };
+registerProject(state, STATE_PATH); // filo kokpiti bu projeyi görsün
 
 if (opt.json) {
   const vis = state.aiVisibilityScore || {};
@@ -1229,17 +1405,40 @@ if (opt.json) {
 
 if (opt.serve) {
   const http = require("http");
+  // filo değilse yerel projeyi kayda geçir (kokpit onu da görsün)
+  if (!opt.fleet) {
+    try {
+      registerProject(loadModel().state, STATE_PATH);
+    } catch {}
+  }
   const server = http.createServer((req, res) => {
     try {
-      // her istekte taze oku: state/ölçüm dosyaları değiştikçe panel canlı kalır
-      const m = loadModel();
-      // önizleme: /?prime=1 tüm fazları tamamlanmış sayar (birleşme finalini göster)
-      if (/[?&]prime=1/.test(req.url || "")) {
-        for (const k of Object.keys(m.state.phases || {}))
-          m.state.phases[k] = { ...m.state.phases[k], status: "completed" };
+      let html;
+      const pm = opt.fleet && (req.url || "").match(/^\/p\/(\d+)/);
+      if (opt.fleet && !pm) {
+        html = renderFleetHtml(true);
+      } else {
+        let m;
+        if (pm) {
+          const r = loadRegistry()[Number(pm[1])];
+          if (!r) {
+            res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+            return res.end("proje bulunamadı — filo kokpitine dön: /");
+          }
+          m = loadModelFrom(r.statePath);
+        } else {
+          // her istekte taze oku: state/ölçüm dosyaları değiştikçe panel canlı kalır
+          m = loadModel();
+        }
+        // önizleme: ?prime=1 tüm fazları tamamlanmış sayar (birleşme finalini göster)
+        if (/[?&]prime=1/.test(req.url || "")) {
+          for (const k of Object.keys(m.state.phases || {}))
+            m.state.phases[k] = { ...m.state.phases[k], status: "completed" };
+        }
+        html = renderHtml(m);
       }
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
-      res.end(renderHtml({ state: m.state, history: m.history, engines: m.engines, cwv: m.cwv, delta: m.delta }));
+      res.end(html);
     } catch (e) {
       res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
       res.end(`panel render hatası: ${e.message}`);

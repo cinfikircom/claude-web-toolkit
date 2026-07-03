@@ -1,6 +1,8 @@
 node_modules/
 .DS_Store
 *.local.md
+# CI smoke geçici alanı (taşınabilirlik için /tmp yerine repo-göreli)
+.ci-tmp/
 
 # E2E harness gerçek-koşu çıktıları (LLM run'ları commit'lenmez)
 seo-os-validation-suite/harness/runs/

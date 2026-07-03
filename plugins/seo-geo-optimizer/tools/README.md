@@ -79,6 +79,11 @@ node "$DASH" --measure --url=https://siten.com --snapshot --note="haftalık öl�
 
 # Makine-okunur veri modeli (CI / sync için)
 node "$DASH" --json
+
+# FİLO KOKPİTİ — birden çok siteyi tek ekranda izle (ajans modu)
+# Panel her çalıştığında proje ~/.seo-os/registry.json'a otomatik kaydolur.
+node "$DASH" --fleet --open              # statik kokpit: ~/.seo-os/fleet.html
+node "$DASH" --serve --fleet --daemon    # canlı: / = kokpit, /p/N = o projenin tam paneli
 ```
 
 **Zamanlanmış ölçüm (önerilir):** haftada bir `--measure --url=… --snapshot` koşarsa
@@ -110,8 +115,11 @@ geçirir. Tercih tarayıcının `localStorage`'ında saklanır (grafik dahil tü
 
 **Komuta Merkezi (oyun arayüzü):** panel bir oyun ekranı gibi davranır. Sci-fi hangar sahnesinde
 dört robot karakter holografik platformlar üzerinde durur — Strateji-Bot (FAZ 0A/0B + A/B),
-GEO-Bot (C–F), Teknik-Bot (G–I), Büyüme-Bot (J–L). Üstte **SEVİYE + XP barı** (tamamlanan görev
-sayısı), her robotun altında isim plakası ve **modül/HP barı** vardır. Her tamamlanan görev robotu
+GEO-Bot (C–F), Teknik-Bot (G–I), Büyüme-Bot (J–L). Üstte **RÜTBE + XP barı** — XP görev zorluğuna
+göre kazanılır (örn. Core Web Vitals 200 XP, Entity/Off-site 150 XP; toplam 1600) ve rütbe atlatır:
+ÇAYLAK → OPERATÖR (300) → UZMAN (700) → KOMUTAN (1200) → **PRIME** (1600). Her robotun altında
+isim plakası ve **modül/HP barı** vardır. PRIME'a ulaşınca **"🏆 Zafer Kartını İndir"** düğmesi
+1200×630 paylaşılabilir bir PNG üretir (tamamı istemcide çizilir, hiçbir yere yüklenmez). Her tamamlanan görev robotu
 alttan yukarı "inşa ederek" geliştirir; aktif görevi olan robot parlayarak titreşir. Faz haritası
 **Görev Günlüğü**dür (✔ tamamlandı / ⚔ aktif / ⛔ engelli / 🔒 kilitli; her görev "+1 SEVİYE").
 Altta **başarım rozetleri** açılır (Keşif Tamam, Stratejist, AI'da Görünür, Hız Şeytanı… 👑 PRIME).

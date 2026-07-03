@@ -7,7 +7,14 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash # Windows'ta da Git Bash: tüm adımlar tek sözdizimiyle çalışır
     steps:
       - uses: actions/checkout@v4
 
@@ -17,6 +24,7 @@ jobs:
 
       - name: Syntax check (pure-Node tools)
         run: |
+          node --check plugins/seo-geo-optimizer/tools/seo-os-state-lib.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-tracker.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-sync.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-dashboard.js
@@ -34,7 +42,7 @@ jobs:
       - name: JSON files parse (all tracked .json)
         run: |
           git ls-files '*.json' | while read -r f; do
-            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" \
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$f" \
               && echo "OK  $f" || { echo "FAIL $f"; exit 1; }
           done
 
@@ -52,25 +60,27 @@ jobs:
           cd seo-os-validation-suite
           npm test
 
+      # smoke'lar repo-göreli .ci-tmp altında koşar: /tmp yok, mutlak yol yok —
+      # aynı adımlar Windows (Git Bash) + Node'da da birebir çalışır
       - name: Dashboard smoke (template state -> --json + HTML)
         run: |
-          mkdir -p /tmp/dash-smoke/.seo-os
+          mkdir -p .ci-tmp/dash-smoke/.seo-os
           sed 's/{SITE_ADI}/ci-smoke/; s/{ISO8601}/2026-01-01T00:00:00Z/' \
             plugins/seo-geo-optimizer/skills/seo-geo-audit/templates/seo-os-state.template.json \
-            > /tmp/dash-smoke/.seo-os/seo-os-state.json
-          cd /tmp/dash-smoke
-          node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-dashboard.js" --json | node -e "
+            > .ci-tmp/dash-smoke/.seo-os/seo-os-state.json
+          cd .ci-tmp/dash-smoke
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-dashboard.js --json | node -e "
             let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
               const j=JSON.parse(d);
               if (j.project!=='ci-smoke' || j.progress.total!==14) { console.error('smoke FAIL', j); process.exit(1); }
               console.log('dashboard smoke OK');
             })"
-          node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-dashboard.js"
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-dashboard.js
           grep -q "Görev Günlüğü" .seo-os/dashboard.html && echo "dashboard HTML OK"
 
-      - name: PSI-parse + probe smoke (deterministic, no network)
+      - name: PSI-parse + probe + fleet smoke (deterministic, no network)
         run: |
-          cat > /tmp/psi-mock.json <<'EOF'
+          cat > .ci-tmp/psi-mock.json <<'EOF'
           {
             "lighthouseResult": {
               "finalUrl": "https://ci.example",
@@ -85,10 +95,16 @@ jobs:
             "loadingExperience": { "metrics": { "INTERACTION_TO_NEXT_PAINT": { "percentile": 210 } } }
           }
           EOF
-          cd /tmp/dash-smoke
-          node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-dashboard.js" --measure --psi-mock=/tmp/psi-mock.json
+          cd .ci-tmp/dash-smoke
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-dashboard.js --measure --psi-mock=../psi-mock.json
           node -e "
-            const r=require('/tmp/dash-smoke/.seo-os/cwv-report.json');
+            const r=JSON.parse(require('fs').readFileSync('.seo-os/cwv-report.json','utf8'));
             if (r.LCP_s!==2.3 || r.INP_ms!==210 || r.source!=='psi-lab+crux') { console.error('PSI parse FAIL', r); process.exit(1); }
             console.log('PSI parse OK');"
-          node "$GITHUB_WORKSPACE/plugins/seo-geo-optimizer/tools/seo-os-probe.js" --site=ci.example --keywords="test sorgusu" --dry-run
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-probe.js --site=ci.example --keywords="test sorgusu" --dry-run
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-dashboard.js --fleet
+          node -e "
+            const os=require('os'),p=require('path'),fs=require('fs');
+            const f=p.join(os.homedir(),'.seo-os','fleet.html');
+            if (!fs.readFileSync(f,'utf8').includes('ci-smoke')) { console.error('fleet FAIL'); process.exit(1); }
+            console.log('fleet smoke OK');"

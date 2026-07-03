@@ -22,6 +22,16 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const {
+  STATE_NAME,
+  findStateFile,
+  TOP,
+  GRID,
+  ALL_KEYS,
+  LABELS,
+  SYMBOL,
+  statusOf,
+} = require("./seo-os-state-lib");
 
 // ---- args -----------------------------------------------------------------
 const argv = process.argv.slice(2);
@@ -50,62 +60,11 @@ if (opt.help) {
   process.exit(0);
 }
 
-// ---- locate state file -----------------------------------------------------
-const STATE_NAME = "seo-os-state.json";
-const STATE_DIR = ".seo-os";
-function findStateFile(explicit) {
-  if (explicit) return path.resolve(explicit);
-  let dir = process.cwd();
-  for (let i = 0; i < 12; i++) {
-    // preferred location first, then legacy root location
-    for (const candidate of [
-      path.join(dir, STATE_DIR, STATE_NAME),
-      path.join(dir, STATE_NAME),
-    ]) {
-      if (fs.existsSync(candidate)) return candidate;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return path.resolve(STATE_DIR, STATE_NAME); // best-effort default (may not exist)
-}
+// ---- locate state file (ortak lib: ./seo-os-state-lib.js) -------------------
 const STATE_PATH = findStateFile(positional[0]);
 
 // ---- presentation ----------------------------------------------------------
-const SYMBOL = {
-  not_started: "[ ]",
-  in_progress: "[~]",
-  completed: "[✓]",
-  blocked: "[!]",
-};
-// fixed dashboard grid (matches execution-model.md)
-const TOP = ["FAZ0A", "FAZ0B"];
-const GRID = [
-  ["A", "B", "C"],
-  ["D", "E", "F"],
-  ["G", "H", "I"],
-  ["J", "K", "L"],
-];
-// human labels for --detail
-const LABELS = {
-  FAZ0A: "Tech Scan",
-  FAZ0B: "Business Input",
-  A: "Is Hedefi (Business Goal)",
-  B: "Rakip / Icerik Boslugu",
-  C: "Topical Authority",
-  D: "GEO / LLM Gorunurlugu",
-  E: "Entity SEO, Schema & Knowledge Graph",
-  F: "Klasik SEO + E-E-A-T",
-  G: "Yerel SEO",
-  H: "Metadata / Crawlability",
-  I: "Core Web Vitals + Cloudflare",
-  J: "CRO",
-  K: "Off-site Kurulum",
-  L: "Dogrulama",
-};
-const ALL_KEYS = [...TOP, ...GRID.flat()];
-
+// SYMBOL / TOP / GRID / LABELS / ALL_KEYS / statusOf ortak lib'den gelir
 const C = opt.color
   ? {
       dim: (s) => `\x1b[2m${s}\x1b[0m`,
@@ -127,10 +86,6 @@ function paintSymbol(status) {
   if (status === "in_progress") return C.yellow(sym);
   if (status === "blocked") return C.red(sym);
   return C.dim(sym);
-}
-
-function statusOf(state, key) {
-  return (state.phases && state.phases[key] && state.phases[key].status) || "not_started";
 }
 
 // ---- render ----------------------------------------------------------------

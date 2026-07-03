@@ -29,27 +29,16 @@ const { spawnSync } = require("child_process");
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
+const { findStateFile, SYMBOL: SYM, progress } = require("./seo-os-state-lib");
 
 const args = process.argv.slice(2);
 const has = (n) => args.includes(`--${n}`);
 const positional = args.filter((a) => !a.startsWith("--"));
 
 // ---------------------------------------------------------------- state
-function findState() {
-  if (positional[0]) return path.resolve(positional[0]);
-  let dir = process.cwd();
-  for (;;) {
-    for (const rel of [".seo-os/seo-os-state.json", "seo-os-state.json"]) {
-      const p = path.join(dir, rel);
-      if (fs.existsSync(p)) return p;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) return null;
-    dir = parent;
-  }
-}
-const statePath = findState();
-if (!statePath) {
+// keşif ortak lib'den (12 seviyeli yukarı yürüyüş — tracker/dashboard ile aynı)
+const statePath = findStateFile(positional[0]);
+if (!fs.existsSync(statePath)) {
   console.error("seo-os-state.json bulunamadı (CWD'den yukarı arandı). Yol verin: node seo-os-sync.js path/to/state.json");
   process.exit(2);
 }
@@ -58,10 +47,9 @@ const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
 // ---------------------------------------------------------------- render
 const phases = state.phases || {};
 const phaseIds = Object.keys(phases);
-const count = (s) => phaseIds.filter((id) => phases[id].status === s).length;
-const done = count("completed");
-const progressPct = phaseIds.length ? Math.round((done / phaseIds.length) * 100) : 0;
-const SYM = { not_started: "[ ]", in_progress: "[~]", completed: "[✓]", blocked: "[!]" };
+const prog = progress(state); // kanonik ilerleme: sabit 14 fazlık ızgara üzerinden
+const done = prog.done;
+const progressPct = prog.pct;
 
 function renderMarkdown() {
   const rows = phaseIds
@@ -72,7 +60,7 @@ function renderMarkdown() {
   const aivs = state.aiVisibilityScore || {};
   return `## SEO-OS Durum — ${state.project || "?"}
 
-**Mod:** \`${state.mode || "?"}\` · **Aktif faz:** \`${state.currentPhase || "—"}\` · **İlerleme:** ${progressPct}% (${done}/${phaseIds.length})
+**Mod:** \`${state.mode || "?"}\` · **Aktif faz:** \`${state.currentPhase || "—"}\` · **İlerleme:** ${progressPct}% (${done}/${prog.total})
 **AI Visibility Score:** önce ${aivs.before ?? "—"} → şimdi ${aivs.current ?? "—"}
 **Son güncelleme:** ${state.updatedAt || "—"}
 

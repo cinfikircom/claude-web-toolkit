@@ -4,6 +4,25 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.5.0] — 2026-07-03
+### Eklendi
+- **Filo Kokpiti (ajans modu):** panel her çalıştığında proje `~/.seo-os/registry.json`a otomatik
+  kaydolur; `--fleet` tüm projeleri tek ekranda özetler (ilerleme, AI Visibility, mod, engel);
+  `--serve --fleet`te `/` kokpit, `/p/N` o projenin tam paneli (prime önizleme dahil).
+- **XP eğrisi + rütbeler:** XP görev zorluğuna göre (CWV 200, Entity/Off-site/Doğrulama 150,
+  standart 100, keşif 50; toplam 1600). Rütbeler: ÇAYLAK → OPERATÖR → UZMAN → KOMUTAN → PRIME.
+  Görev Günlüğü ödülleri "+N XP" gösterir.
+- **🏆 Zafer Kartı:** PRIME modunda tek tıkla 1200×630 paylaşılabilir PNG (canvas, tamamı istemcide).
+- **Haftalık E2E bekçisi:** `agent-run.yml` artık her pazartesi zamanlanmış koşar; `ANTHROPIC_API_KEY`
+  secret'ı yoksa adımlar güvenle atlanır (model drift erken yakalanır).
+- **Windows CI:** `validate` işi ubuntu+windows matrisinde (Git Bash); smoke'lar `/tmp` yerine
+  repo-göreli `.ci-tmp`de koşar — araçlar Windows'ta da doğrulanıyor. Filo smoke testi eklendi.
+### Değişti
+- **`tools/seo-os-state-lib.js`:** state keşfi, faz ızgarası/etiketler, semboller ve ilerleme
+  matematiği tek kütüphanede; tracker / sync / dashboard artık onu kullanıyor (sync'in sınırsız
+  yukarı yürüyüşü 12 seviyeye, ilerleme yüzdesi kanonik 14 fazlık ızgaraya sabitlendi;
+  tracker `--detail` etiketleri Türkçe diakritikli hale geldi).
+
 ## [2.4.0] — 2026-07-03
 ### Eklendi
 - **Gerçek CWV ölçümü:** `seo-os-dashboard.js --measure --url=…` — PageSpeed Insights API'sinden

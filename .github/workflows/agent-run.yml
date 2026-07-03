@@ -1,8 +1,13 @@
 name: agent-run (E2E, LLM)
 
-# Manuel tetiklenen, ücretli LLM çağrısı yapan uçtan uca değerlendirme.
+# Ücretli LLM çağrısı yapan uçtan uca değerlendirme.
 # Deterministik yarı (scorer + golden regression) her PR'da validate.yml'de koşar;
 # bu workflow gerçek `claude -p` koşusunu kapsar.
+#
+# İki tetik:
+#   - workflow_dispatch: elle, istediğin eşik/modelle
+#   - schedule: her pazartesi 03:00 UTC — model drift bekçisi. ANTHROPIC_API_KEY
+#     secret'ı tanımlı değilse adımlar sessizce atlanır (fatura sürprizi yok).
 on:
   workflow_dispatch:
     inputs:
@@ -14,22 +19,35 @@ on:
         description: "claude --model değeri (boş = varsayılan)"
         required: false
         default: ""
+  schedule:
+    - cron: "0 3 * * 1"
+
+env:
+  HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Skip notice (no API key)
+        if: env.HAS_KEY != 'true'
+        run: echo "ANTHROPIC_API_KEY secret tanımlı değil — E2E koşusu atlandı (zamanlanmış tetik güvenli biçimde boş geçer)."
+
       - uses: actions/checkout@v4
+        if: env.HAS_KEY == 'true'
 
       - uses: actions/setup-node@v4
+        if: env.HAS_KEY == 'true'
         with:
           node-version: 20
 
       - name: Install Claude Code CLI
+        if: env.HAS_KEY == 'true'
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Run E2E harness (audit -> grade -> score)
+        if: env.HAS_KEY == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -37,12 +55,12 @@ jobs:
           MODEL_FLAG=""
           [ -n "${{ inputs.model }}" ] && MODEL_FLAG="--model=${{ inputs.model }}"
           node harness/run-agent-harness.js \
-            --min-score=${{ inputs.min_score }} \
+            --min-score=${{ inputs.min_score || '60' }} \
             --out=harness/runs/ci-run.json \
             $MODEL_FLAG
 
       - name: Upload graded output
-        if: always()
+        if: env.HAS_KEY == 'true' && always()
         uses: actions/upload-artifact@v4
         with:
           name: seo-os-e2e-run
