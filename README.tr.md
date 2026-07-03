@@ -8,6 +8,16 @@ Search, Gemini, Perplexity, Claude, AI Overviews) + Core Web Vitals + Knowledge 
 seviyeye çıkarıp **daha fazla lead/satış** üretmek. Strateji → Arama Görünürlüğü → Performans → Büyüme
 akışıyla çalışır. Tek repo, her proje/sitede yeniden kullanılır.
 
+![SEO-OS Komuta Merkezi — oyun tarzı canlı panel](./docs/images/panel-komuta-merkezi.png)
+*Komuta Merkezi paneli (localhost:3928): dört robot karakter, denetim görevleri tamamlandıkça
+gelişir; 14/14'te birleşip **Prime**'ı oluştururlar.*
+
+<details>
+<summary>🏆 Prime finali (14 görevin tümü tamamlandığında)</summary>
+
+![Prime modu — robotlar birleşti](./docs/images/panel-prime.png)
+</details>
+
 ## Yetenekler (plugins)
 
 | Plugin | Ne yapar |

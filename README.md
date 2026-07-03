@@ -8,6 +8,16 @@ The goal isn't just "ranking higher on Google" or traffic; it's lifting a site t
 Vitals + Knowledge Graph** to generate **more leads/sales**. It runs as Strategy → Search Visibility →
 Performance → Growth. One repo, reused on every project/site.
 
+![SEO-OS Command Center — game-style live dashboard](./docs/images/panel-komuta-merkezi.png)
+*The Command Center panel (localhost:3928): four robot characters level up as audit tasks complete;
+at 14/14 they merge into **Prime**.*
+
+<details>
+<summary>🏆 Prime finale (all 14 tasks completed)</summary>
+
+![Prime mode — all robots merged](./docs/images/panel-prime.png)
+</details>
+
 ## Capabilities (plugins)
 
 | Plugin | What it does |
