@@ -30,6 +30,22 @@ function findStateFile(explicit, fromDir) {
   return path.resolve(fromDir || process.cwd(), STATE_DIR, STATE_NAME);
 }
 
+// .seo-os DİZİNİNİ bul (yardımcı araçlar için: probe/sitecheck/indexnow/gsc).
+// DİKKAT: $HOME'da durur — ~/.seo-os filo kayıt dizinidir, bir proje dizini DEĞİLDİR;
+// oraya kilitlenmek config/raporları yanlış projeye yazardı.
+function findSeoOsDir(fromDir) {
+  const home = require("os").homedir();
+  let dir = fromDir || process.cwd();
+  for (let i = 0; i < 12; i++) {
+    if (dir === home) break;
+    if (fs.existsSync(path.join(dir, STATE_DIR))) return path.join(dir, STATE_DIR);
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return path.resolve(fromDir || process.cwd(), STATE_DIR);
+}
+
 // sabit dashboard ızgarası (references/execution-model.md ile birebir)
 const TOP = ["FAZ0A", "FAZ0B"];
 const GRID = [
@@ -99,6 +115,7 @@ module.exports = {
   STATE_NAME,
   STATE_DIR,
   findStateFile,
+  findSeoOsDir,
   TOP,
   GRID,
   ALL_KEYS,

@@ -190,7 +190,7 @@ function enginesOf(geo) {
 }
 
 // ---- snapshot ---------------------------------------------------------------
-function buildSnapshot(state, geo, cwv) {
+function buildSnapshot(state, geo, cwv, gsc) {
   const p = progress(state);
   const vis = state.aiVisibilityScore || {};
   const snap = {
@@ -207,6 +207,13 @@ function buildSnapshot(state, geo, cwv) {
   const eng = enginesOf(geo);
   if (eng) {
     snap.engines = Object.fromEntries(Object.entries(eng).map(([n, e]) => [n, e.score]));
+  }
+  if (gsc && gsc.totals) {
+    snap.gsc = {
+      clicks: gsc.totals.clicks,
+      impressions: gsc.totals.impressions,
+      position: gsc.totals.position,
+    };
   }
   return snap;
 }
@@ -239,7 +246,8 @@ function svgLineChart(series, { w = 860, h = 220, yMax = 100 } = {}) {
   const tMin = Math.min(...allT), tMax = Math.max(...allT);
   const X = (t) => padL + (tMax === tMin ? iw / 2 : ((t - tMin) / (tMax - tMin)) * iw);
   const Y = (y) => padT + ih - (Math.max(0, Math.min(yMax, y)) / yMax) * ih;
-  const gridLines = [0, 25, 50, 75, 100]
+  const gridLines = [0, 0.25, 0.5, 0.75, 1]
+    .map((f) => Math.round(yMax * f))
     .map(
       (v) =>
         `<line x1="${padL}" y1="${Y(v)}" x2="${w - padR}" y2="${Y(v)}" class="grid-line"/>` +
@@ -702,6 +710,36 @@ function cwvSection(cwv, history) {
   return `<section><h2>Performans Çekirdeği — Core Web Vitals</h2><div class="kpis">${tiles}</div></section>`;
 }
 
+// Google Search Console: gerçek arama trafiği (seo-os-gsc.js üretir)
+function gscSection(gsc) {
+  if (!gsc || !gsc.totals) {
+    return `<section class="card"><h2>Arama Telemetrisi — Google Search Console</h2><p class="muted">gsc-report.json bulunamadı. Gerçek tıklama/gösterim verisi için: <code>node "\${CLAUDE_PLUGIN_ROOT}/tools/seo-os-gsc.js" --site=sc-domain:siten.com --creds=sa.json</code> (kurulum adımları araç içinde).</p></section>`;
+  }
+  const t = gsc.totals;
+  const tiles = [
+    { label: "Tıklama", value: `<strong>${t.clicks}</strong>` },
+    { label: "Gösterim", value: `<strong>${t.impressions}</strong>` },
+    { label: "CTR", value: `<strong>%${t.ctr}</strong>` },
+    { label: "Ort. Pozisyon", value: `<strong>${t.position}</strong>` },
+  ]
+    .map((k) => `<div class="card kpi"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div></div>`)
+    .join("");
+  const daily = Array.isArray(gsc.daily) ? gsc.daily : [];
+  const pts = daily
+    .filter((d) => d.date)
+    .map((d) => ({ t: Date.parse(d.date), y: d.clicks || 0 }));
+  const maxClicks = Math.max(4, ...pts.map((p) => p.y));
+  const chart = pts.length > 1
+    ? svgLineChart([{ label: "Günlük tıklama", points: pts }], { yMax: maxClicks, h: 180 })
+    : "";
+  return (
+    `<section><h2>Arama Telemetrisi — Google Search Console</h2>` +
+    `<div class="kpis">${tiles}</div>` +
+    (chart ? `<div class="card" style="margin-top:12px">${chart}</div>` : "") +
+    `<p class="muted" style="font-size:12px;margin:8px 0 0">${esc(gsc.site)} · son ${gsc.days} gün · ölçüm: ${fmtDate(gsc.at)}</p></section>`
+  );
+}
+
 function deltaSection(delta) {
   if (!delta || !delta.before || !delta.after) return "";
   const list = (a, label, cls) =>
@@ -831,7 +869,7 @@ b.addEventListener("click",function(){t=t==="dark"?"light":"dark";try{localStora
 }
 
 function renderHtml(model) {
-  const { state, history, engines, cwv, delta, statePath = STATE_PATH } = model;
+  const { state, history, engines, cwv, delta, gsc, statePath = STATE_PATH } = model;
   const p = progress(state);
   const mode = state.mode || "ANALYZE";
   return `<!doctype html>
@@ -1070,6 +1108,7 @@ function renderHtml(model) {
   ${phaseSection(state)}
   ${engineSection(engines, history)}
   ${cwvSection(cwv, history)}
+  ${gscSection(gsc)}
   ${deltaSection(delta)}
   ${logSection(state)}
   <footer>seo-os-dashboard.js · ${p.done}/${p.total} faz tamam · üretim: ${fmtDate(new Date().toISOString())} · kaynak: ${esc(path.relative(process.cwd(), statePath) || statePath)}</footer>
@@ -1146,6 +1185,7 @@ function pathsFor(statePath) {
     geo: path.join(base, "geo-report.json"),
     cwv: path.join(base, "cwv-report.json"),
     delta: path.join(base, "delta-report.json"),
+    gsc: path.join(base, "gsc-report.json"),
   };
 }
 function loadModelFrom(statePath, overrides) {
@@ -1158,6 +1198,7 @@ function loadModelFrom(statePath, overrides) {
     geo,
     cwv: loadJson(p.cwv, false),
     delta: loadJson(p.delta, false),
+    gsc: loadJson(p.gsc, false),
     history: loadHistory(p.history),
     engines: enginesOf(geo),
   };
@@ -1168,6 +1209,7 @@ function loadModel() {
     geo: GEO_PATH,
     cwv: CWV_PATH,
     delta: DELTA_PATH,
+    gsc: path.join(BASE_DIR, "gsc-report.json"),
   });
 }
 
@@ -1364,23 +1406,23 @@ if (opt.serve && opt.daemon) {
 }
 
 function mainCli() {
-let state, geo, cwv, delta, history, engines;
+let state, geo, cwv, delta, gsc, history, engines;
 try {
-  ({ state, geo, cwv, delta, history, engines } = loadModel());
+  ({ state, geo, cwv, delta, gsc, history, engines } = loadModel());
 } catch (e) {
   console.error(`! ${e.message}\n  Bir yol ver (node seo-os-dashboard.js path/to/${STATE_NAME}) ya da SEO-OS'u Faz 0-A'da baslatip state olusturt.`);
   process.exit(1);
 }
 
 if (opt.snapshot) {
-  const snap = buildSnapshot(state, geo, cwv);
+  const snap = buildSnapshot(state, geo, cwv, gsc);
   fs.mkdirSync(path.dirname(HISTORY_PATH), { recursive: true });
   fs.appendFileSync(HISTORY_PATH, JSON.stringify(snap) + "\n");
   console.error(`[dashboard] snapshot eklendi -> ${HISTORY_PATH}`);
   history = loadHistory(HISTORY_PATH);
 }
 
-const model = { state, history, engines, cwv, delta, statePath: STATE_PATH };
+const model = { state, history, engines, cwv, delta, gsc, statePath: STATE_PATH };
 registerProject(state, STATE_PATH); // filo kokpiti bu projeyi görsün
 
 if (opt.json) {

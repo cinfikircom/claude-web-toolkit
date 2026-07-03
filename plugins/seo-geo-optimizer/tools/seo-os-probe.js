@@ -27,6 +27,7 @@
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
+const { findSeoOsDir } = require("./seo-os-state-lib");
 
 // ---- args -----------------------------------------------------------------
 const argv = process.argv.slice(2);
@@ -67,16 +68,6 @@ const dryRun = has("dry-run");
 const asJson = has("json");
 
 // ---- .seo-os dizini (dashboard/tracker ile aynı yukarı-yürüyüş) -------------
-function findSeoOsDir() {
-  let dir = process.cwd();
-  for (let i = 0; i < 12; i++) {
-    if (fs.existsSync(path.join(dir, ".seo-os"))) return path.join(dir, ".seo-os");
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return path.resolve(".seo-os");
-}
 const SEO_OS_DIR = findSeoOsDir();
 const OUT_PATH = path.join(SEO_OS_DIR, "geo-report.json");
 

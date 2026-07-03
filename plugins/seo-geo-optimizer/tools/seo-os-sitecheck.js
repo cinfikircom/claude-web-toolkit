@@ -22,6 +22,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const { findSeoOsDir } = require("./seo-os-state-lib");
 
 const argv = process.argv.slice(2);
 const flagVal = (n, d) => {
@@ -48,17 +49,6 @@ if (!startUrl && !dirMode) {
   process.exit(2);
 }
 
-// .seo-os dizinini bul (probe ile aynı yukarı yürüyüş)
-function findSeoOsDir() {
-  let dir = process.cwd();
-  for (let i = 0; i < 12; i++) {
-    if (fs.existsSync(path.join(dir, ".seo-os"))) return path.join(dir, ".seo-os");
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return path.resolve(".seo-os");
-}
 const OUT_PATH = path.resolve(flagVal("out", path.join(findSeoOsDir(), "sitecheck-report.json")));
 
 // ---- HTML analizi (regex tabanlı; rapor amaçlı yeterli) -------------------------

@@ -1,7 +1,7 @@
 ---
 name: seo-geo-audit
 description: Growth Optimization Framework for ANY website — SEO + GEO + Entity/Knowledge Graph + Core Web Vitals + Local SEO + CRO. Triggers on "improve SEO", "SEO audit", "rank higher on Google", "be cited by ChatGPT/Perplexity/Gemini", "GEO / AI search optimization", "add llms.txt / schema / structured data", "improve Core Web Vitals", "competitor analysis", "more leads", or /seo-audit. Turkish triggers — "SEO denetimi", "SEO iyileştir", "Google'da üst sıralara çık", "AI aramada görünürlük/alıntılanma", "site hızını artır", "daha çok müşteri/lead". Framework-agnostic (Next.js, Astro, Nuxt, SvelteKit, plain HTML; Cloudflare-aware). Guided consultant: detects the stack, asks goal/risk questions, applies tasks one-by-one with approval.
-version: 2.6.0
+version: 2.7.0
 ---
 
 # AI Search & Growth Optimization Framework
@@ -262,6 +262,8 @@ Riskli Değişiklikler · Sonraki Önerilen Adım.
 - `references/cloudflare-edge.md` — Cloudflare Polish/Fonts/Early Hints/Cache + AI bot bloklama (Başlık I & H)
 - `references/cro-audit.md` — dönüşüm optimizasyonu: CTA/form/telefon/WhatsApp (Başlık J)
 - `references/offsite-setup.md` — Search Console / Bing / GA4 / GBP kurulum rehberi (Başlık K)
+- `references/offsite-authority.md` — dış otorite katmanı: Wikidata/sameAs mühürleme, LLM-beslenen
+  mecralar (Reddit/Quora/YouTube), NAP/citation, yorumlar, dijital PR, IndexNow (Başlık K genişletmesi)
 - `references/audit-tools.md` — PageSpeed / Pingdom / DebugBear / GTmetrix ve hedef skor döngüsü (Başlık L)
 - `references/ai-visibility-score.md` — AI Visibility Score (0-100): sabit scoring model `aivs/v1` (5 boyut × 5 kontrol × 4 puan)
 - `references/release-gate.md` — Release Readiness Gate: hard check'ler + skor eşikleri → PASS/FAIL (`/seo-audit gate`)

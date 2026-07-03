@@ -4,6 +4,27 @@ Biçim: [Keep a Changelog](https://keepachangelog.com/) esinli; sürümler `plug
 
 ## [Unreleased]
 
+## [2.7.0] — 2026-07-03
+### Eklendi — Dış katman (off-site)
+- **`tools/seo-os-indexnow.js`:** IndexNow ile anında indeksleme bildirimi — `--setup` anahtar
+  üretir + `{key}.txt` + config; `--url/--sitemap/--list` gönderimi (sitemap index desteği,
+  yanlış-host filtresi, gönderim öncesi canlı anahtar doğrulaması, `--dry-run`).
+- **`tools/seo-os-gsc.js`:** Google Search Console köprüsü — service-account JWT (saf Node
+  crypto) ile Search Analytics'ten gerçek tıklama/gösterim/CTR/pozisyon → `gsc-report.json`;
+  panelde yeni **"Arama Telemetrisi"** bölümü (KPI'lar + günlük tıklama grafiği); `--snapshot`
+  GSC toplamlarını geçmişe işler. Test/CI için `--gsc-mock` kancası.
+- **`references/offsite-authority.md`:** dış otorite katmanı rehberi — Wikidata item + sameAs
+  mühürleme (adım adım), LLM-beslenen mecralar (Reddit/Quora/YouTube), NAP/citation, yorum
+  protokolü, dijital PR, marka sorgusu, IndexNow entegrasyonu ve ölçüm döngüsü; K fazı
+  kontrol listesiyle. Referans sayısı 27.
+- Grafik ekseni dinamikleşti (yMax'e göre tick'ler) — tıklama gibi 0-100 dışı seriler doğru çizilir.
+- CI: IndexNow setup+dry-run ve GSC mock smoke'ları (deterministik, ağsız; ubuntu + windows).
+### Düzeltildi
+- **`.seo-os` dizin keşfi $HOME'da durur:** yardımcı araçlar (probe/sitecheck/indexnow/gsc)
+  proje köksüz çalıştırıldığında `~/.seo-os` filo kayıt dizinine kilitlenip config/raporu
+  yanlış yere yazabiliyordu; keşif artık ortak `findSeoOsDir`'de (state-lib) ve home'u
+  proje dizini saymaz. Dört araçtaki kopya keşif fonksiyonları da bu vesileyle tekilleşti.
+
 ## [2.6.0] — 2026-07-03
 ### Eklendi
 - **`/seo-wizard` — İçerik Derinliği Sihirbazı:** kullanıcıyı adım adım yürüten yeni komut:

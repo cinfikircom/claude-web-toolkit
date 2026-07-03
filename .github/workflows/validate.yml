@@ -31,6 +31,8 @@ jobs:
           node --check plugins/seo-geo-optimizer/tools/seo-os-probe.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-doctor.js
           node --check plugins/seo-geo-optimizer/tools/seo-os-sitecheck.js
+          node --check plugins/seo-geo-optimizer/tools/seo-os-indexnow.js
+          node --check plugins/seo-geo-optimizer/tools/seo-os-gsc.js
           node --check seo-os-validation-suite/seo-os-scorer.js
           node --check seo-os-validation-suite/golden-tests/check-regression.js
           node --check seo-os-validation-suite/golden-tests/check-integrity.js
@@ -125,3 +127,28 @@ jobs:
             const r=JSON.parse(require('fs').readFileSync('.seo-os/sitecheck-report.json','utf8'));
             if (r.pagesScanned < 2 || !Array.isArray(r.orphans) || !Array.isArray(r.imagesNoAlt)) { console.error('sitecheck FAIL', r); process.exit(1); }
             console.log('sitecheck smoke OK —', r.pagesScanned, 'pages');"
+
+      - name: IndexNow + GSC smoke (deterministic, no network)
+        run: |
+          mkdir -p .ci-tmp/inx/public && cd .ci-tmp/inx
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-indexnow.js --setup --site=https://ci.example --public=public
+          KEY=$(node -pe "require('./.seo-os/indexnow.json').key")
+          test -f "public/$KEY.txt" && echo "indexnow setup OK"
+          printf 'https://ci.example/a\nhttps://ci.example/b\n' > urls.txt
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-indexnow.js --list=urls.txt --dry-run | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              const p=JSON.parse(d);
+              if (p.host!=='ci.example' || p.urlList.length!==2) { console.error('indexnow FAIL', p); process.exit(1); }
+              console.log('indexnow dry-run OK');
+            })"
+          cat > gsc-mock.json <<'EOF'
+          { "rows": [
+            { "keys": ["2026-01-01"], "clicks": 10, "impressions": 100, "ctr": 0.1, "position": 12 },
+            { "keys": ["2026-01-02"], "clicks": 30, "impressions": 300, "ctr": 0.1, "position": 8 }
+          ]}
+          EOF
+          node ../../plugins/seo-geo-optimizer/tools/seo-os-gsc.js --gsc-mock=gsc-mock.json
+          node -e "
+            const r=JSON.parse(require('fs').readFileSync('.seo-os/gsc-report.json','utf8'));
+            if (r.totals.clicks!==40 || r.totals.impressions!==400 || r.totals.position!==9) { console.error('gsc FAIL', r.totals); process.exit(1); }
+            console.log('gsc smoke OK —', JSON.stringify(r.totals));"

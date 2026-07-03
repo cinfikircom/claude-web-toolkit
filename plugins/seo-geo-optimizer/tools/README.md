@@ -196,6 +196,41 @@ node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-sitecheck.js" --dir=dist
 Bulguları adım adım (onaylı) düzeltmek için: **`/seo-wizard`** — sağlık kontrolü → tarama →
 iç bağlantı onarımı → alt metinler → alıntılanabilir bloklar → gelişmiş şema.
 
+## seo-os-indexnow.js
+
+**Anında indeksleme bildirimi (IndexNow).** Yeni/güncellenen URL'leri Bing + ortak motor
+ekosistemine anında bildirir — tarama kuyruğu beklenmez. (Google IndexNow kullanmaz;
+Google tarafı sitemap + GSC ile yürür.)
+
+```bash
+INX="${CLAUDE_PLUGIN_ROOT}/tools/seo-os-indexnow.js"
+node "$INX" --setup --site=https://siten.com     # anahtar üret + public/{key}.txt + config
+# deploy sonrası https://siten.com/{key}.txt 200 dönmeli, sonra:
+node "$INX" --sitemap=https://siten.com/sitemap.xml   # tümünü bildir (sitemap index desteklenir)
+node "$INX" --url=https://siten.com/yeni-sayfa        # tek URL
+node "$INX" --list=degisen-urller.txt --dry-run       # önizleme
+```
+
+Deploy hattına ekle (CI adımı / deploy hook): her yayında değişen URL'leri bildir.
+Yanlış host'lu URL'ler otomatik atlanır; gönderim öncesi anahtar dosyası canlıda doğrulanır.
+
+## seo-os-gsc.js
+
+**Google Search Console köprüsü.** Service-account ile Search Analytics API'sinden son N
+günün **gerçek tıklama / gösterim / CTR / ortalama pozisyon** verisini çeker →
+`.seo-os/gsc-report.json`. Panel "Arama Telemetrisi" bölümünde KPI'lar + günlük tıklama
+grafiği olarak gösterir; `--snapshot` toplamları geçmişe işler (dış SEO çalışmasının
+etkisi gerçek trafikle görünür).
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/tools/seo-os-gsc.js" --site=sc-domain:siten.com --creds=sa.json --days=28
+```
+
+Kurulum (bir kez, ~5 dk — adımlar araç başındaki yorumda da var):
+1. Google Cloud Console'da **Search Console API**'yi etkinleştir.
+2. Service account oluştur → JSON anahtar indir.
+3. GSC → Ayarlar → Kullanıcılar → service account e-postasını ekle.
+
 ## seo-os-sync.js
 
 `.seo-os/seo-os-state.json`'u (SSOT) **GitHub Issues** ve/veya **Notion** veritabanına
